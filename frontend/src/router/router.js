@@ -5,6 +5,7 @@ import RegisterPage from "../pages/register/RegisterPage.js";
 import DashboardPage from "../pages/dashboard/DashboardPage.js";
 import AdminPage from "../pages/admin/AdminPage.js";
 import CreateListingPage from "../pages/create-listing/CreateListingPage.js";
+import EditListingPage from "../pages/edit-listing/EditListingPage.js";
 import NotFoundPage from "../pages/not-found/NotFoundPage.js";
 
 const routes = {
@@ -17,6 +18,10 @@ const routes = {
   "/crear-publicacion": CreateListingPage,
 };
 
+const dynamicRoutes = [
+  { pattern: /^\/editar-publicacion\/(.+)$/, component: EditListingPage },
+];
+
 export const navigateTo = (path) => {
   window.history.pushState({}, "", path);
   window.dispatchEvent(new PopStateEvent("popstate"));
@@ -24,6 +29,16 @@ export const navigateTo = (path) => {
 
 export const renderRoute = (container) => {
   const path = window.location.pathname || "/";
-  const Page = routes[path] || NotFoundPage;
-  container.replaceChildren(Page());
+  const Page = routes[path];
+  if (Page) {
+    container.replaceChildren(Page());
+    return;
+  }
+  for (const { pattern, component } of dynamicRoutes) {
+    if (pattern.test(path)) {
+      container.replaceChildren(component());
+      return;
+    }
+  }
+  container.replaceChildren(NotFoundPage());
 };
