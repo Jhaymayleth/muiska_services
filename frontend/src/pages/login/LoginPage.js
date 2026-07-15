@@ -62,6 +62,7 @@ const LoginPage = () => {
     try {
       const result = await api.login(email, password);
       localStorage.setItem("token", result.token);
+      localStorage.setItem("user", JSON.stringify(result.user));
       navigateTo("/dashboard");
     } catch (err) {
       errorEl.textContent = err.message || "Error al iniciar sesión.";

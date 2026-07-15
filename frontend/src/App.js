@@ -1,6 +1,7 @@
-import { renderRoute } from "./router/router.js";
+import { renderRoute, navigateTo } from "./router/router.js";
 import Navbar from "./components/layout/Navbar.js";
 import Footer from "./components/layout/Footer.js";
+import { isAuthenticated, isRouteProtected, isGuestRoute } from "./utils/auth.js";
 
 const App = () => {
   const app = document.createElement("div");
@@ -15,6 +16,20 @@ const App = () => {
   const isHome = () => window.location.pathname === "/";
 
   const render = () => {
+    const path = window.location.pathname;
+
+    // Proteger rutas que requieren autenticación
+    if (isRouteProtected(path) && !isAuthenticated()) {
+      navigateTo("/login");
+      return;
+    }
+
+    // Redirigir a dashboard si ya está autenticado e intenta ir a login/registro
+    if (isGuestRoute(path) && isAuthenticated()) {
+      navigateTo("/dashboard");
+      return;
+    }
+
     layout.innerHTML = "";
     if (isHome()) {
       main.className = "flex-1";
@@ -36,7 +51,7 @@ const App = () => {
   app.appendChild(layout);
 
   window.addEventListener("popstate", render);
-  renderRoute(main);
+  render();
 
   return app;
 };
