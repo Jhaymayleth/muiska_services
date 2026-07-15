@@ -8,6 +8,8 @@ const Navbar = () => {
       <a href="/" class="text-xl font-semibold text-primary">MUISKA</a>
       <div class="flex gap-3 text-sm">
         <a href="/explorar" class="rounded px-3 py-2 hover:bg-muted">Explorar</a>
+        <a href="/crear-publicacion" class="rounded px-3 py-2 hover:bg-muted">Crear</a>
+        <a href="/dashboard" class="rounded px-3 py-2 hover:bg-muted">Dashboard</a>
         <a href="/login" class="rounded px-3 py-2 hover:bg-muted">Login</a>
         <a href="/registro" class="rounded px-3 py-2 hover:bg-muted">Registro</a>
       </div>
