@@ -16,79 +16,94 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
     rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Fredoka:wght@300..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&family=Quicksand:wght@300..700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="/src/global.css" />
-  <link rel="icon" type="image/png" href="/tu-logo.png" />
+  <link rel="icon" type="image/png" href="/Logo.png" />
 
 </head>
 
 <body>
 
   <!-- Encabezado de la landing page -->
+
   <header class="sticky top-0 z-50 w-full bg-background border-b border-border text-sm">
-    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4 px-6 py-3">
+    <div class="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-[auto_1fr_auto] items-center gap-4 px-6 py-3">
 
       <!-- Logo -->
-      <a href="/index.html" class="flex items-center gap-2 shrink-0">
-        <span
-          class="w-9 h-9 flex items-center justify-center rounded-full bg-primary text-background font-display font-bold">M</span>
-        <span class="font-display text-xl font-bold text-text">Muiska</span>
+      <a href="/index.html" class="flex items-center gap-2 shrink-0 justify-self-start">
+        <img src="/Muiska-nombre.png" alt="MUISKA" class="h-8 w-auto" />
       </a>
 
       <!-- Botón hamburguesa (solo móvil) -->
       <input type="checkbox" id="menu-toggle" class="peer hidden" />
-      <label for="menu-toggle" class="lg:hidden text-text text-2xl cursor-pointer">&#9776;</label>
+      <label for="menu-toggle" class="lg:hidden justify-self-end text-logo-dark text-2xl cursor-pointer">&#9776;</label>
 
-      <!-- Menú de navegación -->
+      <!-- Menú de navegación (columna centro) -->
       <nav
-        class="hidden peer-checked:flex lg:flex flex-col lg:flex-row absolute lg:static top-full left-0 w-full lg:w-auto bg-background lg:bg-transparent border-b lg:border-0 border-border px-6 lg:px-0 py-4 lg:py-0 gap-4 lg:gap-6 items-center lg:flex-1 lg:justify-center">
+        class="hidden peer-checked:flex lg:flex flex-col lg:flex-row absolute lg:static top-full left-0 w-full lg:w-auto bg-background lg:bg-transparent border-b lg:border-0 border-border px-6 lg:px-0 py-4 lg:py-0 gap-4 lg:gap-6 items-center justify-center">
 
-        <ul class="flex flex-col lg:flex-row items-center gap-1 w-full lg:w-auto">
-          <li class="w-full lg:w-auto"><a href="#Inicio"
-              class="block text-center lg:inline px-4 py-2 rounded-full bg-muted text-primary font-medium">Inicio</a>
+        <ul class="nav-links flex flex-col lg:flex-row items-center gap-1 w-full lg:w-auto">
+          <li class="w-full lg:w-auto">
+            <a href="#Inicio" data-active="true"
+              class="nav-link block text-center lg:inline whitespace-nowrap px-4 py-2 rounded-md transition-colors duration-200 bg-logo-blush/40 text-logo-dark font-medium">Inicio</a>
           </li>
-          <li class="w-full lg:w-auto"><a href="#Categorias"
-              class="block text-center lg:inline px-4 py-2 text-text/70 hover:text-text font-medium">Categorías</a></li>
-          <li class="w-full lg:w-auto"><a href="#Publicacion"
-              class="block text-center lg:inline px-4 py-2 text-text/70 hover:text-text font-medium">Publicación</a>
+          <li class="w-full lg:w-auto">
+            <a href="#Categorias"
+              class="nav-link block text-center lg:inline whitespace-nowrap px-4 py-2 rounded-md transition-colors duration-200 text-text/70 hover:text-logo-dark font-medium">Categorías</a>
           </li>
-          <li class="w-full lg:w-auto"><a href="#Comofunciona"
-              class="block text-center lg:inline px-4 py-2 text-text/70 hover:text-text font-medium">¿Cómo funciona?</a>
+          <li class="w-full lg:w-auto">
+            <a href="#Publicacion"
+              class="nav-link block text-center lg:inline whitespace-nowrap px-4 py-2 rounded-md transition-colors duration-200 text-text/70 hover:text-logo-dark font-medium">Publicación</a>
           </li>
-          <li class="w-full lg:w-auto"><a href="#Nosotros"
-              class="block text-center lg:inline px-4 py-2 text-text/70 hover:text-text font-medium">Nosotros</a></li>
+          <li class="w-full lg:w-auto">
+            <a href="#Comofunciona"
+              class="nav-link block text-center lg:inline whitespace-nowrap px-4 py-2 rounded-md transition-colors duration-200 text-text/70 hover:text-logo-dark font-medium">¿Cómo
+              funciona?</a>
+          </li>
+          <li class="w-full lg:w-auto">
+            <a href="#Nosotros"
+              class="nav-link block text-center lg:inline whitespace-nowrap px-4 py-2 rounded-md transition-colors duration-200 text-text/70 hover:text-logo-dark font-medium">Nosotros</a>
+          </li>
         </ul>
 
         <div class="flex items-center gap-2 w-full lg:w-auto">
           <input type="text" placeholder="Buscar..."
-            class="bg-muted text-text placeholder-text/50 rounded-full px-4 py-2 border border-border flex-1 lg:flex-none" />
-          <button class="Search bg-accent hover:opacity-90 text-background font-medium px-4 py-2 rounded-full shrink-0">
+            class="bg-muted text-text placeholder-text/50 rounded-md px-4 py-2 border border-border flex-1 lg:flex-none" />
+          <button
+            class="Search bg-logo-rose hover:opacity-90 text-background font-medium px-4 py-2 rounded-md shrink-0">
             Buscar
           </button>
         </div>
 
         <!-- Acciones (dentro del menú en móvil) -->
         <div class="flex items-center gap-4 lg:hidden w-full justify-center pt-2">
-          <button href="./login.html" class="Login text-text/70 hover:text-text font-medium">Iniciar sesión</button>
-          <button href="./register.html"
-            class="Register bg-primary hover:bg-primary-hover text-background font-medium px-5 py-2.5 rounded-full">
+          <a href="./login.html" class="Login text-text/70 hover:text-logo-dark font-medium">Iniciar sesión</a>
+          <a href="./register.html"
+            class="Register bg-logo-dark hover:bg-primary-hover text-background font-medium px-4 py-2 rounded-md">
             Registrarse
-          </button>
+          </a>
         </div>
       </nav>
 
-      <!-- Inicio de sesión y registro -->
-      <div class="hidden lg:flex items-center gap-4 shrink-0">
-        <button href="./login.html" class="Login text-text/70 hover:text-text font-medium">Iniciar sesión</button>
-        <button href="./register.html"
-          class="Register bg-primary hover:bg-primary-hover text-background font-medium px-5 py-2.5 rounded-full">
+      <!-- Inicio de sesión y registro (columna derecha, solo escritorio) -->
+      <div class="hidden lg:flex items-center gap-4 justify-self-end shrink-0">
+        <a href="./login.html" class="Login text-text/70 hover:text-logo-dark font-medium whitespace-nowrap">Iniciar
+          sesión</a>
+        <a href="./register.html"
+          class="Register bg-logo-dark hover:bg-primary-hover text-background font-medium px-4 py-2 rounded-md whitespace-nowrap">
           Registrarse
-        </button>
+        </a>
       </div>
 
     </div>
   </header>
 
   <!-- Contenido de la landing page -->
+
   <main>
 
     <!-- Contenido de la Hero section -->
@@ -127,11 +142,11 @@
         <!-- Botones -->
         <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
           <a href="#Categorias"
-            class="w-full sm:w-auto text-center bg-primary hover:bg-primary-hover text-background font-medium px-6 py-3 lg:px-8 lg:py-4 lg:text-lg rounded-full">
+            class="w-full sm:w-auto text-center bg-primary hover:bg-primary-hover text-background font-medium px-6 py-3 lg:px-8 lg:py-4 lg:text-lg rounded-md transition">
             Explorar ahora &rarr;
           </a>
           <a href="#Publicar"
-            class="w-full sm:w-auto text-center bg-background hover:bg-muted border border-border text-text font-medium px-6 py-3 lg:px-8 lg:py-4 lg:text-lg rounded-full transition">
+            class="w-full sm:w-auto text-center bg-background hover:bg-muted border border-border text-text font-medium px-6 py-3 lg:px-8 lg:py-4 lg:text-lg rounded-md transition">
             Crear cuenta gratis
           </a>
         </div>
@@ -236,12 +251,12 @@
           <div class="Publicacion flex flex-col h-full bg-white border border-border rounded-2xl overflow-hidden">
             <div class="relative">
               <img src="/vestidor.jpg" alt="Vestido de noche elegante" class="w-full h-56 object-cover" />
-              <span class="absolute top-3 left-3 bg-primary text-background text-xs font-medium px-3 py-1 rounded-full">
+              <span class="absolute top-3 left-3 bg-primary text-background text-xs font-medium px-3 py-1 rounded-md">
                 Venta
               </span>
               <input type="checkbox" id="like-1" class="peer hidden" />
-              <label for="like-1" class="like-btn absolute top-3 right-3 w-9 h-9 flex items-center justify-center bg-white rounded-full cursor-pointer
-                   text-text/40 peer-checked:text-primary transition-transform duration-200 active:scale-75">
+              <label for="like-1" class="like-btn absolute top-3 right-3 w-9 h-9 flex items-center justify-center bg-white rounded-md cursor-pointer
+               text-text/40 peer-checked:text-primary transition-transform duration-200 active:scale-75">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
                   class="w-5 h-5 transition-transform duration-200 peer-checked:scale-125" fill="currentColor">
                   <path
@@ -273,7 +288,7 @@
                 <span class="font-bold text-primary">$85.000</span>
               </div>
               <button
-                class="w-full mt-auto bg-primary hover:bg-primary-hover text-background font-medium py-2 rounded-full">
+                class="w-full mt-auto bg-primary hover:bg-primary-hover text-background font-medium py-2 rounded-md">
                 Contactar
               </button>
             </div>
@@ -283,12 +298,12 @@
           <div class="Publicacion flex flex-col h-full bg-white border border-border rounded-2xl overflow-hidden">
             <div class="relative">
               <img src="/guitarra.jpg" alt="Clases de guitarra online" class="w-full h-56 object-cover" />
-              <span class="absolute top-3 left-3 bg-accent text-background text-xs font-medium px-3 py-1 rounded-full">
+              <span class="absolute top-3 left-3 bg-logo-rose text-background text-xs font-medium px-3 py-1 rounded-md">
                 Servicio
               </span>
               <input type="checkbox" id="like-2" class="peer hidden" />
-              <label for="like-2" class="like-btn absolute top-3 right-3 w-9 h-9 flex items-center justify-center bg-white rounded-full cursor-pointer
-                   text-text/40 peer-checked:text-primary transition-transform duration-200 active:scale-75">
+              <label for="like-2" class="like-btn absolute top-3 right-3 w-9 h-9 flex items-center justify-center bg-white rounded-md cursor-pointer
+               text-text/40 peer-checked:text-primary transition-transform duration-200 active:scale-75">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
                   class="w-5 h-5 transition-transform duration-200 peer-checked:scale-125" fill="currentColor">
                   <path
@@ -311,7 +326,7 @@
               </div>
               <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center gap-2">
-                  <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center shrink-0">
+                  <div class="w-8 h-8 rounded-full bg-logo-rose flex items-center justify-center shrink-0">
                     <span class="text-background text-xs font-bold">CM</span>
                   </div>
                   <span class="text-sm text-text">Carlos Mendez</span>
@@ -319,7 +334,7 @@
                 <span class="font-bold text-primary">$40.000</span>
               </div>
               <button
-                class="w-full mt-auto bg-primary hover:bg-primary-hover text-background font-medium py-2 rounded-full">
+                class="w-full mt-auto bg-primary hover:bg-primary-hover text-background font-medium py-2 rounded-md transition">
                 Contactar
               </button>
             </div>
@@ -329,12 +344,12 @@
           <div class="Publicacion flex flex-col h-full bg-white border border-border rounded-2xl overflow-hidden">
             <div class="relative">
               <img src="/Lenovo.jpg" alt="Laptop Lenovo ThinkPad T14" class="w-full h-56 object-cover" />
-              <span class="absolute top-3 left-3 bg-primary text-background text-xs font-medium px-3 py-1 rounded-full">
+              <span class="absolute top-3 left-3 bg-primary text-background text-xs font-medium px-3 py-1 rounded-md">
                 Venta
               </span>
               <input type="checkbox" id="like-3" class="peer hidden" />
-              <label for="like-3" class="like-btn absolute top-3 right-3 w-9 h-9 flex items-center justify-center bg-white rounded-full cursor-pointer
-                   text-text/40 peer-checked:text-primary transition-transform duration-200 active:scale-75">
+              <label for="like-3" class="like-btn absolute top-3 right-3 w-9 h-9 flex items-center justify-center bg-white rounded-md cursor-pointer
+               text-text/40 peer-checked:text-primary transition-transform duration-200 active:scale-75">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
                   class="w-5 h-5 transition-transform duration-200 peer-checked:scale-125" fill="currentColor">
                   <path
@@ -365,7 +380,7 @@
                 <span class="font-bold text-primary">$2.800.000</span>
               </div>
               <button
-                class="w-full mt-auto bg-primary hover:bg-primary-hover text-background font-medium py-2 rounded-full">
+                class="w-full mt-auto bg-primary hover:bg-primary-hover text-background font-medium py-2 rounded-md transition">
                 Contactar
               </button>
             </div>
@@ -375,12 +390,12 @@
           <div class="Publicacion flex flex-col h-full bg-white border border-border rounded-2xl overflow-hidden">
             <div class="relative">
               <img src="/libro_de_receta.jpg" alt="Libro de recetas" class="w-full h-56 object-cover" />
-              <span class="absolute top-3 left-3 bg-text text-background text-xs font-medium px-3 py-1 rounded-full">
+              <span class="absolute top-3 left-3 bg-text text-background text-xs font-medium px-3 py-1 rounded-md">
                 Donación
               </span>
               <input type="checkbox" id="like-4" class="peer hidden" />
-              <label for="like-4" class="like-btn absolute top-3 right-3 w-9 h-9 flex items-center justify-center bg-white rounded-full cursor-pointer
-                   text-text/40 peer-checked:text-primary transition-transform duration-200 active:scale-75">
+              <label for="like-4" class="like-btn absolute top-3 right-3 w-9 h-9 flex items-center justify-center bg-white rounded-md cursor-pointer
+               text-text/40 peer-checked:text-primary transition-transform duration-200 active:scale-75">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
                   class="w-5 h-5 transition-transform duration-200 peer-checked:scale-125" fill="currentColor">
                   <path
@@ -411,7 +426,7 @@
                 <span class="font-bold text-primary">$57.000</span>
               </div>
               <button
-                class="w-full mt-auto bg-primary hover:bg-primary-hover text-background font-medium py-2 rounded-full">
+                class="w-full mt-auto bg-primary hover:bg-primary-hover text-background font-medium py-2 rounded-md transition">
                 Contactar
               </button>
             </div>
@@ -421,12 +436,12 @@
           <div class="Publicacion flex flex-col h-full bg-white border border-border rounded-2xl overflow-hidden">
             <div class="relative">
               <img src="/Reparacion.jpg" alt="Servicio de reparación" class="w-full h-56 object-cover" />
-              <span class="absolute top-3 left-3 bg-accent text-background text-xs font-medium px-3 py-1 rounded-full">
+              <span class="absolute top-3 left-3 bg-logo-rose text-background text-xs font-medium px-3 py-1 rounded-md">
                 Servicio
               </span>
               <input type="checkbox" id="like-5" class="peer hidden" />
-              <label for="like-5" class="like-btn absolute top-3 right-3 w-9 h-9 flex items-center justify-center bg-white rounded-full cursor-pointer
-                   text-text/40 peer-checked:text-primary transition-transform duration-200 active:scale-75">
+              <label for="like-5" class="like-btn absolute top-3 right-3 w-9 h-9 flex items-center justify-center bg-white rounded-md cursor-pointer
+               text-text/40 peer-checked:text-primary transition-transform duration-200 active:scale-75">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
                   class="w-5 h-5 transition-transform duration-200 peer-checked:scale-125" fill="currentColor">
                   <path
@@ -449,7 +464,7 @@
               </div>
               <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center gap-2">
-                  <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center shrink-0">
+                  <div class="w-8 h-8 rounded-full bg-logo-rose flex items-center justify-center shrink-0">
                     <span class="text-background text-xs font-bold">JM</span>
                   </div>
                   <span class="text-sm text-text">Jorge Martínez</span>
@@ -457,7 +472,7 @@
                 <span class="font-bold text-primary">$55.000</span>
               </div>
               <button
-                class="w-full mt-auto bg-primary hover:bg-primary-hover text-background font-medium py-2 rounded-full">
+                class="w-full mt-auto bg-primary hover:bg-primary-hover text-background font-medium py-2 rounded-md transition">
                 Contactar
               </button>
             </div>
@@ -467,12 +482,12 @@
           <div class="Publicacion flex flex-col h-full bg-white border border-border rounded-2xl overflow-hidden">
             <div class="relative">
               <img src="/Olla.jpg" alt="Olla de cerámica" class="w-full h-56 object-cover" />
-              <span class="absolute top-3 left-3 bg-primary text-background text-xs font-medium px-3 py-1 rounded-full">
+              <span class="absolute top-3 left-3 bg-primary text-background text-xs font-medium px-3 py-1 rounded-md">
                 Venta
               </span>
               <input type="checkbox" id="like-6" class="peer hidden" />
-              <label for="like-6" class="like-btn absolute top-3 right-3 w-9 h-9 flex items-center justify-center bg-white rounded-full cursor-pointer
-                   text-text/40 peer-checked:text-primary transition-transform duration-200 active:scale-75">
+              <label for="like-6" class="like-btn absolute top-3 right-3 w-9 h-9 flex items-center justify-center bg-white rounded-md cursor-pointer
+               text-text/40 peer-checked:text-primary transition-transform duration-200 active:scale-75">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
                   class="w-5 h-5 transition-transform duration-200 peer-checked:scale-125" fill="currentColor">
                   <path
@@ -504,7 +519,7 @@
                 <span class="font-bold text-primary">$86.200</span>
               </div>
               <button
-                class="w-full mt-auto bg-primary hover:bg-primary-hover text-background font-medium py-2 rounded-full">
+                class="w-full mt-auto bg-primary hover:bg-primary-hover text-background font-medium py-2 rounded-md transition">
                 Contactar
               </button>
             </div>
@@ -564,7 +579,7 @@
         <h2 class="font-display text-4xl font-bold text-background mb-4">¡Únete a la comunidad!</h2>
         <p class="text-background/80 mb-10">Miles de emprendedores ya intercambian en MUISKA.</p>
         <a href="./register.html"
-          class="inline-block bg-background hover:bg-muted text-primary font-bold px-8 py-4 rounded-full transition">
+          class="inline-block bg-background hover:bg-muted text-primary font-bold px-8 py-4 rounded-md transition">
           Crear cuenta gratis &rarr;
         </a>
       </div>
@@ -572,30 +587,24 @@
 
     <!-- Contenido de la sección de Footer -->
 
-    <footer class="bg-text px-6 py-8">
-      <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+    <footer class="bg-background px-6 py-8">
+      <div class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-[auto_1fr_auto] items-center gap-6">
 
         <!-- Logo -->
-        <a href="/index.html" class="flex items-center gap-3 shrink-0">
-          <span
-            class="w-9 h-9 flex items-center justify-center rounded-full bg-primary text-background font-display font-bold">
-            M
-          </span>
-          <span class="font-display text-xl font-bold text-background">MUISKA</span>
+        <a href="/index.html" class="flex items-center gap-2 shrink-0 justify-center sm:justify-self-start">
+          <img src="/Muiska-nombre.png" alt="MUISKA" class="h-8 w-auto" />
         </a>
 
         <!-- Copyright -->
-
-        <p class="text-background/60 text-sm text-center">
+        <p class="text-text/60 text-sm text-center">
           &copy; 2024 MUISKA Community Commerce. Todos los derechos reservados.
         </p>
 
         <!-- Nav de pie de página -->
-
-        <nav class="flex items-center gap-6">
-          <a href="#AcercaDe" class="text-background/70 hover:text-background text-sm transition">Términos</a>
-          <a href="#Privacidad" class="text-background/70 hover:text-background text-sm transition">Privacidad</a>
-          <a href="#Ayuda" class="text-background/70 hover:text-background text-sm transition">Ayuda</a>
+        <nav class="flex items-center gap-6 justify-center sm:justify-self-end">
+          <a href="#AcercaDe" class="text-text/70 hover:text-text text-sm transition">Términos</a>
+          <a href="#Privacidad" class="text-text/70 hover:text-text text-sm transition">Privacidad</a>
+          <a href="#Ayuda" class="text-text/70 hover:text-text text-sm transition">Ayuda</a>
         </nav>
 
       </div>
