@@ -2,8 +2,15 @@ const API_BASE = "/api";
 
 export const api = {
   async request(path, options = {}) {
-    const headers = { "Content-Type": "application/json", ...options.headers };
     const token = localStorage.getItem("token");
+    const headers = { ...options.headers };
+    
+    // Don't set Content-Type for FormData - browser sets it with boundary
+    const isFormData = options.body instanceof FormData;
+    if (!isFormData) {
+      headers["Content-Type"] = "application/json";
+    }
+    
     if (token) {
       headers.Authorization = `Bearer ${token}`;
     }
@@ -27,25 +34,47 @@ export const api = {
     return res.json();
   },
 
-  getPublications() {
-    return this.request("/publications");
+  getPublications(params = {}) {
+    const query = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        query.append(key, value);
+      }
+    });
+    return this.request(`/publications?${query.toString()}`);
   },
 
   getPublication(id) {
     return this.request(`/publications/${id}`);
   },
 
-  createPublication(data) {
+  createPublication(data, images = []) {
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      if (value !== null && value !== undefined) {
+        formData.append(key, value);
+      }
+    });
+    images.forEach((image) => formData.append("images", image));
+    
     return this.request("/publications", {
       method: "POST",
-      body: JSON.stringify(data),
+      body: formData,
     });
   },
 
-  updatePublication(id, data) {
+  updatePublication(id, data, images = []) {
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      if (value !== null && value !== undefined) {
+        formData.append(key, value);
+      }
+    });
+    images.forEach((image) => formData.append("images", image));
+    
     return this.request(`/publications/${id}`, {
       method: "PUT",
-      body: JSON.stringify(data),
+      body: formData,
     });
   },
 
@@ -71,6 +100,24 @@ export const api = {
 
   async getMe() {
     return this.request("/auth/me");
+  },
+
+  updateProfile(data) {
+    return this.request("/auth/me", {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  },
+
+  changePassword(data) {
+    return this.request("/auth/change-password", {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  },
+
+  getCategories() {
+    return this.request("/categories");
   },
 
   logout() {

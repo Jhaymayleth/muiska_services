@@ -1,12 +1,78 @@
 import { pool } from "../config/database.js";
 import { normalizePublicationPayload } from "../utils/publication.utils.js";
 
-export const getAll = async (_req, res, next) => {
+export const getAll = async (req, res, next) => {
   try {
-    const result = await pool.query(
-      "SELECT * FROM publications ORDER BY created_at DESC",
+    const {
+      category,
+      minPrice,
+      maxPrice,
+      location,
+      search,
+      status = "active",
+      page = 1,
+      limit = 12,
+    } = req.query;
+
+    const pageNum = Math.max(1, parseInt(page));
+    const limitNum = Math.min(50, Math.max(1, parseInt(limit)));
+    const offset = (pageNum - 1) * limitNum;
+
+    let whereClause = "WHERE status = $1";
+    const params = [status];
+    let paramIndex = 2;
+
+    if (category) {
+      whereClause += ` AND category = $${paramIndex}`;
+      params.push(category);
+      paramIndex++;
+    }
+
+    if (minPrice) {
+      whereClause += ` AND price >= $${paramIndex}`;
+      params.push(parseFloat(minPrice));
+      paramIndex++;
+    }
+
+    if (maxPrice) {
+      whereClause += ` AND price <= $${paramIndex}`;
+      params.push(parseFloat(maxPrice));
+      paramIndex++;
+    }
+
+    if (location) {
+      whereClause += ` AND location ILIKE $${paramIndex}`;
+      params.push(`%${location}%`);
+      paramIndex++;
+    }
+
+    if (search) {
+      whereClause += ` AND (title ILIKE $${paramIndex} OR description ILIKE $${paramIndex})`;
+      params.push(`%${search}%`);
+      paramIndex++;
+    }
+
+    const countResult = await pool.query(
+      `SELECT COUNT(*) FROM publications ${whereClause}`,
+      params,
     );
-    res.json(result.rows);
+    const total = parseInt(countResult.rows[0].count);
+
+    params.push(limitNum, offset);
+    const result = await pool.query(
+      `SELECT * FROM publications ${whereClause} ORDER BY created_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
+      params,
+    );
+
+    res.json({
+      data: result.rows,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        totalPages: Math.ceil(total / limitNum),
+      },
+    });
   } catch (error) {
     next(error);
   }

@@ -29,7 +29,9 @@ const EditListingPage = () => {
             </div>
             <div class="space-y-2">
               <label class="text-sm font-medium text-text" for="category">Categoría</label>
-              <input id="category" name="category" class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary" />
+              <select id="category" name="category" class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary">
+                <option value="">Seleccionar categoría</option>
+              </select>
             </div>
           </div>
           <div class="grid gap-4 md:grid-cols-2">
@@ -43,8 +45,9 @@ const EditListingPage = () => {
             </div>
           </div>
           <div class="space-y-2">
-            <label class="text-sm font-medium text-text" for="images">Imágenes (URLs separadas por coma)</label>
-            <textarea id="images" name="images" rows="3" class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary"></textarea>
+            <label class="text-sm font-medium text-text" for="images">Imágenes</label>
+            <input id="images" name="images" type="file" accept="image/*" multiple class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary" />
+            <p class="text-xs text-text/60">Selecciona nuevas imágenes para reemplazar las actuales</p>
           </div>
           <button type="submit" class="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-white transition hover:bg-primary-hover">
             Guardar cambios
@@ -53,22 +56,44 @@ const EditListingPage = () => {
       `;
 
       const form = section.querySelector("form");
+      const categorySelect = section.querySelector("#category");
+
       form.title.value = pub.title || "";
       form.description.value = pub.description || "";
       form.price.value = pub.price || "";
-      form.category.value = pub.category || "";
       form.location.value = pub.location || "";
       form.contactMethod.value = pub.contact_method || "";
-      form.images.value = Array.isArray(pub.images)
-        ? pub.images.join(", ")
-        : "";
+
+      api.getCategories().then((categories) => {
+        categories.forEach((cat) => {
+          const option = document.createElement("option");
+          option.value = cat.slug || cat.name;
+          option.textContent = cat.name;
+          categorySelect.appendChild(option);
+        });
+        if (pub.category) {
+          categorySelect.value = pub.category;
+        }
+      });
+
+      if (Array.isArray(pub.images) && pub.images.length > 0) {
+        const imagesContainer = document.createElement("div");
+        imagesContainer.className = "flex gap-2 overflow-x-auto mb-4";
+        imagesContainer.innerHTML = pub.images
+          .slice(0, 5)
+          .map(
+            (image) =>
+              `<img src="${image}" alt="imagen actual" class="h-20 w-20 rounded-lg object-cover" />`,
+          )
+          .join("");
+        form.prepend(imagesContainer);
+      }
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
-        const images = form.images.value
-          .split(",")
-          .map((image) => image.trim())
-          .filter(Boolean);
+        const form = e.target;
+        const images = Array.from(form.images.files);
+        
         const data = {
           title: form.title.value,
           description: form.description.value,
@@ -76,10 +101,9 @@ const EditListingPage = () => {
           category: form.category.value || null,
           location: form.location.value || null,
           contactMethod: form.contactMethod.value || null,
-          images,
         };
         try {
-          await api.updatePublication(id, data);
+          await api.updatePublication(id, data, images);
           navigateTo("/dashboard");
         } catch (err) {
           alert(err.message);

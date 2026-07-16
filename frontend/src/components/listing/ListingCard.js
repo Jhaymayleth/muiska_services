@@ -1,7 +1,9 @@
+import { navigateTo } from "../../router/router.js";
+
 const ListingCard = (pub = {}) => {
   const card = document.createElement("article");
   card.className =
-    "rounded-xl border border-border bg-white p-4 shadow-sm transition hover:shadow-md";
+    "rounded-xl border border-border bg-white p-4 shadow-sm transition hover:shadow-md cursor-pointer";
   card.innerHTML = `
     <div class="space-y-3">
       <div class="flex items-start justify-between gap-2">
@@ -29,6 +31,11 @@ const ListingCard = (pub = {}) => {
       }
     </div>
   `;
+
+  card.addEventListener("click", () => {
+    navigateTo(`/publicacion/${pub.id}`);
+  });
+
   return card;
 };
 

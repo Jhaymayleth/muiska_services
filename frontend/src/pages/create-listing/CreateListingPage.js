@@ -23,7 +23,9 @@ const CreateListingPage = () => {
         </div>
         <div class="space-y-2">
           <label class="text-sm font-medium text-text" for="category">Categoría</label>
-          <input id="category" name="category" class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary" />
+          <select id="category" name="category" class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary">
+            <option value="">Seleccionar categoría</option>
+          </select>
         </div>
       </div>
       <div class="grid gap-4 md:grid-cols-2">
@@ -37,8 +39,9 @@ const CreateListingPage = () => {
         </div>
       </div>
       <div class="space-y-2">
-        <label class="text-sm font-medium text-text" for="images">Imágenes (URLs separadas por coma)</label>
-        <textarea id="images" name="images" rows="3" class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary"></textarea>
+        <label class="text-sm font-medium text-text" for="images">Imágenes</label>
+        <input id="images" name="images" type="file" accept="image/*" multiple class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary" />
+        <p class="text-xs text-text/50">Máximo 5 imágenes (JPG, PNG, WebP)</p>
       </div>
       <button type="submit" class="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-white transition hover:bg-primary-hover">
         Publicar
@@ -46,13 +49,22 @@ const CreateListingPage = () => {
     </form>
   `;
 
+  const categorySelect = section.querySelector("#category");
+
+  api.getCategories().then((categories) => {
+    categories.forEach((cat) => {
+      const option = document.createElement("option");
+      option.value = cat.slug || cat.name;
+      option.textContent = cat.name;
+      categorySelect.appendChild(option);
+    });
+  });
+
   section.querySelector("form").addEventListener("submit", async (e) => {
     e.preventDefault();
     const form = e.target;
-    const images = form.images.value
-      .split(",")
-      .map((image) => image.trim())
-      .filter(Boolean);
+    const images = Array.from(form.images.files);
+    
     const data = {
       title: form.title.value,
       description: form.description.value,
@@ -60,10 +72,9 @@ const CreateListingPage = () => {
       category: form.category.value || null,
       location: form.location.value || null,
       contactMethod: form.contactMethod.value || null,
-      images,
     };
     try {
-      await api.createPublication(data);
+      await api.createPublication(data, images);
       navigateTo("/explorar");
     } catch (err) {
       alert(err.message);
