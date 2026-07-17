@@ -1,8 +1,8 @@
 import express from "express";
+import dotenv from "dotenv";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
-import dotenv from "dotenv";
 import statusRouter from "./routes/status.routes.js";
 import publicationRouter from "./routes/publication.routes.js";
 import authRouter from "./routes/auth.routes.js";
@@ -12,21 +12,22 @@ import { notFoundMiddleware } from "./middlewares/notFound.middleware.js";
 
 dotenv.config();
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
+// Configuración de express
 const app = express();
 
+// Middlewares básicos
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Archivos estáticos para subir imágenes
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
-app.use("/api", statusRouter);
-app.use("/api", publicationRouter);
-app.use("/api", authRouter);
-app.use("/api", categoryRouter);
+// Rutas de la API
+app.use("/api", statusRouter, publicationRouter, authRouter, categoryRouter);
 
+// Middlewares de error (al final)
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);
 
