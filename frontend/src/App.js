@@ -1,8 +1,7 @@
-// App.js - Componente principal de la aplicación
 import { renderRoute, navigateTo } from "./router/router.js";
 import Navbar from "./components/layout/Navbar.js";
 import Footer from "./components/layout/Footer.js";
-import { isAuthenticated, isRouteProtected, isGuestRoute, getUser } from "./utils/auth.js";
+import { isAdmin, isAuthenticated, isRouteProtected, isGuestRoute } from "./utils/auth.js";
 
 const App = () => {
   const app = document.createElement("div");
@@ -16,49 +15,26 @@ const App = () => {
 
   const isHome = () => window.location.pathname === "/";
 
-  // Redirigir según rol
-  const redirectBasedOnRole = () => {
-    const user = getUser();
-    if (!user) return;
-
-    const pathname = window.location.pathname;
-
-    // Admin en home -> admin
-    if (user.role === "admin" && pathname === "/") {
-      navigateTo("/admin");
-    }
-    // Usuario normal en admin -> home
-    else if (user.role === "user" && pathname === "/admin") {
-      navigateTo("/");
-    }
-  };
-
   const render = () => {
     const path = window.location.pathname;
 
-    // 1. Proteger rutas que requieren login
+    // Proteger rutas que requieren autenticación
     if (isRouteProtected(path) && !isAuthenticated()) {
       navigateTo("/login");
       return;
     }
 
-    // 2. Si logueado va a login/registro -> redirigir
-    if (isGuestRoute(path) && isAuthenticated()) {
-      const user = getUser();
-      if (user?.role === "admin") {
-        navigateTo("/admin");
-      } else {
-        navigateTo("/");
-      }
+    if (path === "/admin" && !isAdmin()) {
+      navigateTo("/dashboard");
       return;
     }
 
-    // 3. Redirigir según rol
-    if (isAuthenticated()) {
-      redirectBasedOnRole();
+    // Redirigir a dashboard si ya está autenticado e intenta ir a login/registro
+    if (isGuestRoute(path) && isAuthenticated()) {
+      navigateTo("/dashboard");
+      return;
     }
 
-    // Renderizar layout
     layout.innerHTML = "";
     if (isHome()) {
       main.className = "flex-1";
@@ -71,15 +47,8 @@ const App = () => {
     }
     renderRoute(main);
   };
-
-  layout.appendChild(main);
-  if (!isHome()) {
-    layout.prepend(Navbar());
-    layout.appendChild(Footer());
-  }
   app.appendChild(layout);
 
-  // Escuchar cambios de URL (back/forward)
   window.addEventListener("popstate", render);
   render();
 
