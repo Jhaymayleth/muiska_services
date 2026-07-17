@@ -49,6 +49,9 @@ export const register = async (req, res, next) => {
 
     res.status(201).json({ user, token });
   } catch (error) {
+    if (error.code === "23505" && error.constraint === "users_email_key") {
+      return res.status(409).json({ message: "Este correo ya está registrado" });
+    }
     next(error);
   }
 };

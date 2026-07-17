@@ -8,6 +8,15 @@ const DashboardPage = () => {
   const renderList = () => {
     list.innerHTML = '<p class="text-sm text-text/70">Cargando...</p>';
     api.getMyPublications().then((pubs) => {
+      stats.innerHTML = `
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-text/70">Mis publicaciones</p>
+            <h2 class="text-2xl font-bold">${pubs.length}</h2>
+          </div>
+        </div>
+      `;
+
       if (pubs.length === 0) {
         list.innerHTML = `
           <div class="rounded-xl border border-dashed border-border bg-muted/40 p-8 text-center">
@@ -48,19 +57,10 @@ const DashboardPage = () => {
           });
         list.appendChild(card);
       });
+    }).catch((err) => {
+      list.innerHTML = `<p class="text-sm text-red-600">${err.message || "No se pudieron cargar las publicaciones."}</p>`;
     });
   };
-
-  const stats = section.querySelector("#dashboard-stats");
-
-  stats.innerHTML = `
-  <div class="flex items-center justify-between">
-    <div>
-      <p class="text-sm text-text/70">Mis publicaciones</p>
-      <h2 class="text-2xl font-bold">${pubs.length}</h2>
-    </div>
-  </div>
-  `;
 
   section.innerHTML = `
     <div class="flex items-center justify-between">
@@ -78,8 +78,9 @@ const DashboardPage = () => {
     .addEventListener("click", (e) => {
       e.preventDefault();
       navigateTo("/crear-publicacion");
-    });
+  });
 
+  const stats = section.querySelector("#dashboard-stats");
   const list = section.querySelector("#dashboard-list");
   renderList();
 
