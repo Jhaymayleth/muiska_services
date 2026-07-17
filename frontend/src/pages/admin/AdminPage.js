@@ -7,7 +7,7 @@ const escapeHtml = (value = "") =>
     .replaceAll("&", "&")
     .replaceAll("<", "<")
     .replaceAll(">", ">")
-    .replaceAll('"', """)
+    .replaceAll('"', '"')
     .replaceAll("'", "&#039;");
 
 const formatDate = (value) =>
@@ -427,7 +427,7 @@ const AdminPage = () => {
         const params = { page, limit: 20 };
         if (pubCurrentStatus) params.status = pubCurrentStatus;
         if (pubCurrentSearch) params.search = pubCurrentSearch;
-        const res = await api.getPublications(params);
+        const res = await api.getAdminPublications(params);
         render(res.data || [], res.pagination);
       } catch (err) {
         container.innerHTML = `<p class="rounded-xl border border-dashed border-red-200 bg-red-50 p-6 text-center text-sm text-red-700">${err.message}</p>`;
