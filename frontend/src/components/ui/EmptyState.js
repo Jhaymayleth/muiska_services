@@ -1,0 +1,10 @@
+const EmptyState = () => {
+  const empty = document.createElement("div");
+  empty.className =
+    "rounded-xl border border-dashed border-border bg-muted/40 p-8 text-center";
+  empty.innerHTML =
+    '<h3 class="text-lg font-semibold">Sin contenido aún</h3><p class="mt-2 text-sm text-text/70">Esta vista será implementada posteriormente.</p>';
+  return empty;
+};
+
+export default EmptyState;

@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-background: #fffaf4;
+  --color-primary: #7b1826;
+  --color-primary-hover: #651320;
+  --color-accent: #15665a;
+  --color-text: #221a16;
+  --color-muted: #f2ece5;
+  --color-border: #e3d8cd;
+}
+
+body {
+  margin: 0;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Fraunces", serif;
+}
