@@ -6,10 +6,8 @@ const MAX_PUBLICATION_PRICE = 99_999_999.99;
 const isValidPublicationPrice = (price) =>
   Number.isFinite(price) && price > 0 && price <= MAX_PUBLICATION_PRICE;
 
-// Obtener todas las publicaciones (con filtros opcionales)
 export const getAll = async (req, res, next) => {
   try {
-    // Obtener parámetros de consulta (filtros, paginación)
     const {
       category,
       minPrice,
@@ -21,12 +19,10 @@ export const getAll = async (req, res, next) => {
       limit = 12,
     } = req.query;
 
-    // Validar página y límite
     const pageNum = Math.max(1, parseInt(page));
     const limitNum = Math.min(50, Math.max(1, parseInt(limit)));
     const offset = (pageNum - 1) * limitNum;
 
-    // Construir WHERE con filtros dinámicos
     let whereClause = "WHERE status = $1";
     const params = [status];
     let paramIndex = 2;
@@ -61,14 +57,12 @@ export const getAll = async (req, res, next) => {
       paramIndex++;
     }
 
-    // Contar total de resultados
     const countResult = await pool.query(
       `SELECT COUNT(*) FROM publications ${whereClause}`,
       params,
     );
     const total = parseInt(countResult.rows[0].count);
 
-    // Obtener publicaciones con paginación
     params.push(limitNum, offset);
     const result = await pool.query(
       `SELECT * FROM publications ${whereClause} ORDER BY created_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
@@ -89,7 +83,6 @@ export const getAll = async (req, res, next) => {
   }
 };
 
-// Obtener una publicación por ID
 export const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -106,7 +99,6 @@ export const getById = async (req, res, next) => {
   }
 };
 
-// Obtener publicaciones del usuario autenticado
 export const getMine = async (req, res, next) => {
   try {
     const result = await pool.query(
@@ -125,10 +117,8 @@ export const getMine = async (req, res, next) => {
   }
 };
 
-// Crear nueva publicación
 export const create = async (req, res, next) => {
   try {
-    // Normalizar datos del formulario
     const normalized = normalizePublicationPayload(req.body);
 
     if (!isValidPublicationPrice(normalized.price)) {
@@ -137,7 +127,6 @@ export const create = async (req, res, next) => {
       });
     }
 
-    // Usar imágenes subidas si hay, si no usar las del body
     let images = normalized.images;
     if (req.files && req.files.length > 0) {
       images = req.files.map((f) => `/uploads/${f.filename}`);
@@ -155,7 +144,7 @@ export const create = async (req, res, next) => {
         images,
         normalized.location,
         normalized.contact_method,
-        req.user?.id || null,
+        req.user.id,
       ],
     );
     res.status(201).json(result.rows[0]);
@@ -164,7 +153,6 @@ export const create = async (req, res, next) => {
   }
 };
 
-// Actualizar publicación
 export const update = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -176,7 +164,6 @@ export const update = async (req, res, next) => {
       });
     }
 
-    // Usar nuevas imágenes si se subieron
     let images = normalized.images;
     if (req.files && req.files.length > 0) {
       images = req.files.map((f) => `/uploads/${f.filename}`);
@@ -193,7 +180,8 @@ export const update = async (req, res, next) => {
            contact_method = COALESCE($7, contact_method),
            status = COALESCE($8, status),
            updated_at = NOW()
-       WHERE id = $9 AND user_id = $10
+       WHERE id = $9
+       AND user_id = $10
        RETURNING *`,
       [
         normalized.title || null,
@@ -217,7 +205,6 @@ export const update = async (req, res, next) => {
   }
 };
 
-// Eliminar publicación
 export const remove = async (req, res, next) => {
   try {
     const { id } = req.params;

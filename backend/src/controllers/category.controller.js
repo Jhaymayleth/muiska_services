@@ -1,6 +1,5 @@
 import { pool } from "../config/database.js";
 
-// Obtener todas las categorías
 export const getAll = async (_req, res, next) => {
   try {
     const result = await pool.query(
@@ -12,7 +11,6 @@ export const getAll = async (_req, res, next) => {
   }
 };
 
-// Obtener una categoría por ID
 export const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -31,7 +29,6 @@ export const getById = async (req, res, next) => {
   }
 };
 
-// Crear nueva categoría (solo admin)
 export const create = async (req, res, next) => {
   try {
     const { name, description } = req.body;
@@ -40,7 +37,6 @@ export const create = async (req, res, next) => {
       return res.status(400).json({ message: "El nombre es obligatorio" });
     }
 
-    // Generar slug desde el nombre
     const slug = name
       .toLowerCase()
       .replace(/[^a-z0-9áéíóúñü]+/g, "-")
@@ -60,7 +56,6 @@ export const create = async (req, res, next) => {
   }
 };
 
-// Actualizar categoría (solo admin)
 export const update = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -93,7 +88,6 @@ export const update = async (req, res, next) => {
   }
 };
 
-// Eliminar categoría (solo admin)
 export const remove = async (req, res, next) => {
   try {
     const { id } = req.params;

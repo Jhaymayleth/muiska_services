@@ -1,4 +1,5 @@
-import './styles/globals.css';
-import App from './App.js';
+import "./styles/globals.css";
+import App from "./App.js";
 
-document.getElementById('main').appendChild(App());
+const appRoot = document.getElementById("main");
+appRoot?.replaceChildren(App());

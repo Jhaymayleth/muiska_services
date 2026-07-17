@@ -1,8 +1,8 @@
 import express from "express";
-import dotenv from "dotenv";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
+import dotenv from "dotenv";
 import statusRouter from "./routes/status.routes.js";
 import publicationRouter from "./routes/publication.routes.js";
 import authRouter from "./routes/auth.routes.js";

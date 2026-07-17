@@ -4,12 +4,11 @@ import { pool } from "../config/database.js";
 
 const JWT_SECRET = process.env.JWT_SECRET || "muiska_jwt_secret_dev_2024";
 
-// Registro de nuevo usuario
 export const register = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
 
-    // Validar campos obligatorios
+    // Validaciones básicas
     if (!name || !email || !password) {
       return res.status(400).json({ message: "Todos los campos son obligatorios" });
     }
@@ -31,13 +30,12 @@ export const register = async (req, res, next) => {
       return res.status(400).json({ message: "La contraseña debe tener al menos 6 caracteres" });
     }
 
-    // Verificar si el email ya existe
+    // Verificar si email ya existe
     const existing = await pool.query("SELECT id FROM users WHERE email = $1", [emailTrimed]);
     if (existing.rows.length > 0) {
       return res.status(409).json({ message: "Este correo ya está registrado" });
     }
 
-    // Crear usuario con contraseña encriptada
     const passwordHash = await bcrypt.hash(password, 10);
     const result = await pool.query(
       `INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3) RETURNING id, name, email, role, created_at`,
@@ -58,7 +56,6 @@ export const register = async (req, res, next) => {
   }
 };
 
-// Inicio de sesión
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -69,7 +66,6 @@ export const login = async (req, res, next) => {
 
     const emailTrimed = email.trim().toLowerCase();
 
-    // Buscar usuario por email
     const result = await pool.query("SELECT * FROM users WHERE email = $1", [emailTrimed]);
     if (result.rows.length === 0) {
       return res.status(401).json({ message: "Credenciales inválidas" });
@@ -99,7 +95,6 @@ export const login = async (req, res, next) => {
   }
 };
 
-// Obtener perfil del usuario autenticado
 export const getMe = async (req, res, next) => {
   try {
     const result = await pool.query(
@@ -117,7 +112,6 @@ export const getMe = async (req, res, next) => {
   }
 };
 
-// Actualizar perfil (nombre y email)
 export const updateProfile = async (req, res, next) => {
   try {
     const { name, email } = req.body;
@@ -139,7 +133,6 @@ export const updateProfile = async (req, res, next) => {
       return res.status(400).json({ message: "El correo no es válido" });
     }
 
-    // Verificar que el email no esté en uso por otro usuario
     const existing = await pool.query("SELECT id FROM users WHERE email = $1 AND id != $2", [emailTrimed, userId]);
     if (existing.rows.length > 0) {
       return res.status(409).json({ message: "Este correo ya está en uso" });
@@ -156,7 +149,6 @@ export const updateProfile = async (req, res, next) => {
   }
 };
 
-// Cambiar contraseña
 export const changePassword = async (req, res, next) => {
   try {
     const { currentPassword, newPassword } = req.body;
@@ -189,7 +181,6 @@ export const changePassword = async (req, res, next) => {
   }
 };
 
-// Eliminar cuenta
 export const deleteAccount = async (req, res, next) => {
   try {
     const userId = req.user.id;
