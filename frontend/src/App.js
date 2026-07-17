@@ -47,6 +47,12 @@ const App = () => {
     }
     renderRoute(main);
   };
+
+  layout.appendChild(main);
+  if (!isHome()) {
+    layout.prepend(Navbar());
+    layout.appendChild(Footer());
+  }
   app.appendChild(layout);
 
   window.addEventListener("popstate", render);

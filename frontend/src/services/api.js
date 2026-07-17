@@ -1,13 +1,11 @@
-// api.js - Cliente HTTP simple para el backend
 const API_BASE = "/api";
 
 export const api = {
-  // Método base para todas las peticiones
   async request(path, options = {}) {
     const token = localStorage.getItem("token");
     const headers = { ...options.headers };
 
-    // No poner Content-Type si es FormData (el navegador lo pone con boundary)
+    // Don't set Content-Type for FormData - browser sets it with boundary
     const isFormData = options.body instanceof FormData;
     if (!isFormData) {
       headers["Content-Type"] = "application/json";
@@ -22,7 +20,6 @@ export const api = {
       headers,
     });
 
-    // Si token expirado/inválido
     if (res.status === 401) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
@@ -30,7 +27,6 @@ export const api = {
       return;
     }
 
-    // Errores HTTP
     if (!res.ok) {
       const error = await res.json().catch(() => ({ message: res.statusText }));
       throw new Error(error.message || "Error en la solicitud");
@@ -38,7 +34,6 @@ export const api = {
     return res.json();
   },
 
-  // Publicaciones
   getPublications(params = {}) {
     const query = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
@@ -47,6 +42,10 @@ export const api = {
       }
     });
     return this.request(`/publications?${query.toString()}`);
+  },
+
+  getMyPublications() {
+    return this.request("/publications/mine");
   },
 
   getPublication(id) {
@@ -62,7 +61,10 @@ export const api = {
     });
     images.forEach((image) => formData.append("images", image));
 
-    return this.request("/publications", { method: "POST", body: formData });
+    return this.request("/publications", {
+      method: "POST",
+      body: formData,
+    });
   },
 
   updatePublication(id, data, images = []) {
@@ -74,14 +76,18 @@ export const api = {
     });
     images.forEach((image) => formData.append("images", image));
 
-    return this.request(`/publications/${id}`, { method: "PUT", body: formData });
+    return this.request(`/publications/${id}`, {
+      method: "PUT",
+      body: formData,
+    });
   },
 
   deletePublication(id) {
-    return this.request(`/publications/${id}`, { method: "DELETE" });
+    return this.request(`/publications/${id}`, {
+      method: "DELETE",
+    });
   },
 
-  // Auth
   login(email, password) {
     return this.request("/auth/login", {
       method: "POST",
@@ -96,20 +102,42 @@ export const api = {
     });
   },
 
-  getMe() {
+  async getMe() {
     return this.request("/auth/me");
   },
 
   updateProfile(data) {
-    return this.request("/auth/me", { method: "PUT", body: JSON.stringify(data) });
+    return this.request("/auth/me", {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
   },
 
   changePassword(data) {
-    return this.request("/auth/change-password", { method: "PUT", body: JSON.stringify(data) });
+    return this.request("/auth/change-password", {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
   },
 
   getCategories() {
     return this.request("/categories");
+  },
+
+  getAdminUsers(search = "") {
+    const query = search ? `?search=${encodeURIComponent(search)}` : "";
+    return this.request(`/admin/users${query}`);
+  },
+
+  updateAdminUser(id, data) {
+    return this.request(`/admin/users/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    });
+  },
+
+  deleteAdminUser(id) {
+    return this.request(`/admin/users/${id}`, { method: "DELETE" });
   },
 
   logout() {

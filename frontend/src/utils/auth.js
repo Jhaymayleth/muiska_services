@@ -1,4 +1,3 @@
-// auth.js - Utilidades de autenticación del frontend
 export const isAuthenticated = () => {
   return !!localStorage.getItem("token");
 };
@@ -8,24 +7,25 @@ export const getUser = () => {
   return user ? JSON.parse(user) : null;
 };
 
+export const isAdmin = () => getUser()?.role === "admin";
+
 export const logout = () => {
   localStorage.removeItem("token");
   localStorage.removeItem("user");
   window.location.href = "/login";
 };
 
-// Rutas que requieren estar logueado
+// Rutas que requieren autenticación
 export const protectedRoutes = [
+  "/dashboard",
   "/crear-publicacion",
   "/editar-publicacion",
-  "/dashboard",
   "/admin",
 ];
 
-// Rutas solo para invitados (no logueados)
+// Rutas que no deben estar disponibles si ya estás autenticado
 export const guestRoutes = ["/login", "/registro"];
 
-// Verifica si una ruta necesita autenticación
 export const isRouteProtected = (path) => {
   return protectedRoutes.some((route) => {
     if (route.includes(":")) {
@@ -36,7 +36,6 @@ export const isRouteProtected = (path) => {
   });
 };
 
-// Verifica si es ruta de invitado
 export const isGuestRoute = (path) => {
   return guestRoutes.includes(path);
 };

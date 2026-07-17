@@ -33,19 +33,16 @@ export const navigateTo = (path) => {
 
 export const renderRoute = (container) => {
   const path = window.location.pathname || "/";
-
   const Page = routes[path];
   if (Page) {
     container.replaceChildren(Page());
     return;
   }
-
   for (const { pattern, component } of dynamicRoutes) {
     if (pattern.test(path)) {
       container.replaceChildren(component());
       return;
     }
   }
-
   container.replaceChildren(NotFoundPage());
 };
