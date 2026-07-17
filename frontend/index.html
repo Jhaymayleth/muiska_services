@@ -34,13 +34,20 @@
     <div class="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-[auto_1fr_auto] items-center gap-4 px-6 py-3">
 
       <!-- Logo -->
-      <a href="/index.html" class="flex items-center gap-2 shrink-0 justify-self-start">
-        <img src="/Muiska-nombre.png" alt="MUISKA" class="h-8 w-auto" />
+      <a href="/index.html" class="flex items-center gap-2 shrink-0 justify-self-start min-w-[100px]">
+        <img src="/Muiska-nombre.png" alt="MUISKA" class="h-8 w-auto object-contain" />
       </a>
 
       <!-- Botón hamburguesa (solo móvil) -->
       <input type="checkbox" id="menu-toggle" class="peer hidden" />
-      <label for="menu-toggle" class="lg:hidden justify-self-end text-logo-dark text-2xl cursor-pointer">&#9776;</label>
+      <label for="menu-toggle" class="lg:hidden justify-self-end text-logo-dark cursor-pointer">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-7 h-7" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </label>
 
       <!-- Menú de navegación (columna centro) -->
       <nav
