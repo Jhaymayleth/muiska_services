@@ -19,7 +19,6 @@ export const getAll = async (req, res, next) => {
       status = "active",
       page = 1,
       limit = 12,
-      user_id,
     } = req.query;
 
     // Validar página y límite
@@ -31,13 +30,6 @@ export const getAll = async (req, res, next) => {
     let whereClause = "WHERE status = $1";
     const params = [status];
     let paramIndex = 2;
-
-    // Filtro por usuario (para dashboard)
-    if (user_id) {
-      whereClause += ` AND user_id = $${paramIndex}`;
-      params.push(user_id);
-      paramIndex++;
-    }
 
     if (category) {
       whereClause += ` AND category = $${paramIndex}`;
@@ -109,6 +101,25 @@ export const getById = async (req, res, next) => {
       return res.status(404).json({ message: "Publicación no encontrada" });
     }
     res.json(result.rows[0]);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Obtener publicaciones del usuario autenticado
+export const getMine = async (req, res, next) => {
+  try {
+    const result = await pool.query(
+      `
+      SELECT *
+      FROM publications
+      WHERE user_id = $1
+      ORDER BY created_at DESC
+      `,
+      [req.user.id],
+    );
+
+    res.json(result.rows);
   } catch (error) {
     next(error);
   }
