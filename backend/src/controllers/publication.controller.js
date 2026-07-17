@@ -165,7 +165,7 @@ export const update = async (req, res, next) => {
            contact_method = COALESCE($7, contact_method),
            status = COALESCE($8, status),
            updated_at = NOW()
-       WHERE id = $9
+       WHERE id = $9 AND user_id = $10
        RETURNING *`,
       [
         normalized.title || null,
@@ -177,6 +177,7 @@ export const update = async (req, res, next) => {
         normalized.contact_method,
         req.body.status || null,
         id,
+        req.user.id,
       ],
     );
     if (result.rows.length === 0) {
@@ -193,8 +194,8 @@ export const remove = async (req, res, next) => {
   try {
     const { id } = req.params;
     const result = await pool.query(
-      "DELETE FROM publications WHERE id = $1 RETURNING id",
-      [id],
+      "DELETE FROM publications WHERE id = $1 AND user_id = $2 RETURNING id",
+      [id, req.user.id],
     );
     if (result.rows.length === 0) {
       return res.status(404).json({ message: "Publicación no encontrada" });

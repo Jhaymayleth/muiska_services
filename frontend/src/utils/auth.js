@@ -18,6 +18,7 @@ export const logout = () => {
 export const protectedRoutes = [
   "/crear-publicacion",
   "/editar-publicacion",
+  "/dashboard",
   "/admin",
 ];
 

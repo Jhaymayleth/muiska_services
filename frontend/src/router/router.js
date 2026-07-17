@@ -3,6 +3,7 @@ import HomePage from "../pages/HomePage.js";
 import ExplorePage from "../pages/ExplorePage.js";
 import LoginPage from "../pages/LoginPage.js";
 import RegisterPage from "../pages/RegisterPage.js";
+import DashboardPage from "../pages/DashboardPage.js";
 import AdminPage from "../pages/AdminPage.js";
 import CreateListingPage from "../pages/CreateListingPage.js";
 import EditListingPage from "../pages/EditListingPage.js";
@@ -16,6 +17,7 @@ const routes = {
   "/explorar": ExplorePage,
   "/login": LoginPage,
   "/registro": RegisterPage,
+  "/dashboard": DashboardPage,
   "/admin": AdminPage,
   "/crear-publicacion": CreateListingPage,
   "/perfil": ProfilePage,

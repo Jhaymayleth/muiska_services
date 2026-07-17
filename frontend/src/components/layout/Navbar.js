@@ -14,6 +14,7 @@ const Navbar = () => {
         <a href="/explorar" class="rounded px-3 py-2 hover:bg-muted">Explorar</a>
         ${authenticated ? `
           <a href="/crear-publicacion" class="rounded px-3 py-2 hover:bg-muted">Crear</a>
+          <a href="/dashboard" class="rounded px-3 py-2 hover:bg-muted">Dashboard</a>
           ${user?.role === "admin" ? `
             <a href="/admin" class="rounded px-3 py-2 bg-red-50 text-red-600 hover:bg-red-100 font-medium">Admin</a>
           ` : ""}
