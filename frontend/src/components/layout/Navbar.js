@@ -2,8 +2,7 @@ import { isAuthenticated, getUser, logout } from "../../utils/auth.js";
 
 const Navbar = () => {
   const nav = document.createElement("nav");
-  nav.className =
-    "border-b border-border bg-background/90 px-4 py-4 backdrop-blur md:px-8";
+  nav.className = "border-b border-border bg-background/90 px-4 py-4 backdrop-blur md:px-8";
 
   const authenticated = isAuthenticated();
   const user = getUser();
@@ -30,6 +29,7 @@ const Navbar = () => {
     </div>
   `;
 
+  // Navegación SPA en enlaces
   nav.querySelectorAll("a").forEach((link) => {
     link.addEventListener("click", (event) => {
       event.preventDefault();
@@ -39,6 +39,7 @@ const Navbar = () => {
     });
   });
 
+  // Botón logout
   const logoutBtn = nav.querySelector("#btn-logout");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {

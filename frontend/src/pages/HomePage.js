@@ -1,3 +1,4 @@
+// HomePage - Landing page
 const navigate = (path) => {
   window.history.pushState({}, "", path);
   window.dispatchEvent(new PopStateEvent("popstate"));
@@ -13,7 +14,7 @@ const HomePage = () => {
       <div class="max-w-7xl mx-auto flex items-center justify-between gap-4 px-6 py-3">
         <a href="/" class="flex items-center gap-2 shrink-0" id="logo-link">
           <span class="w-9 h-9 flex items-center justify-center rounded-full bg-primary text-background font-display font-bold">M</span>
-          <span class="font-display text-xl font-bold text-text">Muiska</span>
+          <span class="font-display text-xl font-bold text-text">MUISKA</span>
         </a>
 
         <input type="checkbox" id="menu-toggle" class="peer hidden" />
@@ -21,31 +22,31 @@ const HomePage = () => {
 
         <nav class="hidden peer-checked:flex lg:flex flex-col lg:flex-row absolute lg:static top-full left-0 w-full lg:w-auto bg-background lg:bg-transparent border-b lg:border-0 border-border px-6 lg:px-0 py-4 lg:py-0 gap-4 lg:gap-6 items-center lg:flex-1 lg:justify-center">
           <ul class="flex flex-col lg:flex-row items-center gap-1 w-full lg:w-auto">
-            <li class="w-full lg:w-auto"><a href="#Inicio" class="block text-center lg:inline px-4 py-2 rounded-full bg-muted text-primary font-medium">Inicio</a></li>
-            <li class="w-full lg:w-auto"><a href="#Categorias" class="block text-center lg:inline px-4 py-2 text-text/70 hover:text-text font-medium">Categorías</a></li>
-            <li class="w-full lg:w-auto"><a href="#Publicacion" class="block text-center lg:inline px-4 py-2 text-text/70 hover:text-text font-medium">Publicación</a></li>
-            <li class="w-full lg:w-auto"><a href="#Comofunciona" class="block text-center lg:inline px-4 py-2 text-text/70 hover:text-text font-medium">¿Cómo funciona?</a></li>
-            <li class="w-full lg:w-auto"><a href="#Nosotros" class="block text-center lg:inline px-4 py-2 text-text/70 hover:text-text font-medium">Nosotros</a></li>
+            <li class="w-full lg:w-auto"><a href="#inicio" class="block text-center lg:inline px-4 py-2 rounded-full bg-muted text-primary font-medium">Inicio</a></li>
+            <li class="w-full lg:w-auto"><a href="#categorias" class="block text-center lg:inline px-4 py-2 text-text/70 hover:text-text font-medium">Categorías</a></li>
+            <li class="w-full lg:w-auto"><a href="#publicaciones" class="block text-center lg:inline px-4 py-2 text-text/70 hover:text-text font-medium">Publicaciones</a></li>
+            <li class="w-full lg:w-auto"><a href="#como-funciona" class="block text-center lg:inline px-4 py-2 text-text/70 hover:text-text font-medium">Cómo funciona</a></li>
+            <li class="w-full lg:w-auto"><a href="#nosotros" class="block text-center lg:inline px-4 py-2 text-text/70 hover:text-text font-medium">Nosotros</a></li>
           </ul>
           <div class="flex items-center gap-2 w-full lg:w-auto">
             <input type="text" placeholder="Buscar..." class="bg-muted text-text placeholder-text/50 rounded-full px-4 py-2 border border-border flex-1 lg:flex-none" />
-            <button class="Search bg-accent hover:opacity-90 text-background font-medium px-4 py-2 rounded-full shrink-0">Buscar</button>
+            <button class="bg-accent hover:opacity-90 text-background font-medium px-4 py-2 rounded-full shrink-0">Buscar</button>
           </div>
           <div class="flex items-center gap-4 lg:hidden w-full justify-center pt-2">
-            <button class="Login text-text/70 hover:text-text font-medium" data-path="/login">Iniciar sesión</button>
-            <button class="Register bg-primary hover:bg-primary-hover text-background font-medium px-5 py-2.5 rounded-full" data-path="/registro">Registrarse</button>
+            <button class="text-text/70 hover:text-text font-medium" data-path="/login">Iniciar sesión</button>
+            <button class="bg-primary hover:bg-primary-hover text-background font-medium px-5 py-2.5 rounded-full" data-path="/registro">Registrarse</button>
           </div>
         </nav>
 
         <div class="hidden lg:flex items-center gap-4 shrink-0">
-          <button class="Login text-text/70 hover:text-text font-medium" data-path="/login">Iniciar sesión</button>
-          <button class="Register bg-primary hover:bg-primary-hover text-background font-medium px-5 py-2.5 rounded-full" data-path="/registro">Registrarse</button>
+          <button class="text-text/70 hover:text-text font-medium" data-path="/login">Iniciar sesión</button>
+          <button class="bg-primary hover:bg-primary-hover text-background font-medium px-5 py-2.5 rounded-full" data-path="/registro">Registrarse</button>
         </div>
       </div>
     </header>
 
     <!-- Hero -->
-    <section id="Inicio" class="relative px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32 xl:py-40 overflow-hidden">
+    <section id="inicio" class="relative px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32 xl:py-40 overflow-hidden">
       <img src="/Woman.jpg" alt="Emprendedora colombiana trabajando en su taller" class="absolute inset-0 w-full h-full object-cover" />
       <div class="absolute inset-0 bg-background/85"></div>
       <div class="relative max-w-xl sm:max-w-2xl lg:max-w-4xl xl:max-w-5xl mx-auto flex flex-col items-center text-center">
@@ -57,21 +58,21 @@ const HomePage = () => {
         </h1>
         <p class="text-base sm:text-lg lg:text-xl text-text/70 max-w-md sm:max-w-2xl mb-8 sm:mb-10">El mercado comunitario donde emprendedores y personas del día a día intercambian bienes, servicios y donaciones con facilidad.</p>
         <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-          <a href="/explorar" class="w-full sm:w-auto text-center bg-primary hover:bg-primary-hover text-background font-medium px-6 py-3 lg:px-8 lg:py-4 lg:text-lg rounded-full" id="hero-explorar">Explorar ahora &rarr;</a>
+          <a href="/explorar" class="w-full sm:w-auto text-center bg-primary hover:bg-primary-hover text-background font-medium px-6 py-3 lg:px-8 lg:py-4 lg:text-lg rounded-full" id="hero-explorar">Explorar ahora →</a>
           <a href="/registro" class="w-full sm:w-auto text-center bg-background hover:bg-muted border border-border text-text font-medium px-6 py-3 lg:px-8 lg:py-4 lg:text-lg rounded-full transition" id="hero-registro">Crear cuenta gratis</a>
         </div>
       </div>
     </section>
 
     <!-- Categorías -->
-    <section id="Categorias" class="bg-background px-6 py-20">
+    <section id="categorias" class="bg-background px-6 py-20">
       <div class="max-w-6xl mx-auto">
         <div class="flex items-end justify-between mb-10">
           <div>
             <h2 class="font-display text-4xl font-bold text-text mb-2">Categorías</h2>
             <p class="text-text/60">Explora nuestras categorías principales.</p>
           </div>
-          <a href="/explorar" class="text-primary font-medium flex items-center gap-1 hover:text-primary-hover transition" id="cat-ver-todo">Ver todo &rarr;</a>
+          <a href="/explorar" class="text-primary font-medium flex items-center gap-1 hover:text-primary-hover transition" id="cat-ver-todo">Ver todo →</a>
         </div>
         <div class="categories grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <a href="/explorar" class="category flex items-center gap-4 bg-background border border-border rounded-2xl px-5 py-6 transition-all duration-200 hover:border-primary hover:bg-primary/5 active:scale-95 cursor-pointer">
@@ -111,17 +112,17 @@ const HomePage = () => {
     </section>
 
     <!-- Publicaciones destacadas -->
-    <section id="Publicacion" class="bg-muted px-6 py-20">
+    <section id="publicaciones" class="bg-muted px-6 py-20">
       <div class="max-w-6xl mx-auto">
         <div class="flex items-end justify-between mb-10">
           <div>
             <h2 class="font-display text-4xl font-bold text-text mb-2">Publicaciones destacadas</h2>
             <p class="text-text/60">Nuestra selección de publicaciones más populares.</p>
           </div>
-          <a href="/explorar" class="text-primary font-medium flex items-center gap-1 hover:text-primary-hover transition" id="pub-ver-mas">Ver más &rarr;</a>
+          <a href="/explorar" class="text-primary font-medium flex items-center gap-1 hover:text-primary-hover transition" id="pub-ver-mas">Ver más →</a>
         </div>
         <div class="Publicaciones grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
+          <!-- Publicación 1 -->
           <div class="Publicacion flex flex-col h-full bg-white border border-border rounded-2xl overflow-hidden">
             <div class="relative">
               <img src="/vestidor.jpg" alt="Vestido de noche elegante" class="w-full h-56 object-cover" />
@@ -158,6 +159,7 @@ const HomePage = () => {
             </div>
           </div>
 
+          <!-- Publicación 2 -->
           <div class="Publicacion flex flex-col h-full bg-white border border-border rounded-2xl overflow-hidden">
             <div class="relative">
               <img src="/guitarra.jpg" alt="Clases de guitarra online" class="w-full h-56 object-cover" />
@@ -194,6 +196,7 @@ const HomePage = () => {
             </div>
           </div>
 
+          <!-- Publicación 3 -->
           <div class="Publicacion flex flex-col h-full bg-white border border-border rounded-2xl overflow-hidden">
             <div class="relative">
               <img src="/Lenovo.jpg" alt="Laptop Lenovo ThinkPad T14" class="w-full h-56 object-cover" />
@@ -230,6 +233,7 @@ const HomePage = () => {
             </div>
           </div>
 
+          <!-- Publicación 4 -->
           <div class="Publicacion flex flex-col h-full bg-white border border-border rounded-2xl overflow-hidden">
             <div class="relative">
               <img src="/libro_de_receta.jpg" alt="Libro de recetas" class="w-full h-56 object-cover" />
@@ -266,6 +270,7 @@ const HomePage = () => {
             </div>
           </div>
 
+          <!-- Publicación 5 -->
           <div class="Publicacion flex flex-col h-full bg-white border border-border rounded-2xl overflow-hidden">
             <div class="relative">
               <img src="/Reparacion.jpg" alt="Servicio de reparación" class="w-full h-56 object-cover" />
@@ -302,6 +307,7 @@ const HomePage = () => {
             </div>
           </div>
 
+          <!-- Publicación 6 -->
           <div class="Publicacion flex flex-col h-full bg-white border border-border rounded-2xl overflow-hidden">
             <div class="relative">
               <img src="/Olla.jpg" alt="Olla de cerámica" class="w-full h-56 object-cover" />
@@ -343,7 +349,7 @@ const HomePage = () => {
     </section>
 
     <!-- Cómo funciona -->
-    <section id="Comofunciona" class="bg-background px-6 py-24">
+    <section id="como-funciona" class="bg-background px-6 py-24">
       <div class="max-w-5xl mx-auto text-center">
         <h2 class="font-display text-4xl font-bold text-text mb-3">¿Cómo funciona?</h2>
         <p class="text-text/60 mb-14">Simple y sin complicaciones.</p>
@@ -371,11 +377,11 @@ const HomePage = () => {
     </section>
 
     <!-- CTA -->
-    <section id="CTA" class="bg-primary px-10 py-24">
+    <section id="cta" class="bg-primary px-10 py-24">
       <div class="max-w-4xl mx-auto text-center">
         <h2 class="font-display text-4xl font-bold text-background mb-4">¡Únete a la comunidad!</h2>
         <p class="text-background/80 mb-10">Miles de emprendedores ya intercambian en MUISKA.</p>
-        <a href="/registro" class="inline-block bg-background hover:bg-muted text-primary font-bold px-8 py-4 rounded-full transition" id="cta-registro">Crear cuenta gratis &rarr;</a>
+        <a href="/registro" class="inline-block bg-background hover:bg-muted text-primary font-bold px-8 py-4 rounded-full transition" id="cta-registro">Crear cuenta gratis →</a>
       </div>
     </section>
 
@@ -396,6 +402,7 @@ const HomePage = () => {
     </footer>
   `;
 
+  // Navegación SPA en botones y enlaces
   page.querySelectorAll("[data-path]").forEach((btn) => {
     btn.addEventListener("click", () => {
       navigate(btn.dataset.path);

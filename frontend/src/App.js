@@ -1,3 +1,4 @@
+// App.js - Componente principal de la aplicación
 import { renderRoute, navigateTo } from "./router/router.js";
 import Navbar from "./components/layout/Navbar.js";
 import Footer from "./components/layout/Footer.js";
@@ -15,15 +16,19 @@ const App = () => {
 
   const isHome = () => window.location.pathname === "/";
 
+  // Redirigir según rol
   const redirectBasedOnRole = () => {
     const user = getUser();
     if (!user) return;
 
     const pathname = window.location.pathname;
 
+    // Admin en home -> admin
     if (user.role === "admin" && pathname === "/") {
       navigateTo("/admin");
-    } else if (user.role === "user" && pathname === "/admin") {
+    }
+    // Usuario normal en admin -> home
+    else if (user.role === "user" && pathname === "/admin") {
       navigateTo("/");
     }
   };
@@ -31,13 +36,13 @@ const App = () => {
   const render = () => {
     const path = window.location.pathname;
 
-    // Proteger rutas que requieren autenticación
+    // 1. Proteger rutas que requieren login
     if (isRouteProtected(path) && !isAuthenticated()) {
       navigateTo("/login");
       return;
     }
 
-    // Redirigir a home si ya está autenticado e intenta ir a login/registro
+    // 2. Si logueado va a login/registro -> redirigir
     if (isGuestRoute(path) && isAuthenticated()) {
       const user = getUser();
       if (user?.role === "admin") {
@@ -48,11 +53,12 @@ const App = () => {
       return;
     }
 
-    // Redirigir según rol
+    // 3. Redirigir según rol
     if (isAuthenticated()) {
       redirectBasedOnRole();
     }
 
+    // Renderizar layout
     layout.innerHTML = "";
     if (isHome()) {
       main.className = "flex-1";
@@ -73,10 +79,11 @@ const App = () => {
   }
   app.appendChild(layout);
 
+  // Escuchar cambios de URL (back/forward)
   window.addEventListener("popstate", render);
   render();
 
   return app;
-}
+};
 
 export default App;

@@ -1,40 +1,23 @@
+// LoginPage - Página de inicio de sesión
 import { api } from "../services/api.js";
 import { navigateTo } from "../router/router.js";
 
 const LoginPage = () => {
   const section = document.createElement("section");
-  section.className =
-    "mx-auto max-w-md space-y-6 rounded-2xl border border-border bg-white p-8 shadow-sm";
+  section.className = "mx-auto max-w-md space-y-6 rounded-2xl border border-border bg-white p-8 shadow-sm";
 
   section.innerHTML = `
     <h1 class="text-3xl font-semibold text-primary">Iniciar Sesión</h1>
     <form id="login-form" class="space-y-4">
       <div>
         <label for="email" class="block text-sm font-medium text-text">Correo electrónico</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          required
-          class="mt-1 w-full rounded-lg border border-border bg-background px-4 py-2 text-sm text-text outline-none focus:border-primary"
-        />
+        <input type="email" id="email" name="email" required class="mt-1 w-full rounded-lg border border-border bg-background px-4 py-2 text-sm text-text outline-none focus:border-primary" />
       </div>
       <div>
         <label for="password" class="block text-sm font-medium text-text">Contraseña</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          required
-          class="mt-1 w-full rounded-lg border border-border bg-background px-4 py-2 text-sm text-text outline-none focus:border-primary"
-        />
+        <input type="password" id="password" name="password" required class="mt-1 w-full rounded-lg border border-border bg-background px-4 py-2 text-sm text-text outline-none focus:border-primary" />
       </div>
-      <button
-        type="submit"
-        class="w-full rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-hover"
-      >
-        Ingresar
-      </button>
+      <button type="submit" class="w-full rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-hover">Ingresar</button>
     </form>
     <p id="login-error" class="hidden text-sm text-red-600"></p>
     <p class="text-center text-sm text-text/70">
