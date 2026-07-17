@@ -3,9 +3,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const { Pool } = pg;
-
 // Configuración de la conexión a PostgreSQL
-export const pool = new Pool({
+export const pool = new pg.Pool({
   connectionString: process.env.DATABASE_URL || "postgres://postgres:postgres@localhost:5433/muiska",
 });
