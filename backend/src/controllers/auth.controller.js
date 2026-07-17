@@ -98,7 +98,7 @@ export const login = async (req, res, next) => {
 export const getMe = async (req, res, next) => {
   try {
     const result = await pool.query(
-      "SELECT id, name, email, role, created_at FROM users WHERE id = $1",
+      "SELECT id, name, email, role, address, created_at FROM users WHERE id = $1",
       [req.user.id]
     );
 
@@ -139,10 +139,33 @@ export const updateProfile = async (req, res, next) => {
     }
 
     const result = await pool.query(
-      "UPDATE users SET name = $1, email = $2, updated_at = NOW() WHERE id = $3 RETURNING id, name, email, role, created_at",
+      "UPDATE users SET name = $1, email = $2, updated_at = NOW() WHERE id = $3 RETURNING id, name, email, role, address, created_at",
       [nameTrimed, emailTrimed, userId]
     );
 
+    res.json(result.rows[0]);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateAddress = async (req, res, next) => {
+  try {
+    const { address } = req.body;
+
+    if (typeof address !== "string" || !address.trim()) {
+      return res.status(400).json({ message: "La dirección es obligatoria" });
+    }
+
+    const normalizedAddress = address.trim();
+    if (normalizedAddress.length > 255) {
+      return res.status(400).json({ message: "La dirección no puede superar 255 caracteres" });
+    }
+
+    const result = await pool.query(
+      "UPDATE users SET address = $1, updated_at = NOW() WHERE id = $2 RETURNING id, name, email, role, address, created_at",
+      [normalizedAddress, req.user.id],
+    );
     res.json(result.rows[0]);
   } catch (error) {
     next(error);

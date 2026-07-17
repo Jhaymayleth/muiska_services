@@ -1,3 +1,5 @@
+import { isAuthenticated, getUser, logout } from "../../utils/auth.js";
+
 const navigate = (path) => {
   window.history.pushState({}, "", path);
   window.dispatchEvent(new PopStateEvent("popstate"));
@@ -6,6 +8,9 @@ const navigate = (path) => {
 const HomePage = () => {
   const page = document.createElement("div");
   page.className = "flex flex-col";
+
+  const authenticated = isAuthenticated();
+  const user = getUser();
 
   page.innerHTML = `
     <!-- Header -->
@@ -32,14 +37,32 @@ const HomePage = () => {
             <button class="Search bg-accent hover:opacity-90 text-background font-medium px-4 py-2 rounded-full shrink-0">Buscar</button>
           </div>
           <div class="flex items-center gap-4 lg:hidden w-full justify-center pt-2">
-            <button class="Login text-text/70 hover:text-text font-medium" data-path="/login">Iniciar sesión</button>
-            <button class="Register bg-primary hover:bg-primary-hover text-background font-medium px-5 py-2.5 rounded-full" data-path="/registro">Registrarse</button>
+            ${authenticated ? `
+              <button class="rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-text transition hover:bg-muted" data-path="/perfil">
+                ${user?.name || "Usuario"}
+              </button>
+              <button class="rounded-full px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50" id="home-logout-mobile">
+                Salir
+              </button>
+            ` : `
+              <button class="Login text-text/70 hover:text-text font-medium" data-path="/login">Iniciar sesión</button>
+              <button class="Register bg-primary hover:bg-primary-hover text-background font-medium px-5 py-2.5 rounded-full" data-path="/registro">Registrarse</button>
+            `}
           </div>
         </nav>
 
         <div class="hidden lg:flex items-center gap-4 shrink-0">
-          <button class="Login text-text/70 hover:text-text font-medium" data-path="/login">Iniciar sesión</button>
-          <button class="Register bg-primary hover:bg-primary-hover text-background font-medium px-5 py-2.5 rounded-full" data-path="/registro">Registrarse</button>
+          ${authenticated ? `
+            <button class="rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-text transition hover:bg-muted" data-path="/perfil">
+              ${user?.name || "Usuario"}
+            </button>
+            <button class="rounded-full px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50" id="home-logout-desktop">
+              Salir
+            </button>
+          ` : `
+            <button class="Login text-text/70 hover:text-text font-medium" data-path="/login">Iniciar sesión</button>
+            <button class="Register bg-primary hover:bg-primary-hover text-background font-medium px-5 py-2.5 rounded-full" data-path="/registro">Registrarse</button>
+          `}
         </div>
       </div>
     </header>
@@ -399,6 +422,12 @@ const HomePage = () => {
   page.querySelectorAll("[data-path]").forEach((btn) => {
     btn.addEventListener("click", () => {
       navigate(btn.dataset.path);
+    });
+  });
+
+  page.querySelectorAll("#home-logout-mobile, #home-logout-desktop").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      logout();
     });
   });
 

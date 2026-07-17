@@ -113,6 +113,13 @@ export const api = {
     });
   },
 
+  updateAddress(address) {
+    return this.request("/auth/me/address", {
+      method: "PUT",
+      body: JSON.stringify({ address }),
+    });
+  },
+
   changePassword(data) {
     return this.request("/auth/change-password", {
       method: "PUT",
