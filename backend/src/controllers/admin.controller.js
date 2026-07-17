@@ -154,6 +154,7 @@ export const getPublications = async (req, res, next) => {
       },
     });
   } catch (error) {
+    console.error("Error in getPublications:", error);
     next(error);
   }
 };

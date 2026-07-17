@@ -16,7 +16,7 @@ router.get("/admin/users", getUsers);
 router.patch("/admin/users/:id", updateUser);
 router.delete("/admin/users/:id", deleteUser);
 
-// Admin - Publications
+// Admin Publications
 router.get("/admin/publications", getPublications);
 router.patch("/admin/publications/:id", updatePublication);
 router.delete("/admin/publications/:id", deletePublication);
