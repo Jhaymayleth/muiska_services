@@ -1,6 +1,11 @@
 import { pool } from "../config/database.js";
 import { normalizePublicationPayload } from "../utils/publication.utils.js";
 
+const MAX_PUBLICATION_PRICE = 99_999_999.99;
+
+const isValidPublicationPrice = (price) =>
+  Number.isFinite(price) && price > 0 && price <= MAX_PUBLICATION_PRICE;
+
 // Obtener todas las publicaciones (con filtros opcionales)
 export const getAll = async (req, res, next) => {
   try {
@@ -115,6 +120,12 @@ export const create = async (req, res, next) => {
     // Normalizar datos del formulario
     const normalized = normalizePublicationPayload(req.body);
 
+    if (!isValidPublicationPrice(normalized.price)) {
+      return res.status(400).json({
+        message: "El precio debe ser mayor que 0 y no superar 99.999.999,99",
+      });
+    }
+
     // Usar imágenes subidas si hay, si no usar las del body
     let images = normalized.images;
     if (req.files && req.files.length > 0) {
@@ -147,6 +158,12 @@ export const update = async (req, res, next) => {
   try {
     const { id } = req.params;
     const normalized = normalizePublicationPayload(req.body);
+
+    if (req.body.price !== undefined && !isValidPublicationPrice(normalized.price)) {
+      return res.status(400).json({
+        message: "El precio debe ser mayor que 0 y no superar 99.999.999,99",
+      });
+    }
 
     // Usar nuevas imágenes si se subieron
     let images = normalized.images;

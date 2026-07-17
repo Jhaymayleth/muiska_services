@@ -25,7 +25,7 @@ const EditListingPage = () => {
           <div class="grid gap-4 md:grid-cols-2">
             <div class="space-y-2">
               <label class="text-sm font-medium text-text" for="price">Precio</label>
-              <input id="price" name="price" type="number" step="0.01" required class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary" />
+            <input id="price" name="price" type="number" min="0.01" max="99999999.99" step="0.01" required class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary" />
             </div>
             <div class="space-y-2">
               <label class="text-sm font-medium text-text" for="category">Categoría</label>
