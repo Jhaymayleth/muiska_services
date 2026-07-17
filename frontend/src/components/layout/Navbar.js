@@ -15,7 +15,9 @@ const Navbar = () => {
         <a href="/explorar" class="rounded px-3 py-2 hover:bg-muted">Explorar</a>
         ${authenticated ? `
           <a href="/crear-publicacion" class="rounded px-3 py-2 hover:bg-muted">Crear</a>
-          <a href="/dashboard" class="rounded px-3 py-2 hover:bg-muted">Dashboard</a>
+          ${user?.role === "admin" ? `
+            <a href="/admin" class="rounded px-3 py-2 bg-red-50 text-red-600 hover:bg-red-100 font-medium">Admin</a>
+          ` : ""}
           <div class="flex items-center gap-3 border-l border-border pl-3">
             <span class="text-text/70">${user?.name || "Usuario"}</span>
             <button id="btn-logout" class="rounded px-3 py-2 text-red-600 hover:bg-red-50">Salir</button>

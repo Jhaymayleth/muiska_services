@@ -21,7 +21,7 @@ const App = () => {
 
     const pathname = window.location.pathname;
 
-    if (user.role === "admin" && pathname === "/dashboard") {
+    if (user.role === "admin" && pathname === "/") {
       navigateTo("/admin");
     } else if (user.role === "user" && pathname === "/admin") {
       navigateTo("/");
