@@ -5,10 +5,7 @@ dotenv.config();
 
 const { Pool } = pg;
 
+// Configuración de la conexión a PostgreSQL
 export const pool = new Pool({
-  host: process.env.DB_HOST || "localhost",
-  port: Number(process.env.DB_PORT || 5433),
-  database: process.env.DB_NAME || "muiska",
-  user: process.env.DB_USER || "postgres",
-  password: process.env.DB_PASSWORD || "postgres",
+  connectionString: process.env.DATABASE_URL || "postgres://postgres:postgres@localhost:5433/muiska",
 });
