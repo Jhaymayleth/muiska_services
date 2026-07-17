@@ -20,6 +20,7 @@ export const protectedRoutes = [
   "/dashboard",
   "/crear-publicacion",
   "/editar-publicacion",
+  "/perfil",
   "/admin",
 ];
 
