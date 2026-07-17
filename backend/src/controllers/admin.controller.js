@@ -89,3 +89,129 @@ export const deleteUser = async (req, res, next) => {
     next(error);
   }
 };
+
+// --- Admin Publications ---
+export const getAdminPublications = async (req, res, next) => {
+  try {
+    const {
+      status,
+      search,
+      category,
+      user_id,
+      page = 1,
+      limit = 20,
+    } = req.query;
+
+    const pageNum = Math.max(1, parseInt(page));
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit)));
+    const offset = (pageNum - 1) * limitNum;
+
+    let whereClause = "WHERE 1=1";
+    const params = [];
+    let paramIndex = 1;
+
+    if (status) {
+      whereClause += ` AND status = $${paramIndex}`;
+      params.push(status);
+      paramIndex++;
+    }
+
+    if (user_id) {
+      whereClause += ` AND user_id = $${paramIndex}`;
+      params.push(user_id);
+      paramIndex++;
+    }
+
+    if (category) {
+      whereClause += ` AND category = $${paramIndex}`;
+      params.push(category);
+      paramIndex++;
+    }
+
+    if (search) {
+      whereClause += ` AND (title ILIKE $${paramIndex} OR description ILIKE $${paramIndex})`;
+      params.push(`%${search}%`);
+      paramIndex++;
+    }
+
+    const countResult = await pool.query(
+      `SELECT COUNT(*) FROM publications ${whereClause}`,
+      params,
+    );
+    const total = parseInt(countResult.rows[0].count);
+
+    params.push(limitNum, offset);
+    const result = await pool.query(
+      `SELECT p.*, u.name as user_name, u.email as user_email
+       FROM publications p
+       LEFT JOIN users u ON u.id = p.user_id
+       ${whereClause}
+       ORDER BY p.created_at DESC
+       LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
+      params,
+    );
+
+    res.json({
+      data: result.rows,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        totalPages: Math.ceil(total / limitNum),
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateAdminPublication = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (status && !["active", "sold", "inactive"].includes(status)) {
+      return res.status(400).json({ message: "Estado no válido" });
+    }
+
+    const result = await pool.query(
+      `UPDATE publications
+       SET status = COALESCE($1, status), updated_at = NOW()
+       WHERE id = $2
+       RETURNING *`,
+      [status || null, id],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Publicación no encontrada" });
+    }
+    res.json(result.rows[0]);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteAdminPublication = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query(
+      "DELETE FROM publications WHERE id = $1 RETURNING id",
+      [id],
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Publicación no encontrada" });
+    }
+    res.json({ message: "Publicación eliminada correctamente" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default {
+  getUsers,
+  updateUser,
+  deleteUser,
+  getAdminPublications,
+  updateAdminPublication,
+  deleteAdminPublication,
+};

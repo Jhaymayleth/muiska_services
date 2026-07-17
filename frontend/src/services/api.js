@@ -140,6 +140,47 @@ export const api = {
     return this.request(`/admin/users/${id}`, { method: "DELETE" });
   },
 
+  // Admin - Publications
+  getAdminPublications(params = {}) {
+    const query = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        query.append(key, value);
+      }
+    });
+    return this.request(`/admin/publications?${query.toString()}`);
+  },
+
+  updateAdminPublication(id, data) {
+    return this.request(`/admin/publications/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    });
+  },
+
+  deleteAdminPublication(id) {
+    return this.request(`/admin/publications/${id}`, { method: "DELETE" });
+  },
+
+  // Admin - Categories
+  createCategory(data) {
+    return this.request("/categories", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+
+  updateCategory(id, data) {
+    return this.request(`/categories/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  },
+
+  deleteCategory(id) {
+    return this.request(`/categories/${id}`, { method: "DELETE" });
+  },
+
   logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
