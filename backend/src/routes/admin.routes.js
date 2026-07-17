@@ -3,9 +3,9 @@ import {
   deleteUser,
   getUsers,
   updateUser,
-  getAdminPublications,
-  updateAdminPublication,
-  deleteAdminPublication,
+  getPublications,
+  updatePublication,
+  deletePublication,
 } from "../controllers/admin.controller.js";
 import { requireAdmin, verifyToken } from "../middlewares/auth.middleware.js";
 
@@ -16,9 +16,9 @@ router.get("/admin/users", getUsers);
 router.patch("/admin/users/:id", updateUser);
 router.delete("/admin/users/:id", deleteUser);
 
-// Admin Publications
-router.get("/admin/publications", getAdminPublications);
-router.patch("/admin/publications/:id", updateAdminPublication);
-router.delete("/admin/publications/:id", deleteAdminPublication);
+// Admin - Publications
+router.get("/admin/publications", getPublications);
+router.patch("/admin/publications/:id", updatePublication);
+router.delete("/admin/publications/:id", deletePublication);
 
 export default router;

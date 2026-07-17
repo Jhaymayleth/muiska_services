@@ -90,14 +90,13 @@ export const deleteUser = async (req, res, next) => {
   }
 };
 
-// --- Admin Publications ---
-export const getAdminPublications = async (req, res, next) => {
+// Admin - Publications
+export const getPublications = async (req, res, next) => {
   try {
     const {
       status,
       search,
       category,
-      user_id,
       page = 1,
       limit = 20,
     } = req.query;
@@ -113,12 +112,6 @@ export const getAdminPublications = async (req, res, next) => {
     if (status) {
       whereClause += ` AND status = $${paramIndex}`;
       params.push(status);
-      paramIndex++;
-    }
-
-    if (user_id) {
-      whereClause += ` AND user_id = $${paramIndex}`;
-      params.push(user_id);
       paramIndex++;
     }
 
@@ -165,7 +158,7 @@ export const getAdminPublications = async (req, res, next) => {
   }
 };
 
-export const updateAdminPublication = async (req, res, next) => {
+export const updatePublication = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
@@ -191,7 +184,7 @@ export const updateAdminPublication = async (req, res, next) => {
   }
 };
 
-export const deleteAdminPublication = async (req, res, next) => {
+export const deletePublication = async (req, res, next) => {
   try {
     const { id } = req.params;
     const result = await pool.query(
@@ -205,13 +198,4 @@ export const deleteAdminPublication = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-};
-
-export default {
-  getUsers,
-  updateUser,
-  deleteUser,
-  getAdminPublications,
-  updateAdminPublication,
-  deleteAdminPublication,
 };
