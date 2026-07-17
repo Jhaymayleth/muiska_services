@@ -4,6 +4,7 @@ import { normalizePublicationPayload } from "../utils/publication.utils.js";
 // Obtener todas las publicaciones (con filtros opcionales)
 export const getAll = async (req, res, next) => {
   try {
+    // Obtener parámetros de consulta (filtros, paginación)
     const {
       category,
       minPrice,
@@ -21,11 +22,12 @@ export const getAll = async (req, res, next) => {
     const limitNum = Math.min(50, Math.max(1, parseInt(limit)));
     const offset = (pageNum - 1) * limitNum;
 
-    // Construir consulta con filtros
+    // Construir WHERE con filtros dinámicos
     let whereClause = "WHERE status = $1";
     const params = [status];
     let paramIndex = 2;
 
+    // Filtro por usuario (para dashboard)
     if (user_id) {
       whereClause += ` AND user_id = $${paramIndex}`;
       params.push(user_id);
@@ -110,6 +112,7 @@ export const getById = async (req, res, next) => {
 // Crear nueva publicación
 export const create = async (req, res, next) => {
   try {
+    // Normalizar datos del formulario
     const normalized = normalizePublicationPayload(req.body);
 
     // Usar imágenes subidas si hay, si no usar las del body
