@@ -63,7 +63,8 @@ const LoginPage = () => {
       const result = await api.login(email, password);
       localStorage.setItem("token", result.token);
       localStorage.setItem("user", JSON.stringify(result.user));
-      navigateTo("/dashboard");
+      const redirectPath = result.user.role === "admin" ? "/admin" : "/dashboard";
+      navigateTo(redirectPath);
     } catch (err) {
       errorEl.textContent = err.message || "Error al iniciar sesión.";
       errorEl.classList.remove("hidden");
