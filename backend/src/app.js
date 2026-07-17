@@ -3,10 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
-import statusRouter from "./routes/status.routes.js";
-import publicationRouter from "./routes/publication.routes.js";
-import authRouter from "./routes/auth.routes.js";
-import categoryRouter from "./routes/category.routes.js";
+import routes from "./routes/routes.js";
 import { errorMiddleware } from "./middlewares/error.middleware.js";
 import { notFoundMiddleware } from "./middlewares/notFound.middleware.js";
 
@@ -25,7 +22,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 // Rutas de la API
-app.use("/api", statusRouter, publicationRouter, authRouter, categoryRouter);
+app.use("/api", routes);
 
 // Middlewares de error (al final)
 app.use(notFoundMiddleware);
