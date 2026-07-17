@@ -17,6 +17,7 @@ export const getAll = async (req, res, next) => {
       status = "active",
       page = 1,
       limit = 12,
+      user_id,
     } = req.query;
 
     const pageNum = Math.max(1, parseInt(page));
@@ -26,6 +27,12 @@ export const getAll = async (req, res, next) => {
     let whereClause = "WHERE status = $1";
     const params = [status];
     let paramIndex = 2;
+
+    if (user_id) {
+      whereClause += ` AND user_id = $${paramIndex}`;
+      params.push(user_id);
+      paramIndex++;
+    }
 
     if (category) {
       whereClause += ` AND category = $${paramIndex}`;
