@@ -72,6 +72,9 @@ export const login = async (req, res, next) => {
     }
 
     const user = result.rows[0];
+    if (user.is_banned) {
+      return res.status(403).json({ message: "Tu cuenta ha sido suspendida" });
+    }
     const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) {
       return res.status(401).json({ message: "Credenciales inválidas" });

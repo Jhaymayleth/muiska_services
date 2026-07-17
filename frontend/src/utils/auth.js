@@ -7,6 +7,8 @@ export const getUser = () => {
   return user ? JSON.parse(user) : null;
 };
 
+export const isAdmin = () => getUser()?.role === "admin";
+
 export const logout = () => {
   localStorage.removeItem("token");
   localStorage.removeItem("user");

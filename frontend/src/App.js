@@ -1,7 +1,7 @@
 import { renderRoute, navigateTo } from "./router/router.js";
 import Navbar from "./components/layout/Navbar.js";
 import Footer from "./components/layout/Footer.js";
-import { isAuthenticated, isRouteProtected, isGuestRoute } from "./utils/auth.js";
+import { isAdmin, isAuthenticated, isRouteProtected, isGuestRoute } from "./utils/auth.js";
 
 const App = () => {
   const app = document.createElement("div");
@@ -21,6 +21,11 @@ const App = () => {
     // Proteger rutas que requieren autenticación
     if (isRouteProtected(path) && !isAuthenticated()) {
       navigateTo("/login");
+      return;
+    }
+
+    if (path === "/admin" && !isAdmin()) {
+      navigateTo("/dashboard");
       return;
     }
 

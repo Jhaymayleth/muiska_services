@@ -124,6 +124,22 @@ export const api = {
     return this.request("/categories");
   },
 
+  getAdminUsers(search = "") {
+    const query = search ? `?search=${encodeURIComponent(search)}` : "";
+    return this.request(`/admin/users${query}`);
+  },
+
+  updateAdminUser(id, data) {
+    return this.request(`/admin/users/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    });
+  },
+
+  deleteAdminUser(id) {
+    return this.request(`/admin/users/${id}`, { method: "DELETE" });
+  },
+
   logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");

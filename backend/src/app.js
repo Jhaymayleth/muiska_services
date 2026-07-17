@@ -7,6 +7,7 @@ import statusRouter from "./routes/status.routes.js";
 import publicationRouter from "./routes/publication.routes.js";
 import authRouter from "./routes/auth.routes.js";
 import categoryRouter from "./routes/category.routes.js";
+import adminRouter from "./routes/admin.routes.js";
 import { errorMiddleware } from "./middlewares/error.middleware.js";
 import { notFoundMiddleware } from "./middlewares/notFound.middleware.js";
 
@@ -26,6 +27,7 @@ app.use("/api", statusRouter);
 app.use("/api", publicationRouter);
 app.use("/api", authRouter);
 app.use("/api", categoryRouter);
+app.use("/api", adminRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);

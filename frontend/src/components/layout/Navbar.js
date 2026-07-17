@@ -1,4 +1,4 @@
-import { isAuthenticated, getUser, logout } from "../../utils/auth.js";
+import { isAdmin, isAuthenticated, getUser, logout } from "../../utils/auth.js";
 
 const Navbar = () => {
   const nav = document.createElement("nav");
@@ -16,6 +16,7 @@ const Navbar = () => {
         ${authenticated ? `
           <a href="/crear-publicacion" class="rounded px-3 py-2 hover:bg-muted">Crear</a>
           <a href="/dashboard" class="rounded px-3 py-2 hover:bg-muted">Dashboard</a>
+          ${isAdmin() ? '<a href="/admin" class="rounded px-3 py-2 hover:bg-muted">Admin</a>' : ""}
           <div class="flex items-center gap-3 border-l border-border pl-3">
             <span class="text-text/70">${user?.name || "Usuario"}</span>
             <button id="btn-logout" class="rounded px-3 py-2 text-red-600 hover:bg-red-50">Salir</button>
