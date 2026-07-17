@@ -1,7 +1,7 @@
 import { renderRoute, navigateTo } from "./router/router.js";
 import Navbar from "./components/layout/Navbar.js";
 import Footer from "./components/layout/Footer.js";
-import { isAuthenticated, isRouteProtected, isGuestRoute } from "./utils/auth.js";
+import { isAuthenticated, isRouteProtected, isGuestRoute, getUser } from "./utils/auth.js";
 
 const App = () => {
   const app = document.createElement("div");
@@ -15,6 +15,19 @@ const App = () => {
 
   const isHome = () => window.location.pathname === "/";
 
+  const redirectBasedOnRole = () => {
+    const user = getUser();
+    if (!user) return;
+
+    const pathname = window.location.pathname;
+
+    if (user.role === "admin" && pathname === "/dashboard") {
+      navigateTo("/admin");
+    } else if (user.role === "user" && pathname === "/admin") {
+      navigateTo("/");
+    }
+  };
+
   const render = () => {
     const path = window.location.pathname;
 
@@ -24,10 +37,20 @@ const App = () => {
       return;
     }
 
-    // Redirigir a dashboard si ya está autenticado e intenta ir a login/registro
+    // Redirigir a home si ya está autenticado e intenta ir a login/registro
     if (isGuestRoute(path) && isAuthenticated()) {
-      navigateTo("/dashboard");
+      const user = getUser();
+      if (user?.role === "admin") {
+        navigateTo("/admin");
+      } else {
+        navigateTo("/");
+      }
       return;
+    }
+
+    // Redirigir según rol
+    if (isAuthenticated()) {
+      redirectBasedOnRole();
     }
 
     layout.innerHTML = "";
@@ -54,6 +77,6 @@ const App = () => {
   render();
 
   return app;
-};
+}
 
 export default App;

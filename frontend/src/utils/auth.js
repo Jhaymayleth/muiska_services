@@ -15,7 +15,6 @@ export const logout = () => {
 
 // Rutas que requieren autenticación
 export const protectedRoutes = [
-  "/dashboard",
   "/crear-publicacion",
   "/editar-publicacion",
   "/admin",
