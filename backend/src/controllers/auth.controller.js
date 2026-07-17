@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { pool } from "../config/database.js";
 
-const JWT_SECRET = process.env.JWT_SECRET || "mi_secreto_jwt";
+const JWT_SECRET = process.env.JWT_SECRET || "muiska_jwt_secret_dev_2024";
 
 // Registro de nuevo usuario
 export const register = async (req, res, next) => {
@@ -76,6 +76,9 @@ export const login = async (req, res, next) => {
     }
 
     const user = result.rows[0];
+    if (user.is_banned) {
+      return res.status(403).json({ message: "Tu cuenta ha sido suspendida" });
+    }
     const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) {
       return res.status(401).json({ message: "Credenciales inválidas" });
