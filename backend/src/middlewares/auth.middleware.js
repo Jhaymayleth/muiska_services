@@ -1,7 +1,8 @@
 import jwt from "jsonwebtoken";
+import { pool } from "../config/database.js";
 
 // Verifica el token JWT y guarda el usuario en req.user
-export const verifyToken = (req, res, next) => {
+export const verifyToken = async (req, res, next) => {
   const header = req.headers.authorization;
 
   // Si no hay token o no empieza con "Bearer "
@@ -15,26 +16,55 @@ export const verifyToken = (req, res, next) => {
   try {
     // Verificar y decodificar el token
     const decoded = jwt.verify(token, process.env.JWT_SECRET || "mi_secreto_jwt");
-    req.user = decoded; // Guardar datos del usuario en la request
+
+    // Verificar que el usuario existe y no está baneado
+    const result = await pool.query(
+      "SELECT id, name, email, role, is_banned FROM users WHERE id = $1",
+      [decoded.id],
+    );
+
+    const user = result.rows[0];
+    if (!user || user.is_banned) {
+      return res.status(403).json({ message: "Tu cuenta no tiene acceso" });
+    }
+
+    req.user = user; // Guardar datos del usuario en la request
     next(); // Continuar al siguiente middleware o controlador
-  } catch {
-    return res.status(401).json({ message: "Token inválido o expirado" });
+  } catch (error) {
+    if (error.name === "JsonWebTokenError" || error.name === "TokenExpiredError") {
+      return res.status(401).json({ message: "Token inválido o expirado" });
+    }
+    next(error);
   }
 };
 
-// Middleware para verificar roles (solo admin por ahora)
-export const requireRole = (...allowedRoles) => {
-  return (req, res, next) => {
-    // Si no hay usuario (no pasó verifyToken)
-    if (!req.user) {
-      return res.status(401).json({ message: "Token requerido" });
-    }
+// Middleware para verificar rol de administrador
+export const requireAdmin = (req, res, next) => {
+  if (req.user?.role !== "admin") {
+    return res.status(403).json({ message: "Permisos de administrador requeridos" });
+  }
+  next();
+};
 
-    // Si el rol no está en la lista permitida
-    if (!allowedRoles.includes(req.user.role)) {
-      return res.status(403).json({ message: "No tienes permisos para acceder" });
-    }
+// Middleware opcional: autenticación sin requerir token
+export const optionalAuth = async (req, res, next) => {
+  const header = req.headers.authorization;
+  if (!header || !header.startsWith("Bearer ")) {
+    req.user = null;
+    return next();
+  }
 
-    next(); // El usuario tiene el rol correcto, continuar
-  };
+  const token = header.split(" ")[1];
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "mi_secreto_jwt");
+    const result = await pool.query(
+      "SELECT id, name, email, role, is_banned FROM users WHERE id = $1",
+      [decoded.id],
+    );
+    req.user = result.rows[0] || null;
+    if (req.user?.is_banned) req.user = null;
+  } catch {
+    req.user = null;
+  }
+  next();
 };
