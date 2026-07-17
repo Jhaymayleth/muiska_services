@@ -1,6 +1,6 @@
-// ExplorePage - Página para explorar publicaciones con filtros
-import { api } from "../services/api.js";
-import ListingCard from "../components/listing/ListingCard.js";
+import { api } from "../../services/api.js";
+import ListingCard from "../../components/listing/ListingCard.js";
+import { navigateTo } from "../../router/router.js";
 
 const ExplorePage = () => {
   const section = document.createElement("section");
@@ -86,31 +86,74 @@ const ExplorePage = () => {
       <form id="filter-form" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <div class="sm:col-span-2">
           <label for="search" class="block text-sm font-medium text-text mb-1">Buscar</label>
-          <input type="search" id="search" name="search" placeholder="Título, descripción..." class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary" />
+          <input
+            type="search"
+            id="search"
+            name="search"
+            placeholder="Título, descripción..."
+            class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary"
+          />
         </div>
         <div>
           <label for="category" class="block text-sm font-medium text-text mb-1">Categoría</label>
-          <select id="category" name="category" class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary">
+          <select
+            id="category"
+            name="category"
+            class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary"
+          >
             <option value="">Todas</option>
           </select>
         </div>
         <div>
           <label for="minPrice" class="block text-sm font-medium text-text mb-1">Precio mínimo</label>
-          <input type="number" id="minPrice" name="minPrice" step="0.01" min="0" placeholder="0" class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary" />
+          <input
+            type="number"
+            id="minPrice"
+            name="minPrice"
+            step="0.01"
+            min="0"
+            placeholder="0"
+            class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary"
+          />
         </div>
         <div>
           <label for="maxPrice" class="block text-sm font-medium text-text mb-1">Precio máximo</label>
-          <input type="number" id="maxPrice" name="maxPrice" step="0.01" min="0" placeholder="∞" class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary" />
+          <input
+            type="number"
+            id="maxPrice"
+            name="maxPrice"
+            step="0.01"
+            min="0"
+            placeholder="∞"
+            class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary"
+          />
         </div>
         <div class="sm:col-span-2 lg:col-span-1">
           <label for="location" class="block text-sm font-medium text-text mb-1">Ubicación</label>
-          <input type="text" id="location" name="location" placeholder="Ciudad, barrio..." class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary" />
+          <input
+            type="text"
+            id="location"
+            name="location"
+            placeholder="Ciudad, barrio..."
+            class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary"
+          />
         </div>
         <div class="sm:col-span-2 lg:col-span-1 flex items-end">
-          <button type="submit" class="w-full rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-hover">Filtrar</button>
+          <button
+            type="submit"
+            class="w-full rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-hover"
+          >
+            Filtrar
+          </button>
         </div>
         <div class="sm:col-span-2 lg:col-span-1 flex items-end">
-          <button type="button" id="clear-filters" class="w-full rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium text-text hover:bg-muted transition">Limpiar</button>
+          <button
+            type="button"
+            id="clear-filters"
+            class="w-full rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium text-text hover:bg-muted transition"
+          >
+            Limpiar
+          </button>
         </div>
       </form>
     </div>
@@ -126,7 +169,6 @@ const ExplorePage = () => {
   const categorySelect = section.querySelector("#category");
   const clearBtn = section.querySelector("#clear-filters");
 
-  // Cargar categorías
   api.getCategories().then((categories) => {
     categories.forEach((cat) => {
       const option = document.createElement("option");
