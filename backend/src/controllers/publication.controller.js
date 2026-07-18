@@ -14,19 +14,26 @@ export const getAll = async (req, res, next) => {
       maxPrice,
       location,
       search,
-      status = "active",
+      status,
       page = 1,
       limit = 12,
       user_id,
     } = req.query;
 
-    const pageNum = Math.max(1, parseInt(page));
-    const limitNum = Math.min(50, Math.max(1, parseInt(limit)));
+    const pageNum = Math.max(1, parseInt(page, 10));
+    const limitNum = Math.min(50, Math.max(1, parseInt(limit, 10)));
     const offset = (pageNum - 1) * limitNum;
 
-    let whereClause = "WHERE status = $1";
-    const params = [status];
-    let paramIndex = 2;
+    const params = [];
+    let whereClause = "WHERE 1=1";
+    let paramIndex = 1;
+
+    const normalizedStatus = status || (user_id ? null : "active");
+    if (normalizedStatus) {
+      whereClause += ` AND status = $${paramIndex}`;
+      params.push(normalizedStatus);
+      paramIndex++;
+    }
 
     if (user_id) {
       whereClause += ` AND user_id = $${paramIndex}`;

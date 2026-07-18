@@ -7,7 +7,7 @@ import {
   update,
   remove,
 } from "../controllers/publication.controller.js";
-import { verifyToken, optionalAuth } from "../middlewares/auth.middleware.js";
+import { verifyToken } from "../middlewares/auth.middleware.js";
 import { upload, handleUploadError } from "../middlewares/upload.middleware.js";
 
 const router = Router();

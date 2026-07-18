@@ -31,12 +31,17 @@ export const verifyToken = async (req, res, next) => {
   }
 };
 
-export const requireAdmin = (req, res, next) => {
-  if (req.user?.role !== "admin") {
-    return res.status(403).json({ message: "Permisos de administrador requeridos" });
-  }
-  next();
+export const requireRole = (roles) => {
+  const allowedRoles = Array.isArray(roles) ? roles : [roles];
+  return (req, res, next) => {
+    if (!req.user || !allowedRoles.includes(req.user.role)) {
+      return res.status(403).json({ message: "Permisos insuficientes" });
+    }
+    next();
+  };
 };
+
+export const requireAdmin = requireRole("admin");
 
 export const optionalAuth = async (req, res, next) => {
   const header = req.headers.authorization;
