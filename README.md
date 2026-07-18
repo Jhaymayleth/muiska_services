@@ -59,12 +59,12 @@ muiska/
 
 ## ⚙️ Tecnologías
 
-| Capa | Tecnologías |
-|---|---|
-| **Frontend** | HTML5, JavaScript ES6 Modules, Tailwind CSS, Vite |
-| **Backend** | Node.js, Express.js, `pg` (driver de PostgreSQL) |
-| **Base de datos** | PostgreSQL 16, extensión `pgcrypto` (UUID) |
-| **Infraestructura** | Docker / Docker Compose |
+| Capa                | Tecnologías                                       |
+| ------------------- | ------------------------------------------------- |
+| **Frontend**        | HTML5, JavaScript ES6 Modules, Tailwind CSS, Vite |
+| **Backend**         | Node.js, Express.js, `pg` (driver de PostgreSQL)  |
+| **Base de datos**   | PostgreSQL 16, extensión `pgcrypto` (UUID)        |
+| **Infraestructura** | Docker / Docker Compose                           |
 
 ---
 
@@ -72,16 +72,16 @@ muiska/
 
 La tabla principal `publications` representa los artículos publicados en la plataforma:
 
-| Campo | Tipo | Detalle |
-|---|---|---|
-| `id` | UUID | Generado automáticamente (`gen_random_uuid()`) |
-| `title` | VARCHAR(255) | Obligatorio |
-| `description` | TEXT | Opcional |
-| `price` | DECIMAL(10,2) | Por defecto `0` |
-| `category` | VARCHAR(100) | Opcional |
-| `images` | TEXT[] | Arreglo de URLs, por defecto vacío |
-| `status` | VARCHAR(20) | `active` \| `sold` \| `inactive` |
-| `created_at` / `updated_at` | TIMESTAMP | Auto-gestionados |
+| Campo                       | Tipo          | Detalle                                        |
+| --------------------------- | ------------- | ---------------------------------------------- |
+| `id`                        | UUID          | Generado automáticamente (`gen_random_uuid()`) |
+| `title`                     | VARCHAR(255)  | Obligatorio                                    |
+| `description`               | TEXT          | Opcional                                       |
+| `price`                     | DECIMAL(10,2) | Por defecto `0`                                |
+| `category`                  | VARCHAR(100)  | Opcional                                       |
+| `images`                    | TEXT[]        | Arreglo de URLs, por defecto vacío             |
+| `status`                    | VARCHAR(20)   | `active` \| `sold` \| `inactive`               |
+| `created_at` / `updated_at` | TIMESTAMP     | Auto-gestionados                               |
 
 Incluye índices sobre `status` y `created_at` para optimizar listados y filtros.
 
@@ -91,14 +91,14 @@ Incluye índices sobre `status` y `created_at` para optimizar listados y filtros
 
 Prefijo base: `/api`
 
-| Método | Endpoint | Descripción |
-|---|---|---|
-| `GET` | `/status` | Verifica que el backend esté activo |
-| `GET` | `/publications` | Lista todas las publicaciones (ordenadas por fecha) |
-| `GET` | `/publications/:id` | Obtiene una publicación por ID |
-| `POST` | `/publications` | Crea una nueva publicación |
-| `PUT` | `/publications/:id` | Actualiza una publicación existente |
-| `DELETE` | `/publications/:id` | Elimina una publicación |
+| Método   | Endpoint            | Descripción                                         |
+| -------- | ------------------- | --------------------------------------------------- |
+| `GET`    | `/status`           | Verifica que el backend esté activo                 |
+| `GET`    | `/publications`     | Lista todas las publicaciones (ordenadas por fecha) |
+| `GET`    | `/publications/:id` | Obtiene una publicación por ID                      |
+| `POST`   | `/publications`     | Crea una nueva publicación                          |
+| `PUT`    | `/publications/:id` | Actualiza una publicación existente                 |
+| `DELETE` | `/publications/:id` | Elimina una publicación                             |
 
 Todas las rutas cuentan con middleware de manejo de errores (`error.middleware.js`) y de rutas no encontradas (`notFound.middleware.js`).
 
