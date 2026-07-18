@@ -25,32 +25,34 @@
 ## 🗂️ Estructura del proyecto
 
 ```
-muiska_services/
-├── frontend/                  # SPA con Vite + Tailwind + JS vanilla
-│   ├── src/
-│   │   ├── components/        # common, layout, listing, ui
-│   │   ├── pages/              # home, explore, login, register,
-│   │   │                        # dashboard, admin, create/edit-listing, not-found
-│   │   ├── router/             # enrutador basado en history.pushState
-│   │   ├── services/           # cliente HTTP hacia el backend (api.js)
-│   │   └── styles/             # estilos globales
-│   ├── index.html
-│   ├── login.html
-│   └── tailwind.config.js
-│
+muiska/
 ├── backend/                   # API REST con Express
+│   ├── Dockerfile
+│   ├── package.json
 │   └── src/
-│       ├── controllers/        # lógica de negocio (status, publication)
-│       ├── routes/              # definición de endpoints
-│       ├── middlewares/         # manejo de errores y rutas no encontradas
-│       ├── config/               # conexión a PostgreSQL (pg Pool)
+│       ├── config/            # conexión a PostgreSQL (pg Pool)
+│       ├── controllers/       # lógica de negocio
+│       ├── middlewares/       # auth, upload, error handling
+│       ├── routes/            # definición de endpoints
+│       ├── db/                # SQL de inicialización
 │       ├── app.js
 │       └── server.js
 │
-├── database/
-│   └── init.sql               # esquema inicial (tabla publications)
+├── frontend/                  # SPA con Vite + Tailwind + JS vanilla
+│   ├── Dockerfile
+│   ├── package.json
+│   ├── src/
+│   │   ├── components/        # common, layout, listing, ui
+│   │   ├── pages/             # vistas de la aplicación
+│   │   ├── router/            # enrutador basado en history.pushState
+│   │   ├── services/          # cliente HTTP hacia el backend
+│   │   ├── styles/            # estilos globales
+│   │   └── utils/             # auth, helpers
+│   └── public/
 │
-└── docker-compose.yml         # contenedor de PostgreSQL
+├── docker-compose.yml         # orquesta backend, frontend y PostgreSQL
+├── ruta-desarrollo.txt        # backlog y tareas identificadas
+└── README.md
 ```
 
 ---
@@ -125,23 +127,37 @@ El enrutador (`router/router.js`) resuelve las siguientes vistas mediante `histo
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/Jhaymayleth/muiska_services.git
-cd muiska_services
+git clone https://github.com/Jhaymayleth/muiska.git
+cd muiska
 ```
 
-### 2. Base de datos (Docker)
+### 2. Levantar todo con un solo comando
 
 ```bash
 docker compose up -d
 ```
 
-Esto levanta un contenedor PostgreSQL 16 en el puerto `5432` con la base `muiska`. Luego, ejecuta el script de inicialización:
+Esto construye y levanta los servicios de `postgres`, `backend` y `frontend`.
+
+- Backend: http://localhost:3001/api/status
+- Frontend: http://localhost:8080
+- PostgreSQL: localhost:5433
+
+### 3. Ver el estado de los servicios
 
 ```bash
-docker exec -i muiska-postgres psql -U postgres -d muiska < backend/src/db/init.sql
+docker compose ps
 ```
 
-### 3. Backend
+### 4. Detener los servicios
+
+```bash
+docker compose down
+```
+
+### 5. Iniciar desarrollo local de forma manual (opcional)
+
+#### Backend
 
 ```bash
 cd backend
@@ -155,15 +171,14 @@ Variables de entorno esperadas (`.env`):
 ```
 PORT=3000
 DB_HOST=localhost
-DB_PORT=5432
+DB_PORT=5433
 DB_NAME=muiska
 DB_USER=postgres
 DB_PASSWORD=postgres
+JWT_SECRET=muiska_jwt_secret_dev_2024
 ```
 
-El backend queda disponible en **http://localhost:3000/api/status**
-
-### 4. Frontend
+#### Frontend
 
 ```bash
 cd frontend
@@ -171,7 +186,7 @@ npm install
 npm run dev
 ```
 
-El frontend queda disponible en **http://localhost:5173**
+El frontend en modo desarrollo se sirve en **http://localhost:5173** y usa proxy hacia el backend.
 
 ---
 

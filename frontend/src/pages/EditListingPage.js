@@ -1,5 +1,5 @@
-import { api } from "../../services/api.js";
-import { navigateTo } from "../../router/router.js";
+import { api } from "../services/api.js";
+import { navigateTo } from "../router/router.js";
 
 const EditListingPage = () => {
   const section = document.createElement("section");

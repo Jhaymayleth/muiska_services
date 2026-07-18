@@ -1,6 +1,6 @@
-import { api } from "../../services/api.js";
-import ListingCard from "../../components/listing/ListingCard.js";
-import { navigateTo } from "../../router/router.js";
+import { api } from "../services/api.js";
+import ListingCard from "../components/listing/ListingCard.js";
+import { navigateTo } from "../router/router.js";
 
 const ExplorePage = () => {
   const section = document.createElement("section");

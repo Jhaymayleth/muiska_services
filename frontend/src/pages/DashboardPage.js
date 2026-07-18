@@ -1,6 +1,6 @@
-import { api } from "../../services/api.js";
-import { navigateTo } from "../../router/router.js";
-import { getUser } from "../../utils/auth.js";
+import { api } from "../services/api.js";
+import { navigateTo } from "../router/router.js";
+import { getUser } from "../utils/auth.js";
 
 const formatDate = (value) =>
   value

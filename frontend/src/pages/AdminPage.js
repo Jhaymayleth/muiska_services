@@ -1,6 +1,6 @@
-import { navigateTo } from "../../router/router.js";
-import { api } from "../../services/api.js";
-import { getUser } from "../../utils/auth.js";
+import { navigateTo } from "../router/router.js";
+import { api } from "../services/api.js";
+import { getUser } from "../utils/auth.js";
 
 const escapeHtml = (value = "") =>
   String(value)

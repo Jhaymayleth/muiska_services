@@ -1,6 +1,6 @@
-import { api } from "../../services/api.js";
-import { navigateTo } from "../../router/router.js";
-import { isAuthenticated } from "../../utils/auth.js";
+import { api } from "../services/api.js";
+import { navigateTo } from "../router/router.js";
+import { isAuthenticated } from "../utils/auth.js";
 
 const PublicationDetailPage = () => {
   const section = document.createElement("section");
