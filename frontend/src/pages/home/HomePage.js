@@ -210,7 +210,45 @@ const HomePage = () => {
     return "📦";
   };
 
+  const renderCategoryLoader = () => {
+    categoriesContainer.innerHTML = `
+      <div class="col-span-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        ${Array.from({ length: 4 })
+          .map(
+            () => `
+            <div class="rounded-2xl border border-border bg-background px-5 py-6 animate-pulse">
+              <div class="h-10 w-10 rounded-full bg-muted mb-5"></div>
+              <div class="h-5 rounded-full bg-muted mb-3"></div>
+              <div class="h-4 w-3/4 rounded-full bg-muted"></div>
+            </div>
+          `,
+          )
+          .join("")}
+      </div>
+    `;
+  };
+
+  const renderFeaturedLoader = () => {
+    featuredContainer.innerHTML = `
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        ${Array.from({ length: 3 })
+          .map(
+            () => `
+            <div class="rounded-2xl border border-border bg-background p-6 animate-pulse">
+              <div class="h-48 w-full rounded-2xl bg-muted mb-4"></div>
+              <div class="h-5 rounded-full bg-muted mb-3"></div>
+              <div class="h-4 rounded-full bg-muted mb-2"></div>
+              <div class="h-4 w-3/4 rounded-full bg-muted"></div>
+            </div>
+          `,
+          )
+          .join("")}
+      </div>
+    `;
+  };
+
   const loadCategories = async () => {
+    renderCategoryLoader();
     try {
       const categories = await api.getCategories();
       if (categories.length === 0) {
@@ -280,6 +318,7 @@ const HomePage = () => {
   };
 
   const loadFeatured = async () => {
+    renderFeaturedLoader();
     try {
       const response = await api.getPublications({ status: "active", limit: 6, page: 1 });
       const pubs = response.data || [];
