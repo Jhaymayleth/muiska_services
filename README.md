@@ -138,7 +138,7 @@ docker compose up -d
 Esto levanta un contenedor PostgreSQL 16 en el puerto `5432` con la base `muiska`. Luego, ejecuta el script de inicialización:
 
 ```bash
-docker exec -i muiska-postgres psql -U postgres -d muiska < database/init.sql
+docker exec -i muiska-postgres psql -U postgres -d muiska < backend/src/db/init.sql
 ```
 
 ### 3. Backend
@@ -195,6 +195,6 @@ El proyecto se encuentra en **fase inicial**: la base del CRUD de publicaciones 
 
 <div align="center">
 
-Desarrollado como parte del proceso formativo en **Riwi** — Clan Cayena
+Desarrollado como parte del proceso formativo en **Riwi**
 
 </div>

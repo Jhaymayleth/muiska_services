@@ -6,6 +6,8 @@ import DashboardPage from "../pages/dashboard/DashboardPage.js";
 import AdminPage from "../pages/admin/AdminPage.js";
 import CreateListingPage from "../pages/create-listing/CreateListingPage.js";
 import EditListingPage from "../pages/edit-listing/EditListingPage.js";
+import PublicationDetailPage from "../pages/publication-detail/PublicationDetailPage.js";
+import ProfilePage from "../pages/profile/ProfilePage.js";
 import NotFoundPage from "../pages/not-found/NotFoundPage.js";
 
 const routes = {
@@ -16,10 +18,12 @@ const routes = {
   "/dashboard": DashboardPage,
   "/admin": AdminPage,
   "/crear-publicacion": CreateListingPage,
+  "/perfil": ProfilePage,
 };
 
 const dynamicRoutes = [
   { pattern: /^\/editar-publicacion\/(.+)$/, component: EditListingPage },
+  { pattern: /^\/publicacion\/(.+)$/, component: PublicationDetailPage },
 ];
 
 export const navigateTo = (path) => {
