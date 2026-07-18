@@ -40,12 +40,27 @@ CREATE INDEX IF NOT EXISTS idx_publications_user_id ON publications(user_id);
 CREATE INDEX IF NOT EXISTS idx_publications_category ON publications(category);
 CREATE INDEX IF NOT EXISTS idx_publications_created_at ON publications(created_at DESC);
 
+-- Credenciales de prueba para acceso administrativo y de usuario normal
 INSERT INTO users (name, email, password_hash, role)
 VALUES (
   'Administrador',
   'admin@admin.com',
-  '$2b$10$hQDKkwG7xrlX/J13kEEAouQu0EqkLeRyVnkB25rFnTkvehO8qReUm',
+  '$2b$10$C7LXRmskEUWkmydQ0tq/GOUtbV7NmMKt5lQ/Pot3tKVVB.e9OeLHW',
   'admin'
+)
+ON CONFLICT (email) DO UPDATE
+SET name = EXCLUDED.name,
+    password_hash = EXCLUDED.password_hash,
+    role = EXCLUDED.role,
+    is_banned = FALSE,
+    updated_at = NOW();
+
+INSERT INTO users (name, email, password_hash, role)
+VALUES (
+  'Usuario de Prueba',
+  'user@user.com',
+  '$2b$10$KhV9.gVAJqnhFZ7PCHRmZuWx9XnpHC2gvrlA9Zua323JlKfQhICga',
+  'user'
 )
 ON CONFLICT (email) DO UPDATE
 SET name = EXCLUDED.name,

@@ -143,6 +143,19 @@ Esto construye y levanta los servicios de `postgres`, `backend` y `frontend`.
 - Frontend: http://localhost:8080
 - PostgreSQL: localhost:5433
 
+### 3. Credenciales de prueba
+
+La base de datos se inicializa con usuarios de prueba para acceso directo al panel:
+
+- Admin
+  - Email: `admin@admin.com`
+  - Contraseña: `Admin123!`
+- Usuario normal
+  - Email: `user@user.com`
+  - Contraseña: `User123!`
+
+Si usas el modo manual con `backend/src/db/init.sql`, esta semilla también aplica.
+
 ### 3. Ver el estado de los servicios
 
 ```bash
