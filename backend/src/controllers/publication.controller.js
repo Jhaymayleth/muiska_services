@@ -6,6 +6,12 @@ const MAX_PUBLICATION_PRICE = 99_999_999.99;
 const isValidPublicationPrice = (price) =>
   Number.isFinite(price) && price > 0 && price <= MAX_PUBLICATION_PRICE;
 
+const publicationSelectFields = `
+  p.id, p.title, p.description, p.price, p.category_id, 
+  c.name as category, p.images, p.location, p.contact_method, 
+  p.user_id, p.status, p.created_at, p.updated_at
+`;
+
 export const getAll = async (req, res, next) => {
   try {
     const {
@@ -30,56 +36,61 @@ export const getAll = async (req, res, next) => {
 
     const normalizedStatus = status || (user_id ? null : "active");
     if (normalizedStatus) {
-      whereClause += ` AND status = $${paramIndex}`;
+      whereClause += ` AND p.status = $${paramIndex}`;
       params.push(normalizedStatus);
       paramIndex++;
     }
 
     if (user_id) {
-      whereClause += ` AND user_id = $${paramIndex}`;
+      whereClause += ` AND p.user_id = $${paramIndex}`;
       params.push(user_id);
       paramIndex++;
     }
 
     if (category) {
-      whereClause += ` AND category = $${paramIndex}`;
+      whereClause += ` AND c.name = $${paramIndex}`;
       params.push(category);
       paramIndex++;
     }
 
     if (minPrice) {
-      whereClause += ` AND price >= $${paramIndex}`;
+      whereClause += ` AND p.price >= $${paramIndex}`;
       params.push(parseFloat(minPrice));
       paramIndex++;
     }
 
     if (maxPrice) {
-      whereClause += ` AND price <= $${paramIndex}`;
+      whereClause += ` AND p.price <= $${paramIndex}`;
       params.push(parseFloat(maxPrice));
       paramIndex++;
     }
 
     if (location) {
-      whereClause += ` AND location ILIKE $${paramIndex}`;
+      whereClause += ` AND p.location ILIKE $${paramIndex}`;
       params.push(`%${location}%`);
       paramIndex++;
     }
 
     if (search) {
-      whereClause += ` AND (title ILIKE $${paramIndex} OR description ILIKE $${paramIndex})`;
+      whereClause += ` AND (p.title ILIKE $${paramIndex} OR p.description ILIKE $${paramIndex})`;
       params.push(`%${search}%`);
       paramIndex++;
     }
 
     const countResult = await pool.query(
-      `SELECT COUNT(*) FROM publications ${whereClause}`,
+      `SELECT COUNT(*) FROM publications p LEFT JOIN categories c ON p.category_id = c.id ${whereClause}`,
       params,
     );
     const total = parseInt(countResult.rows[0].count);
 
     params.push(limitNum, offset);
     const result = await pool.query(
-      `SELECT * FROM publications ${whereClause} ORDER BY created_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
+      `SELECT ${publicationSelectFields} 
+       FROM publications p 
+       LEFT JOIN categories c ON p.category_id = c.id 
+       ${whereClause} 
+       ORDER BY p.created_at DESC 
+       LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
       params,
     );
 
@@ -101,7 +112,10 @@ export const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
     const result = await pool.query(
-      "SELECT * FROM publications WHERE id = $1",
+      `SELECT ${publicationSelectFields} 
+       FROM publications p 
+       LEFT JOIN categories c ON p.category_id = c.id 
+       WHERE p.id = $1`,
       [id],
     );
     if (result.rows.length === 0) {
@@ -116,12 +130,11 @@ export const getById = async (req, res, next) => {
 export const getMine = async (req, res, next) => {
   try {
     const result = await pool.query(
-      `
-      SELECT *
-      FROM publications
-      WHERE user_id = $1
-      ORDER BY created_at DESC
-      `,
+      `SELECT ${publicationSelectFields}
+       FROM publications p
+       LEFT JOIN categories c ON p.category_id = c.id
+       WHERE p.user_id = $1
+       ORDER BY p.created_at DESC`,
       [req.user.id],
     );
 
@@ -146,22 +159,44 @@ export const create = async (req, res, next) => {
       images = req.files.map((f) => `/uploads/${f.filename}`);
     }
 
+    // Buscar category_id por nombre de categoría
+    let categoryId = null;
+    if (normalized.category) {
+      const catResult = await pool.query(
+        "SELECT id FROM categories WHERE name = $1",
+        [normalized.category]
+      );
+      if (catResult.rows.length > 0) {
+        categoryId = catResult.rows[0].id;
+      }
+    }
+
     const result = await pool.query(
-      `INSERT INTO publications (title, description, price, category, images, location, contact_method, user_id)
+      `INSERT INTO publications (title, description, price, category_id, images, location, contact_method, user_id)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        RETURNING *`,
       [
         normalized.title,
         normalized.description,
         normalized.price,
-        normalized.category,
+        categoryId,
         images,
         normalized.location,
         normalized.contact_method,
         req.user.id,
       ],
     );
-    res.status(201).json(result.rows[0]);
+    
+    // Retornar con nombre de categoría incluido
+    const pubResult = await pool.query(
+      `SELECT ${publicationSelectFields} 
+       FROM publications p 
+       LEFT JOIN categories c ON p.category_id = c.id 
+       WHERE p.id = $1`,
+      [result.rows[0].id]
+    );
+    
+    res.status(201).json(pubResult.rows[0]);
   } catch (error) {
     next(error);
   }
@@ -183,12 +218,24 @@ export const update = async (req, res, next) => {
       images = req.files.map((f) => `/uploads/${f.filename}`);
     }
 
+    // Buscar category_id si se envía categoría
+    let categoryId = undefined;
+    if (normalized.category) {
+      const catResult = await pool.query(
+        "SELECT id FROM categories WHERE name = $1",
+        [normalized.category]
+      );
+      if (catResult.rows.length > 0) {
+        categoryId = catResult.rows[0].id;
+      }
+    }
+
     const result = await pool.query(
       `UPDATE publications
        SET title = COALESCE($1, title),
            description = COALESCE($2, description),
            price = COALESCE($3, price),
-           category = COALESCE($4, category),
+           category_id = COALESCE($4, category_id),
            images = COALESCE($5, images),
            location = COALESCE($6, location),
            contact_method = COALESCE($7, contact_method),
@@ -201,7 +248,7 @@ export const update = async (req, res, next) => {
         normalized.title || null,
         normalized.description || null,
         normalized.price || null,
-        normalized.category,
+        categoryId,
         images,
         normalized.location,
         normalized.contact_method,
@@ -213,7 +260,17 @@ export const update = async (req, res, next) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ message: "Publicación no encontrada" });
     }
-    res.json(result.rows[0]);
+    
+    // Retornar con nombre de categoría incluido
+    const pubResult = await pool.query(
+      `SELECT ${publicationSelectFields} 
+       FROM publications p 
+       LEFT JOIN categories c ON p.category_id = c.id 
+       WHERE p.id = $1`,
+      [id]
+    );
+    
+    res.json(pubResult.rows[0]);
   } catch (error) {
     next(error);
   }
