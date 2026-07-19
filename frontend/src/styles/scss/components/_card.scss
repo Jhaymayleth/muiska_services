@@ -1,0 +1,89 @@
+@use "../foundations/variables" as *;
+@use "./badge" as badge;
+
+// Clases para tarjetas de publicación
+// Uso: <article class="publication-card">...</article>
+
+.publication-card {
+  background: white;
+  border: 1px solid $color-border;
+  border-radius: $border-radius-2xl;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+  transition: box-shadow $transition-normal, transform $transition-normal;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+  }
+
+  &__image {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    background: $color-muted;
+  }
+
+  &__content {
+    padding: $spacing-md;
+  }
+
+  &__title {
+    font-size: 1.125rem;    // text-lg
+    font-weight: 600;
+    color: $color-text;
+    margin-bottom: $spacing-xs;
+    line-height: 1.3;
+  }
+
+  &__description {
+    font-size: 0.875rem;    // text-sm
+    color: $color-text;
+    opacity: 0.7;
+    margin-bottom: $spacing-sm;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $spacing-sm;
+    margin-top: $spacing-sm;
+    font-size: 0.875rem;    // text-sm
+  }
+
+  &__price {
+    font-family: $font-display;
+    font-weight: 700;
+    font-size: 1.25rem;     // text-xl
+    color: $color-primary;
+  }
+
+  &__location {
+    color: $color-text;
+    opacity: 0.6;
+  }
+
+  &__category {
+    @include badge.badge($color-accent);
+  }
+}
+
+// Variante para dashboard/admin
+.publication-card--compact {
+  .publication-card__image {
+    aspect-ratio: 16/9;
+  }
+
+  .publication-card__content {
+    padding: $spacing-sm;
+  }
+
+  .publication-card__title {
+    font-size: 1rem;        // text-base
+  }
+}

@@ -1,5 +1,7 @@
 import { api } from "../services/api.js";
 import { navigateTo } from "../router/router.js";
+import womanImg from "../assets/images/Woman.jpg";
+import vestidorImg from "../assets/images/vestidor.jpg";
 
 const navigate = (path) => {
   window.history.pushState({}, "", path);
@@ -81,7 +83,7 @@ const HomePage = () => {
 
     <!-- Hero -->
     <section id="Inicio" class="relative px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32 xl:py-40 overflow-hidden">
-      <img src="/Woman.jpg" alt="Emprendedora colombiana trabajando en su taller" class="absolute inset-0 w-full h-full object-cover" />
+      <img src="${womanImg}" alt="Emprendedora colombiana trabajando en su taller" class="absolute inset-0 w-full h-full object-cover" />
       <div class="absolute inset-0 bg-background/85"></div>
       <div class="relative max-w-xl sm:max-w-2xl lg:max-w-4xl xl:max-w-5xl mx-auto flex flex-col items-center text-center">
         <a class="inline-flex items-center gap-2 bg-muted border border-border rounded-full px-3 py-1 sm:px-4 sm:py-1.5 text-xs sm:text-sm text-text/70 mb-8 sm:mb-10 hover:border-primary transition">Plataforma de intercambio comunitario</a>
@@ -276,7 +278,7 @@ const HomePage = () => {
     const userBg = pub.user?.name ? "bg-primary" : "bg-muted";
     const typeLabel = statusLabel(pub.status || "active");
     const typeClass = statusClass(pub.status || "active");
-    const image = pub.images?.[0] || "/vestidor.jpg";
+    const image = pub.images?.[0] || vestidorImg;
 
     return `
       <div class="Publicacion flex flex-col h-full bg-white border border-border rounded-2xl overflow-hidden">
