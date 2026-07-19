@@ -1,56 +1,28 @@
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import { pool } from "../config/database.js";
+import { authService } from "../services/auth.service.js";
+import { 
+  validateRegister, 
+  validateLogin, 
+  validateUpdateProfile, 
+  validateChangePassword 
+} from "../validators/auth.validator.js";
 
-const JWT_SECRET = process.env.JWT_SECRET || "muiska_jwt_secret_dev_2024";
+// Controlador de autenticación: solo maneja HTTP (req/res), delega lógica a authService
 
 export const register = async (req, res, next) => {
   try {
-    const { name, email, password } = req.body;
-
-    // Validaciones básicas
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: "Todos los campos son obligatorios" });
+    // Validar entrada usando validator
+    const errors = validateRegister(req.body);
+    if (errors.length > 0) {
+      return res.status(400).json({ message: errors[0] });
     }
 
-    const nameTrimed = name.trim();
-    const emailTrimed = email.trim().toLowerCase();
-
-    if (nameTrimed.length < 3) {
-      return res.status(400).json({ message: "El nombre debe tener al menos 3 caracteres" });
-    }
-
-    // Validar formato de email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(emailTrimed)) {
-      return res.status(400).json({ message: "El correo no es válido" });
-    }
-
-    if (password.length < 6) {
-      return res.status(400).json({ message: "La contraseña debe tener al menos 6 caracteres" });
-    }
-
-    // Verificar si email ya existe
-    const existing = await pool.query("SELECT id FROM users WHERE email = $1", [emailTrimed]);
-    if (existing.rows.length > 0) {
-      return res.status(409).json({ message: "Este correo ya está registrado" });
-    }
-
-    const passwordHash = await bcrypt.hash(password, 10);
-    const result = await pool.query(
-      `INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3) RETURNING id, name, email, role, created_at`,
-      [nameTrimed, emailTrimed, passwordHash]
-    );
-
-    const user = result.rows[0];
-    const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, {
-      expiresIn: "7d",
-    });
-
-    res.status(201).json({ user, token });
+    // Delegar lógica al servicio
+    const result = await authService.register(req.body);
+    res.status(201).json(result);
   } catch (error) {
-    if (error.code === "23505" && error.constraint === "users_email_key") {
-      return res.status(409).json({ message: "Este correo ya está registrado" });
+    // Manejar errores específicos del servicio
+    if (error.code === "EMAIL_EXISTS") {
+      return res.status(409).json({ message: error.message });
     }
     next(error);
   }
@@ -58,134 +30,83 @@ export const register = async (req, res, next) => {
 
 export const login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ message: "Correo y contraseña son obligatorios" });
+    // Validar entrada
+    const errors = validateLogin(req.body);
+    if (errors.length > 0) {
+      return res.status(400).json({ message: errors[0] });
     }
 
-    const emailTrimed = email.trim().toLowerCase();
-
-    const result = await pool.query("SELECT * FROM users WHERE email = $1", [emailTrimed]);
-    if (result.rows.length === 0) {
-      return res.status(401).json({ message: "Credenciales inválidas" });
-    }
-
-    const user = result.rows[0];
-    if (user.is_banned) {
-      return res.status(403).json({ message: "Tu cuenta ha sido suspendida" });
-    }
-    const valid = await bcrypt.compare(password, user.password_hash);
-    if (!valid) {
-      return res.status(401).json({ message: "Credenciales inválidas" });
-    }
-
-    const token = jwt.sign(
-      { id: user.id, name: user.name, email: user.email, role: user.role },
-      JWT_SECRET,
-      { expiresIn: "7d" }
-    );
-
-    res.json({
-      user: { id: user.id, name: user.name, email: user.email, role: user.role },
-      token,
-    });
+    // Delegar al servicio
+    const result = await authService.login(req.body);
+    res.json(result);
   } catch (error) {
+    if (error.code === "INVALID_CREDENTIALS") {
+      return res.status(401).json({ message: error.message });
+    }
+    if (error.code === "BANNED") {
+      return res.status(403).json({ message: error.message });
+    }
     next(error);
   }
 };
 
 export const getMe = async (req, res, next) => {
   try {
-    const result = await pool.query(
-      "SELECT id, name, email, role, created_at FROM users WHERE id = $1",
-      [req.user.id]
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Usuario no encontrado" });
-    }
-
-    res.json(result.rows[0]);
+    const user = await authService.getMe(req.user.id);
+    res.json(user);
   } catch (error) {
+    if (error.code === "NOT_FOUND") {
+      return res.status(404).json({ message: error.message });
+    }
     next(error);
   }
 };
 
 export const updateProfile = async (req, res, next) => {
   try {
-    const { name, email } = req.body;
-    const userId = req.user.id;
-
-    if (!name || !email) {
-      return res.status(400).json({ message: "Nombre y email son obligatorios" });
+    // Validar entrada
+    const errors = validateUpdateProfile(req.body);
+    if (errors.length > 0) {
+      return res.status(400).json({ message: errors[0] });
     }
 
-    const nameTrimed = name.trim();
-    const emailTrimed = email.trim().toLowerCase();
-
-    if (nameTrimed.length < 3) {
-      return res.status(400).json({ message: "El nombre debe tener al menos 3 caracteres" });
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(emailTrimed)) {
-      return res.status(400).json({ message: "El correo no es válido" });
-    }
-
-    const existing = await pool.query("SELECT id FROM users WHERE email = $1 AND id != $2", [emailTrimed, userId]);
-    if (existing.rows.length > 0) {
-      return res.status(409).json({ message: "Este correo ya está en uso" });
-    }
-
-    const result = await pool.query(
-      "UPDATE users SET name = $1, email = $2, updated_at = NOW() WHERE id = $3 RETURNING id, name, email, role, created_at",
-      [nameTrimed, emailTrimed, userId]
-    );
-
-    res.json(result.rows[0]);
+    // Delegar al servicio
+    const user = await authService.updateProfile(req.user.id, req.body);
+    res.json(user);
   } catch (error) {
+    if (error.code === "EMAIL_EXISTS") {
+      return res.status(409).json({ message: error.message });
+    }
     next(error);
   }
 };
 
 export const changePassword = async (req, res, next) => {
   try {
-    const { currentPassword, newPassword } = req.body;
-    const userId = req.user.id;
-
-    if (!currentPassword || !newPassword) {
-      return res.status(400).json({ message: "Contraseña actual y nueva son obligatorias" });
+    // Validar entrada
+    const errors = validateChangePassword(req.body);
+    if (errors.length > 0) {
+      return res.status(400).json({ message: errors[0] });
     }
 
-    if (newPassword.length < 6) {
-      return res.status(400).json({ message: "La nueva contraseña debe tener al menos 6 caracteres" });
-    }
-
-    const result = await pool.query("SELECT password_hash FROM users WHERE id = $1", [userId]);
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Usuario no encontrado" });
-    }
-
-    const valid = await bcrypt.compare(currentPassword, result.rows[0].password_hash);
-    if (!valid) {
-      return res.status(401).json({ message: "Contraseña actual incorrecta" });
-    }
-
-    const passwordHash = await bcrypt.hash(newPassword, 10);
-    await pool.query("UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2", [passwordHash, userId]);
-
-    res.json({ message: "Contraseña actualizada correctamente" });
+    // Delegar al servicio
+    const result = await authService.changePassword(req.user.id, req.body);
+    res.json(result);
   } catch (error) {
+    if (error.code === "NOT_FOUND") {
+      return res.status(404).json({ message: error.message });
+    }
+    if (error.code === "INVALID_PASSWORD") {
+      return res.status(401).json({ message: error.message });
+    }
     next(error);
   }
 };
 
 export const deleteAccount = async (req, res, next) => {
   try {
-    const userId = req.user.id;
-    await pool.query("DELETE FROM users WHERE id = $1", [userId]);
-    res.json({ message: "Cuenta eliminada correctamente" });
+    const result = await authService.deleteAccount(req.user.id);
+    res.json(result);
   } catch (error) {
     next(error);
   }
