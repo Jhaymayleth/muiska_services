@@ -1,4 +1,4 @@
-import { api } from "../services/api.js";
+import { createPublication, getCategories } from "../services/publication.service.js";
 import { navigateTo } from "../router/router.js";
 
 const CreateListingPage = () => {
@@ -51,7 +51,7 @@ const CreateListingPage = () => {
 
   const categorySelect = section.querySelector("#category");
 
-  api.getCategories().then((categories) => {
+  getCategories().then((categories) => {
     categories.forEach((cat) => {
       const option = document.createElement("option");
       option.value = cat.slug || cat.name;
@@ -74,7 +74,7 @@ const CreateListingPage = () => {
       contactMethod: form.contactMethod.value || null,
     };
     try {
-      await api.createPublication(data, images);
+      await createPublication(data, images);
       navigateTo("/explorar");
     } catch (err) {
       alert(err.message);

@@ -1,19 +1,18 @@
-export const isAuthenticated = () => {
-  return !!localStorage.getItem("token");
-};
+import { sessionStore } from "../state/session.store.js";
 
-export const getUser = () => {
-  const user = localStorage.getItem("user");
-  return user ? JSON.parse(user) : null;
-};
+// ===== WRAPPERS PARA COMPATIBILIDAD HACIA ATRÁS =====
+// Estos usan sessionStore internamente, manteniendo la misma API
 
-export const isAdmin = () => getUser()?.role === "admin";
+export const isAuthenticated = () => sessionStore.isAuthenticated();
 
-export const logout = () => {
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
-  window.location.href = "/login";
-};
+export const getUser = () => sessionStore.getUser();
+
+export const isAdmin = () => sessionStore.isAdmin();
+
+// Logout usando sessionStore + redirección
+export const logout = () => sessionStore.logout();
+
+// ===== RUTAS PROTEGIDAS / GUEST =====
 
 // Rutas que requieren autenticación
 export const protectedRoutes = [
@@ -40,3 +39,6 @@ export const isRouteProtected = (path) => {
 export const isGuestRoute = (path) => {
   return guestRoutes.includes(path);
 };
+
+// Exportar sessionStore para uso directo si se necesita
+export { sessionStore };

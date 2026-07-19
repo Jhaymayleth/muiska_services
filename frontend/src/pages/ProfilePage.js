@@ -1,6 +1,6 @@
 import { api } from "../services/api.js";
 import { navigateTo } from "../router/router.js";
-import { isAuthenticated } from "../utils/auth.js";
+import { isAuthenticated, sessionStore } from "../utils/auth.js";
 
 const ProfilePage = () => {
   const section = document.createElement("section");
@@ -11,7 +11,7 @@ const ProfilePage = () => {
     return section;
   }
 
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const user = sessionStore.getUser();
 
   section.innerHTML = `
     <div class="rounded-2xl border border-border bg-white p-6 shadow-sm">
@@ -140,7 +140,7 @@ const ProfilePage = () => {
 
     try {
       const updatedUser = await api.updateProfile(data);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
+      sessionStore.setUser(updatedUser);
       profileMessage.textContent = "Perfil actualizado correctamente";
       profileMessage.className = "flex items-center text-sm text-green-600";
       profileMessage.classList.remove("hidden");
@@ -191,7 +191,7 @@ const ProfilePage = () => {
 
     try {
       await api.request("/auth/me", { method: "DELETE" });
-      api.logout();
+      sessionStore.logout();
       navigateTo("/");
     } catch (err) {
       alert(err.message || "Error al eliminar cuenta");

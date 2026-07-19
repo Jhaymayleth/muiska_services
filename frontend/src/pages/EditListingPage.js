@@ -1,4 +1,4 @@
-import { api } from "../services/api.js";
+import { getPublication, updatePublication, getCategories } from "../services/publication.service.js";
 import { navigateTo } from "../router/router.js";
 
 const EditListingPage = () => {
@@ -8,8 +8,7 @@ const EditListingPage = () => {
 
   const id = window.location.pathname.split("/").pop();
 
-  api
-    .getPublication(id)
+  getPublication(id)
     .then((pub) => {
       section.innerHTML = `
         <h1 class="text-3xl font-semibold text-primary">Editar Publicación</h1>
@@ -64,7 +63,7 @@ const EditListingPage = () => {
       form.location.value = pub.location || "";
       form.contactMethod.value = pub.contact_method || "";
 
-      api.getCategories().then((categories) => {
+      getCategories().then((categories) => {
         categories.forEach((cat) => {
           const option = document.createElement("option");
           option.value = cat.slug || cat.name;
@@ -103,7 +102,7 @@ const EditListingPage = () => {
           contactMethod: form.contactMethod.value || null,
         };
         try {
-          await api.updatePublication(id, data, images);
+          await updatePublication(id, data, images);
           navigateTo("/dashboard");
         } catch (err) {
           alert(err.message);

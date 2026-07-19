@@ -1,6 +1,6 @@
 import { api } from "../services/api.js";
 import { navigateTo } from "../router/router.js";
-import { isAuthenticated } from "../utils/auth.js";
+import { isAuthenticated, sessionStore } from "../utils/auth.js";
 
 const PublicationDetailPage = () => {
   const section = document.createElement("section");
@@ -27,7 +27,7 @@ const PublicationDetailPage = () => {
 
   api.getPublication(publicationId).then((pub) => {
     const images = Array.isArray(pub.images) && pub.images.length > 0 ? pub.images : [];
-    const currentUser = isAuthenticated() ? JSON.parse(localStorage.getItem("user")) : null;
+    const currentUser = isAuthenticated() ? sessionStore.getUser() : null;
     const isOwner = currentUser && pub.user_id === currentUser.id;
 
     container.innerHTML = `
