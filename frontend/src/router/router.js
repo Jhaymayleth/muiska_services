@@ -25,6 +25,7 @@ const routes = {
 const dynamicRoutes = [
   { pattern: /^\/editar-publicacion\/(.+)$/, component: EditListingPage },
   { pattern: /^\/publicacion\/(.+)$/, component: PublicationDetailPage },
+  { pattern: /^\/dashboard\/favoritos$/, component: DashboardPage },
 ];
 
 export const navigateTo = (path) => {
