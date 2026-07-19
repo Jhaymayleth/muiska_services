@@ -1,23 +1,13 @@
 import { api } from "../services/api.js";
 import { navigateTo } from "../router/router.js";
 import { isAuthenticated, sessionStore } from "../utils/auth.js";
+import { toggleFavorite, checkFavorite } from "../services/publication.service.js";
 
 const PublicationDetailPage = () => {
   const section = document.createElement("section");
   section.className = "mx-auto max-w-3xl space-y-6";
 
-  section.innerHTML = `
-    <div class="rounded-2xl border border-border bg-white p-6 shadow-sm" id="detail-container">
-      <div class="flex justify-center py-8">
-        <div class="animate-pulse space-y-4 w-full max-w-md">
-          <div class="h-6 bg-muted rounded w-3/4"></div>
-          <div class="h-4 bg-muted rounded w-1/2"></div>
-          <div class="h-4 bg-muted rounded w-1/3"></div>
-        </div>
-      </div>
-    </div>
-    <div id="owner-actions" class="hidden"></div>
-  `;
+  section.innerHTML = "<div class=\"rounded-2xl border border-border bg-white p-6 shadow-sm\" id=\"detail-container\"><div class=\"flex justify-center py-8\"><div class=\"animate-pulse space-y-4 w-full max-w-md\"><div class=\"h-6 bg-muted rounded w-3/4\"></div><div class=\"h-4 bg-muted rounded w-1/2\"></div><div class=\"h-4 bg-muted rounded w-1/3\"></div></div></div></div><div id=\"owner-actions\" class=\"hidden\"></div>";
 
   const container = section.querySelector("#detail-container");
   const ownerActions = section.querySelector("#owner-actions");
@@ -30,97 +20,101 @@ const PublicationDetailPage = () => {
     const currentUser = isAuthenticated() ? sessionStore.getUser() : null;
     const isOwner = currentUser && pub.user_id === currentUser.id;
 
-    container.innerHTML = `
-      <div class="space-y-6">
-        ${images.length > 0 ? `
-          <div class="rounded-xl overflow-hidden">
-            <div class="relative aspect-video overflow-hidden" id="main-image">
-              <img src="${images[0]}" alt="${pub.title}" class="w-full h-full object-cover" />
-            </div>
-            ${images.length > 1 ? `
-              <div class="flex gap-2 mt-3 overflow-x-auto pb-2" id="thumbnails">
-                ${images.map((img, i) => `
-                  <button 
-                    data-index="${i}" 
-                    class="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition ${i === 0 ? "border-primary" : "border-transparent hover:border-border"}"
-                    aria-label="Ver imagen ${i + 1}"
-                  >
-                    <img src="${img}" alt="${pub.title} - miniatura ${i + 1}" class="w-full h-full object-cover" />
-                  </button>
-                `).join("")}
-              </div>
-            ` : ""}
-          </div>
-        ` : `
-          <div class="rounded-xl bg-muted/30 aspect-video flex items-center justify-center">
-            <svg class="w-16 h-16 text-text/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-            </svg>
-          </div>
-        `}
+    let isFavorited = false;
 
-        <div class="space-y-3">
-          <div class="flex items-start justify-between gap-4">
-            <div>
-              <h1 class="text-2xl font-semibold text-primary">${pub.title}</h1>
-              <p class="mt-1 text-sm uppercase tracking-wide text-text/50">${pub.category || "Sin categoría"}</p>
-            </div>
-            <div class="flex-shrink-0 rounded-full bg-accent/10 px-4 py-2 text-lg font-semibold text-accent">
-              $${pub.price ? parseFloat(pub.price).toFixed(2) : "0.00"}
-            </div>
-          </div>
+    // Función para renderizar botón de favoritos
+    function renderFavButton(favorited) {
+      return "<button class=\"detail-fav-btn p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-sm transition-all hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary\" aria-label=\"" + (favorited ? "Quitar de favoritos" : "Agregar a favoritos") + "\" title=\"" + (favorited ? "Quitar de favoritos" : "Agregar a favoritos") + "\">" + (favorited ? "<svg class=\"w-6 h-6 text-red-500 fill-current\" viewBox=\"0 0 24 24\"><path d=\"M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z\"/></svg>" : "<svg class=\"w-6 h-6 text-text/40 hover:text-red-500 transition-colors\" viewBox=\"0 0 24 24\"><path d=\"M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z\"/></svg>") + "</button>";
+    }
 
-          <div class="flex flex-wrap items-center gap-3 text-sm text-text/60 border-t pt-3">
-            <span class="flex items-center gap-1">📅 ${new Date(pub.created_at).toLocaleDateString("es-ES")}</span>
-            ${pub.location ? `<span class="flex items-center gap-1">📍 ${pub.location}</span>` : ""}
-            ${pub.contact_method ? `<span class="flex items-center gap-1">📞 ${pub.contact_method}</span>` : ""}
-            <span class="flex items-center gap-1 rounded-full bg-${pub.status === 'active' ? 'green' : pub.status === 'sold' ? 'blue' : 'gray'}-100 px-2 py-1 text-${pub.status === 'active' ? 'green' : pub.status === 'sold' ? 'blue' : 'gray'}-700 capitalize">${pub.status}</span>
-          </div>
-        </div>
+    // Verificar si está en favoritos
+    if (currentUser && pub.id) {
+      checkFavorite(pub.id).then((result) => {
+        isFavorited = result.favorited;
+        const favBtn = container.querySelector(".detail-fav-btn");
+        if (favBtn) {
+          favBtn.innerHTML = isFavorited ? "<svg class=\"w-6 h-6 text-red-500 fill-current\" viewBox=\"0 0 24 24\"><path d=\"M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z\"/></svg>" : "<svg class=\"w-6 h-6 text-text/40 hover:text-red-500 transition-colors\" viewBox=\"0 0 24 24\"><path d=\"M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z\"/></svg>";
+          favBtn.setAttribute("aria-label", isFavorited ? "Quitar de favoritos" : "Agregar a favoritos");
+        }
+      });
+    }
 
-        <div class="border-t pt-6">
-          <h2 class="text-lg font-semibold text-text mb-3">Descripción</h2>
-          <p class="text-text/70 whitespace-pre-wrap">${pub.description || "Sin descripción"}</p>
-        </div>
-      </div>
-    `;
+    // Construir HTML de la galería de imágenes
+    let imagesHtml = "";
+    if (images.length > 0) {
+      imagesHtml = "<div class=\"rounded-xl overflow-hidden\"><div class=\"relative aspect-video overflow-hidden\" id=\"main-image\"><img src=\"" + images[0] + "\" alt=\"" + pub.title + "\" class=\"w-full h-full object-cover\" /></div>";
+      if (images.length > 1) {
+        imagesHtml += "<div class=\"flex gap-2 mt-3 overflow-x-auto pb-2\" id=\"thumbnails\">";
+        images.forEach(function(img, i) {
+          imagesHtml += "<button data-index=\"" + i + "\" class=\"flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition " + (i === 0 ? "border-primary" : "border-transparent hover:border-border") + "\" aria-label=\"Ver imagen " + (i + 1) + "\"><img src=\"" + img + "\" alt=\"" + pub.title + " - miniatura " + (i + 1) + "\" class=\"w-full h-full object-cover\" /></button>";
+        });
+        imagesHtml += "</div>";
+      }
+      imagesHtml += "</div>";
+    } else {
+      imagesHtml = "<div class=\"rounded-xl bg-muted/30 aspect-video flex items-center justify-center\"><svg class=\"w-16 h-16 text-text/30\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z\"/></svg></div>";
+    }
 
+    // Meta info
+    var metaHtml = "<span class=\"flex items-center gap-1\">📅 " + new Date(pub.created_at).toLocaleDateString("es-ES") + "</span>";
+    if (pub.location) metaHtml += "<span class=\"flex items-center gap-1\">📍 " + pub.location + "</span>";
+    if (pub.contact_method) metaHtml += "<span class=\"flex items-center gap-1\">📞 " + pub.contact_method + "</span>";
+    metaHtml += "<span class=\"flex items-center gap-1 rounded-full bg-" + (pub.status === "active" ? "green" : pub.status === "sold" ? "blue" : "gray") + "-100 px-2 py-1 text-" + (pub.status === "active" ? "green" : pub.status === "sold" ? "blue" : "gray") + "-700 capitalize\">" + pub.status + "</span>";
+
+    // HTML principal
+    var html = "";
+    html += "<div class=\"space-y-6\">";
+    html += imagesHtml;
+
+    html += "<div class=\"space-y-3\">";
+    html += "<div class=\"flex items-start justify-between gap-4\">";
+    html += "<div><h1 class=\"text-2xl font-semibold text-primary\">" + pub.title + "</h1><p class=\"mt-1 text-sm uppercase tracking-wide text-text/50\">" + (pub.category || "Sin categoría") + "</p></div>";
+    html += "<div class=\"flex items-center gap-3 flex-shrink-0\"><!-- FAV_BTN_PLACEHOLDER --><div class=\"flex-shrink-0 rounded-full bg-accent/10 px-4 py-2 text-lg font-semibold text-accent\">$" + (pub.price ? parseFloat(pub.price).toFixed(2) : "0.00") + "</div></div>";
+    html += "</div>";
+
+    html += "<div class=\"flex flex-wrap items-center gap-3 text-sm text-text/60 border-t pt-3\">" + metaHtml + "</div>";
+    html += "</div>";
+
+    html += "<div class=\"border-t pt-6\"><h2 class=\"text-lg font-semibold text-text mb-3\">Descripción</h2><p class=\"text-text/70 whitespace-pre-wrap\">" + (pub.description || "Sin descripción") + "</p></div>";
+    html += "</div>";
+
+    // Inyectar botón de favoritos (reemplazar placeholder)
+    var finalHtml = html.replace("<!-- FAV_BTN_PLACEHOLDER -->", renderFavButton(false));
+    container.innerHTML = html.replace("<!-- FAV_BTN_PLACEHOLDER -->", renderFavButton(false));
+
+    // Verificar si está en favoritos
+    if (currentUser && pub.id) {
+      checkFavorite(pub.id).then(function(result) {
+        isFavorited = result.favorited;
+        var favBtn = container.querySelector(".detail-fav-btn");
+        if (favBtn) {
+          favBtn.innerHTML = isFavorited ? "<svg class=\"w-6 h-6 text-red-500 fill-current\" viewBox=\"0 0 24 24\"><path d=\"M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z\"/></svg>" : "<svg class=\"w-6 h-6 text-text/40 hover:text-red-500 transition-colors\" viewBox=\"0 0 24 24\"><path d=\"M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z\"/></svg>";
+          favBtn.setAttribute("aria-label", isFavorited ? "Quitar de favoritos" : "Agregar a favoritos");
+        }
+      });
+    }
+    
     if (images.length > 1) {
-      const mainImg = container.querySelector("#main-image img");
-      container.querySelectorAll("#thumbnails button").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const idx = parseInt(btn.dataset.index, 10);
+      var mainImg = container.querySelector("#main-image img");
+      container.querySelectorAll("#thumbnails button").forEach(function(btn) {
+        btn.addEventListener("click", function() {
+          var idx = parseInt(btn.dataset.index, 10);
           mainImg.src = images[idx];
-          container.querySelectorAll("#thumbnails button").forEach((b) => b.classList.toggle("border-primary", b === btn));
+          container.querySelectorAll("#thumbnails button").forEach(function(b) { b.classList.toggle("border-primary", b === btn); });
         });
       });
     }
 
     if (isOwner) {
       ownerActions.classList.remove("hidden");
-      ownerActions.innerHTML = `
-        <div class="rounded-2xl border border-border bg-white p-6 shadow-sm space-y-3">
-          <h3 class="text-lg font-semibold">Tus opciones</h3>
-          <div class="flex flex-wrap gap-3">
-            <button id="edit-btn" class="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-hover">
-              Editar publicación
-            </button>
-            <button id="status-btn" class="rounded-lg bg-accent/10 px-4 py-2 text-sm font-medium text-accent transition hover:bg-accent/20">
-              ${pub.status === "active" ? "Marcar como vendida" : pub.status === "sold" ? "Reactivar" : "Activar"}
-            </button>
-            <button id="delete-btn" class="rounded-lg bg-red-50 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-100">
-              Eliminar
-            </button>
-          </div>
-        </div>
-      `;
+      ownerActions.innerHTML = "<div class=\"rounded-2xl border border-border bg-white p-6 shadow-sm space-y-3\"><h3 class=\"text-lg font-semibold\">Tus opciones</h3><div class=\"flex flex-wrap gap-3\"><button id=\"edit-btn\" class=\"rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-hover\">Editar publicación</button><button id=\"status-btn\" class=\"rounded-lg bg-accent/10 px-4 py-2 text-sm font-medium text-accent transition hover:bg-accent/20\">" + (pub.status === "active" ? "Marcar como vendida" : pub.status === "sold" ? "Reactivar" : "Activar") + "</button><button id=\"delete-btn\" class=\"rounded-lg bg-red-50 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-100\">Eliminar</button></div></div>";
 
-      ownerActions.querySelector("#edit-btn").addEventListener("click", () => {
-        navigateTo(`/editar-publicacion/${pub.id}`);
+      ownerActions.querySelector("#edit-btn").addEventListener("click", function() {
+        navigateTo("/editar-publicacion/" + pub.id);
       });
 
-      ownerActions.querySelector("#status-btn").addEventListener("click", async () => {
-        const newStatus = pub.status === "active" ? "sold" : "active";
+      ownerActions.querySelector("#status-btn").addEventListener("click", async function() {
+        var newStatus = pub.status === "active" ? "sold" : "active";
         try {
           await api.updatePublication(pub.id, { status: newStatus });
           navigateTo(window.location.pathname);
@@ -129,7 +123,7 @@ const PublicationDetailPage = () => {
         }
       });
 
-      ownerActions.querySelector("#delete-btn").addEventListener("click", async () => {
+      ownerActions.querySelector("#delete-btn").addEventListener("click", async function() {
         if (confirm("¿Eliminar esta publicación? No se puede deshacer.")) {
           try {
             await api.deletePublication(pub.id);
@@ -140,19 +134,33 @@ const PublicationDetailPage = () => {
         }
       });
     }
-  }).catch((err) => {
-    container.innerHTML = `
-      <div class="rounded-xl border border-dashed border-border bg-muted/40 p-8 text-center">
-        <svg class="mx-auto h-12 w-12 text-text/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-        </svg>
-        <h3 class="mt-4 text-lg font-semibold">Publicación no encontrada</h3>
-        <p class="mt-2 text-sm text-text/70">${err.message || "No existe o ha sido eliminada"}</p>
-        <a href="/explorar" class="mt-4 inline-block rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-hover">
-          Volver a explorar
-        </a>
-      </div>
-    `;
+    
+    // Event listener para botón de favoritos
+    var favBtn = container.querySelector(".detail-fav-btn");
+    if (favBtn) {
+      favBtn.addEventListener("click", async function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (!isAuthenticated()) {
+          navigateTo("/login");
+          return;
+        }
+        
+        if (!pub.id) return;
+        
+        try {
+          var result = await toggleFavorite(pub.id);
+          isFavorited = result.favorited;
+          favBtn.innerHTML = isFavorited ? "<svg class=\"w-6 h-6 text-red-500 fill-current\" viewBox=\"0 0 24 24\"><path d=\"M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z\"/></svg>" : "<svg class=\"w-6 h-6 text-text/40 hover:text-red-500 transition-colors\" viewBox=\"0 0 24 24\"><path d=\"M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z\"/></svg>";
+          favBtn.setAttribute("aria-label", isFavorited ? "Quitar de favoritos" : "Agregar a favoritos");
+        } catch (err) {
+          alert(err.message || "Error al actualizar favorito");
+        }
+      });
+    }
+  }).catch(function(err) {
+    container.innerHTML = "<div class=\"rounded-xl border border-dashed border-border bg-muted/40 p-8 text-center\"><svg class=\"mx-auto h-12 w-12 text-text/40\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z\"/></svg><h3 class=\"mt-4 text-lg font-semibold\">Publicación no encontrada</h3><p class=\"mt-2 text-sm text-text/70\">" + (err.message || "No existe o ha sido eliminada") + "</p><a href=\"/explorar\" class=\"mt-4 inline-block rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-hover\">Volver a explorar</a></div>";
   });
 
   return section;

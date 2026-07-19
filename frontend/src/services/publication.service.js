@@ -37,3 +37,28 @@ export async function deletePublication(id) {
 export async function getCategories() {
   return api.getCategories();
 }
+
+// ===== FAVORITOS =====
+
+// Toggle favorito (agregar/quitar)
+export async function toggleFavorite(publicationId) {
+  return api.request(`/favorites/${publicationId}/toggle`, {
+    method: "POST",
+  });
+}
+
+// Listar mis favoritos (paginado)
+export async function getFavorites(params = {}) {
+  const query = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      query.append(key, value);
+    }
+  });
+  return api.request(`/favorites?${query.toString()}`);
+}
+
+// Verificar si una publicación es favorita
+export async function checkFavorite(publicationId) {
+  return api.request(`/favorites/${publicationId}/check`);
+}
