@@ -2,24 +2,7 @@ import { navigateTo } from "../../router/router.js";
 import { getUser, sessionStore } from "../../utils/auth.js";
 import { getFavorites } from "../../services/publication.service.js";
 import { loadTemplate } from "../../utils/templateLoader.js";
-
-const formatDate = (value) =>
-  value
-    ? new Intl.DateTimeFormat("es-CO", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      }).format(new Date(value))
-    : "Sin fecha";
-
-const getInitials = (name = "") =>
-  name
-    .trim()
-    .split(/\s+/)
-    .map((n) => n[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
+import { formatDate } from "../../utils/helpers.js";
 
 const DashboardPage = async () => {
   const template = loadTemplate("DashboardPage");
@@ -32,12 +15,16 @@ const DashboardPage = async () => {
   const path = window.location.pathname;
   let activeTab = path === "/dashboard/favoritos" ? "favorites" : "publications";
 
-  const userInitials = getInitials(user.name);
+  const userInitials = user.name
+    ? user.name.trim().split(/\s+/).map(n => n[0]).slice(0,2).join("").toUpperCase()
+    : "US";
   const userName = user.name || "Usuario";
   const userEmail = user.email || "";
   const userRole = user.role || "user";
   const userSince = formatDate(user.created_at);
-  const adminButton = user.role === "admin" ? '<a href="/admin" id="btn-admin" class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent-hover">Panel admin</a>' : "";
+  const adminButton = user.role === "admin" 
+    ? '<a href="/admin" id="btn-admin" class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent-hover">Panel admin</a>' 
+    : "";
 
   section.innerHTML = template
     .replace("{{userInitials}}", userInitials)
@@ -47,27 +34,35 @@ const DashboardPage = async () => {
     .replace("{{userSince}}", userSince)
     .replace("{{adminButton}}", adminButton);
 
+  // Load component templates
+  const statsTemplate = loadTemplate("DashboardStats");
+  const pubCardTemplate = loadTemplate("DashboardPubCard");
+  const favCardTemplate = loadTemplate("DashboardFavCard");
+  const pubEmptyTemplate = loadTemplate("DashboardPubEmpty");
+  const favEmptyTemplate = loadTemplate("DashboardFavEmpty");
+  const favStatsTemplate = loadTemplate("DashboardFavStats");
+
+  // DOM elements
+  const stats = section.querySelector("#dashboard-stats");
+  const list = section.querySelector("#dashboard-list");
+  const favList = section.querySelector("#favorites-list");
+  const favStats = section.querySelector("#favorites-stats");
+
+  const tabPublications = section.querySelector("#tab-publications");
+  const tabFavorites = section.querySelector("#tab-favorites");
+  const publicationsSection = section.querySelector("#publications-section");
+  const favoritesSection = section.querySelector("#favorites-section");
+
+  // Render stats for publications
   const renderStats = (pubs) => {
     const total = pubs.length;
     const active = pubs.filter((p) => p.status === "active").length;
     const sold = pubs.filter((p) => p.status === "sold").length;
 
-    stats.innerHTML = `
-      <div class="grid gap-4 sm:grid-cols-3">
-        <article class="rounded-2xl border border-border bg-white p-5 shadow-sm">
-          <p class="text-sm text-text/60">Total publicaciones</p>
-          <p class="mt-2 font-display text-3xl font-bold text-primary">${total}</p>
-        </article>
-        <article class="rounded-2xl border border-border bg-white p-5 shadow-sm">
-          <p class="text-sm text-text/60">Activas</p>
-          <p class="mt-2 font-display text-3xl font-bold text-accent">${active}</p>
-        </article>
-        <article class="rounded-2xl border border-border bg-white p-5 shadow-sm">
-          <p class="text-sm text-text/60">Vendidas/Inactivas</p>
-          <p class="mt-2 font-display text-3xl font-bold text-text">${sold}</p>
-        </article>
-      </div>
-    `;
+    stats.innerHTML = statsTemplate
+      .replace("{{total}}", total)
+      .replace("{{active}}", active)
+      .replace("{{sold}}", sold);
   };
 
   const renderPubList = async () => {
@@ -78,50 +73,38 @@ const DashboardPage = async () => {
       renderStats(pubs);
 
       if (pubs.length === 0) {
-        list.innerHTML = `
-          <div class="rounded-xl border border-dashed border-border bg-muted/40 p-8 text-center">
-            <h3 class="text-lg font-semibold">No hay publicaciones</h3>
-            <p class="mt-2 text-sm text-text/70">Crea tu primera publicación para empezar.</p>
-          </div>`;
+        list.innerHTML = pubEmptyTemplate;
         return;
       }
 
-      list.innerHTML = "";
-      pubs.forEach((pub) => {
-        const card = document.createElement("div");
-        card.className =
-          "flex items-center justify-between rounded-xl border border-border bg-white p-4";
-        const statusBadge =
-          pub.status === "active"
-            ? '<span class="inline-flex rounded-full bg-accent/10 px-2.5 py-1 text-xs font-medium text-accent">Activa</span>'
-            : '<span class="inline-flex rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-text/70">Inactiva</span>';
+      list.innerHTML = pubs.map((pub) => {
+        const statusBadge = pub.status === "active"
+          ? '<span class="inline-flex rounded-full bg-accent/10 px-2.5 py-1 text-xs font-medium text-accent">Activa</span>'
+          : '<span class="inline-flex rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-text/70">Inactiva</span>';
 
-        card.innerHTML = `
-          <div>
-            <h3 class="font-semibold">${pub.title}</h3>
-            <p class="text-sm text-text/70">$${parseFloat(pub.price).toFixed(2)}${pub.category ? ` · ${pub.category}` : ""} · ${statusBadge}</p>
-          </div>
-          <div class="flex gap-2">
-            <button data-id="${pub.id}" class="edit-btn rounded bg-accent/10 px-3 py-1 text-sm text-accent transition hover:bg-accent/20">Editar</button>
-            <button data-id="${pub.id}" class="delete-btn rounded bg-red-50 px-3 py-1 text-sm text-red-600 transition hover:bg-red-100">Eliminar</button>
-          </div>
-        `;
-        card.querySelector(".edit-btn").addEventListener("click", () => {
-          navigateTo(`/editar-publicacion/${pub.id}`);
-        });
-        card
-          .querySelector(".delete-btn")
-          .addEventListener("click", async () => {
-            if (confirm("¿Eliminar esta publicación?")) {
-              try {
-                await api.deletePublication(pub.id);
-                renderPubList();
-              } catch (err) {
-                alert(err.message);
-              }
+        return pubCardTemplate
+          .replace("{{title}}", pub.title)
+          .replace("{{price}}", parseFloat(pub.price).toFixed(2))
+          .replace("{{category}}", pub.category || "")
+          .replace("{{statusBadge}}", statusBadge)
+          .replace("{{id}}", pub.id);
+      }).join("");
+
+      // Add event listeners
+      list.querySelectorAll(".edit-btn").forEach(btn => {
+        btn.addEventListener("click", () => navigateTo(`/editar-publicacion/${btn.dataset.id}`));
+      });
+      list.querySelectorAll(".delete-btn").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          if (confirm("¿Eliminar esta publicación?")) {
+            try {
+              await api.deletePublication(btn.dataset.id);
+              renderPubList();
+            } catch (err) {
+              alert(err.message);
             }
-          });
-        list.appendChild(card);
+          }
+        });
       });
     } catch (err) {
       list.innerHTML = `<p class="text-sm text-red-600">${err.message || "No se pudieron cargar las publicaciones."}</p>`;
@@ -137,69 +120,45 @@ const DashboardPage = async () => {
       const favs = result.data || [];
 
       if (favs.length === 0) {
-        favList.innerHTML = `
-          <div class="rounded-xl border border-dashed border-border bg-muted/40 p-8 text-center">
-            <svg class="mx-auto h-12 w-12 text-text/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-            <h3 class="mt-4 text-lg font-semibold">No tienes favoritos</h3>
-            <p class="mt-2 text-sm text-text/70">Explora y guarda tus publicaciones favoritas.</p>
-            <a href="/explorar" class="mt-4 inline-block rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-hover">Explorar</a>
-          </div>`;
+        favList.innerHTML = favEmptyTemplate;
         return;
       }
 
       // Stats
-      favStats.innerHTML = `
-        <div class="grid gap-4 sm:grid-cols-3 mb-6">
-          <article class="rounded-2xl border border-border bg-white p-5 shadow-sm">
-            <p class="text-sm text-text/60">Total favoritos</p>
-            <p class="mt-2 font-display text-3xl font-bold text-primary">${favs.length}</p>
-          </article>
-          <article class="rounded-2xl border border-border bg-white p-5 shadow-sm">
-            <p class="text-sm text-text/60">Activas</p>
-            <p class="mt-2 font-display text-3xl font-bold text-accent">${favs.filter((p) => p.status === "active").length}</p>
-          </article>
-          <article class="rounded-2xl border border-border bg-white p-5 shadow-sm">
-            <p class="text-sm text-text/60">Vendidas/Inactivas</p>
-            <p class="mt-2 font-display text-3xl font-bold text-text">${favs.filter((p) => p.status === "sold" || p.status === "inactive").length}</p>
-          </article>
-        </div>
-      `;
+      favStats.innerHTML = favStatsTemplate
+        .replace("{{total}}", favs.length)
+        .replace("{{active}}", favs.filter(p => p.status === "active").length)
+        .replace("{{inactive}}", favs.filter(p => p.status === "sold" || p.status === "inactive").length);
 
-      favList.innerHTML = "";
-      favs.forEach((pub) => {
-        const card = document.createElement("div");
-        card.className =
-          "flex items-center justify-between rounded-xl border border-border bg-white p-4";
-        const statusBadge =
-          pub.status === "active"
-            ? '<span class="inline-flex rounded-full bg-accent/10 px-2.5 py-1 text-xs font-medium text-accent">Activa</span>'
-            : '<span class="inline-flex rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-text/70">Inactiva</span>';
+      favList.innerHTML = favs.map((pub) => {
+        const statusBadge = pub.status === "active"
+          ? '<span class="inline-flex rounded-full bg-accent/10 px-2.5 py-1 text-xs font-medium text-accent">Activa</span>'
+          : '<span class="inline-flex rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-text/70">Inactiva</span>';
 
-        card.innerHTML = `
-          <div class="flex items-center gap-4">
-            ${pub.images && pub.images.length > 0 ? `<img src="${pub.images[0]}" alt="${pub.title}" class="h-20 w-20 rounded-lg object-cover">` : '<div class="h-20 w-20 rounded-lg bg-muted flex items-center justify-center"><svg class="w-8 h-8 text-text/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>'}
-            <div>
-              <h3 class="font-semibold">${pub.title}</h3>
-              <p class="text-sm text-text/70">$${parseFloat(pub.price).toFixed(2)}${pub.category ? ` · ${pub.category}` : ""} · ${statusBadge}</p>
-              <p class="text-xs text-text/50">Por: ${pub.user_name || "Usuario"}</p>
-            </div>
-          </div>
-          <div class="flex gap-2">
-            <a href="/publicacion/${pub.id}" class="rounded bg-accent/10 px-3 py-1 text-sm text-accent transition hover:bg-accent/20">Ver</a>
-            <button data-id="${pub.id}" class="unfav-btn rounded bg-red-50 px-3 py-1 text-sm text-red-600 transition hover:bg-red-100">Quitar</button>
-          </div>
-        `;
-        card.querySelector(".unfav-btn").addEventListener("click", async () => {
+        return favCardTemplate
+          .replace("{{id}}", pub.id)
+          .replace("{{title}}", pub.title)
+          .replace("{{price}}", parseFloat(pub.price).toFixed(2))
+          .replace("{{category}}", pub.category || "")
+          .replace("{{statusBadge}}", statusBadge)
+          .replace("{{userName}}", pub.user_name || "Usuario")
+          .replace("{{hasImage}}", pub.images && pub.images.length > 0 ? "true" : "false")
+          .replace("{{image}}", pub.images?.[0] || "")
+          .replace("{{title}}", pub.title);
+      }).join("");
+
+      // Add unfavorite listeners
+      favList.querySelectorAll(".unfav-btn").forEach(btn => {
+        btn.addEventListener("click", async () => {
           if (confirm("¿Quitar de favoritos?")) {
             try {
-              await api.request(`/favorites/${pub.id}/toggle`, { method: "POST" });
+              await api.request(`/favorites/${btn.dataset.id}/toggle`, { method: "POST" });
               renderFavList();
             } catch (err) {
               alert(err.message);
             }
           }
         });
-        favList.appendChild(card);
       });
     } catch (err) {
       favList.innerHTML = `<p class="text-sm text-red-600">${err.message || "No se pudieron cargar los favoritos."}</p>`;
@@ -233,15 +192,6 @@ const DashboardPage = async () => {
       navigateTo(link.getAttribute("href"));
     });
   });
-
-  const stats = section.querySelector("#dashboard-stats");
-  const list = section.querySelector("#dashboard-list");
-  const favList = section.querySelector("#favorites-list");
-  const favStats = section.querySelector("#favorites-stats");
-  const tabPublications = section.querySelector("#tab-publications");
-  const tabFavorites = section.querySelector("#tab-favorites");
-  const publicationsSection = section.querySelector("#publications-section");
-  const favoritesSection = section.querySelector("#favorites-section");
 
   tabPublications.addEventListener("click", () => switchTab("publications"));
   tabFavorites.addEventListener("click", () => switchTab("favorites"));
