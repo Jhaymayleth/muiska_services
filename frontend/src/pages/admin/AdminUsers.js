@@ -15,6 +15,7 @@ export const AdminUsers = {
   init(panel) {
     this.currentUser = panel.dataset.currentUserId || null;
     this.cacheElements(panel);
+    this.loadTableTemplate();
     this.attachListeners();
     this.loadUsers();
   },
@@ -26,6 +27,24 @@ export const AdminUsers = {
       searchForm: panel.querySelector("#user-search-form"),
       messageEl: panel.querySelector("#user-management-message"),
     };
+  },
+
+  loadTableTemplate() {
+    const tableTemplate = loadTemplate("AdminUsersTable");
+    this.rowTemplate = this.extractRowTemplate(tableTemplate);
+
+    // Inject table template into container
+    const { container } = this.elements;
+    if (container) {
+      container.innerHTML = tableTemplate;
+    }
+  },
+
+  extractRowTemplate(tableTemplate) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(tableTemplate, "text/html");
+    const script = doc.querySelector("#admin-user-row");
+    return script ? script.textContent : "";
   },
 
   attachListeners() {
@@ -111,67 +130,39 @@ export const AdminUsers = {
     const { container } = this.elements;
     if (!container) return;
 
+    const tbody = container.querySelector("#admin-users-tbody");
+    if (!tbody) return;
+
     if (users.length === 0) {
-      container.innerHTML = '<p class="admin-empty">No se encontraron usuarios.</p>';
+      tbody.innerHTML = '<tr><td colspan="6" class="admin-empty">No se encontraron usuarios.</td></tr>';
       return;
     }
 
-    container.innerHTML = `
-      <div class="admin-table-wrapper">
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>Usuario</th>
-              <th>Rol</th>
-              <th>Estado</th>
-              <th>Publicaciones</th>
-              <th>Registro</th>
-              <th class="text-right">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${users
-              .map((u) => {
-                const isMe = u.id === this.currentUser;
-                return `
-              <tr class="${isMe ? "admin-table__row--current" : ""}">
-                <td>
-                  <p class="font-semibold">${escapeHtml(u.name || "Sin nombre")}${isMe ? ' <span class="text-muted text-xs">(tú)</span>' : ""}</p>
-                  <p class="text-xs text-muted">${escapeHtml(u.email)}</p>
-                </td>
-                <td>
-                  <select data-role-id="${u.id}" ${isMe ? "disabled" : ""} class="form-select form-select--sm">
-                    <option value="user" ${u.role === "user" ? "selected" : ""}>Usuario</option>
-                    <option value="admin" ${u.role === "admin" ? "selected" : ""}>Administrador</option>
-                  </select>
-                </td>
-                <td>
-                  <span class="status-badge status-badge--${u.is_banned ? "banned" : "active"}">
-                    ${u.is_banned ? "Suspendido" : "Activo"}
-                  </span>
-                </td>
-                <td class="font-medium text-muted">${u.publication_count}</td>
-                <td class="text-muted">${formatDate(u.created_at)}</td>
-                <td class="text-right">
-                  ${isMe
-                    ? '<span class="text-xs text-muted">Tu cuenta está protegida</span>'
-                    : `
-                    <div class="flex justify-end gap-2">
-                      <button data-action="ban" data-user-id="${u.id}" data-banned="${u.is_banned}" class="btn btn--ghost btn--sm ${u.is_banned ? "btn--success" : ""}">
-                        ${u.is_banned ? "Restablecer" : "Suspender"}
-                      </button>
-                      <button data-action="delete" data-user-id="${u.id}" data-user-name="${escapeHtml(u.name || "Sin nombre")}" class="btn btn--danger btn--sm">Eliminar</button>
-                    </div>
-                  `}
-                </td>
-              </tr>
-            `;
-              })
-              .join("")}
-          </tbody>
-        </table>
-      </div>
-    `;
+    tbody.innerHTML = users
+      .map((u) => {
+        const isMe = u.id === this.currentUser;
+        return this.rowTemplate
+          .replace("{{name}}", escapeHtml(u.name || "Sin nombre"))
+          .replace("{{email}}", escapeHtml(u.email))
+          .replace("{{isMe}}", isMe ? '<span class="text-muted text-xs">(tú)</span>' : "")
+          .replace("{{id}}", u.id)
+          .replace("{{isUser}}", u.role === "user" ? "selected" : "")
+          .replace("{{isAdmin}}", u.role === "admin" ? "selected" : "")
+          .replace("{{statusClass}}", u.is_banned ? "banned" : "active")
+          .replace("{{statusLabel}}", u.is_banned ? "Suspendido" : "Activo")
+          .replace("{{publicationCount}}", u.publication_count)
+          .replace("{{date}}", formatDate(u.created_at))
+          .replace("{{isMe}}", isMe ? '<span class="text-xs text-muted">Tu cuenta está protegida</span>' : `
+            <div class="flex justify-end gap-2">
+              <button data-action="ban" data-user-id="${u.id}" data-banned="${u.is_banned}" class="btn btn--ghost btn--sm ${u.is_banned ? "btn--success" : ""}">
+                ${u.is_banned ? "Restablecer" : "Suspender"}
+              </button>
+              <button data-action="delete" data-user-id="${u.id}" data-user-name="${escapeHtml(u.name || "Sin nombre")}" class="btn btn--danger btn--sm">Eliminar</button>
+            </div>
+          `)
+          .replace("{{isMe}}", isMe ? "admin-table__row--current" : "");
+      })
+      .join("");
   },
 
   showMessage(text, type = "success") {

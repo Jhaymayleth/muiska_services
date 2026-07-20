@@ -19,13 +19,24 @@ export const AdminPublications = {
     const template = loadTemplate("AdminPublications");
     section.innerHTML = template;
 
+    // Load table template and extract row template
+    const tableTemplate = loadTemplate("AdminPublicationsTable");
+    this.rowTemplate = section.querySelector("#admin-publication-row").textContent;
+
     // Referencias
     this.elements = {
       container: section.querySelector("#publications-container"),
+      tbody: section.querySelector("#publications-tbody"),
       pagination: section.querySelector("#publications-pagination"),
       statusFilter: section.querySelector("#pub-status-filter"),
       searchInput: section.querySelector("#pub-search"),
     };
+
+    // Inject table template into container
+    if (this.elements.container) {
+      this.elements.container.innerHTML = tableTemplate;
+      this.elements.tbody = this.elements.container.querySelector("#publications-tbody");
+    }
 
     this.attachListeners();
     await this.loadPublications(1);
@@ -63,11 +74,11 @@ export const AdminPublications = {
   },
 
   async loadPublications(page = 1) {
-    const { container, pagination } = this.elements;
+    const { tbody, pagination } = this.elements;
     this.currentPage = page;
 
-    if (container) {
-      container.innerHTML = '<p class="admin-loading">Cargando…</p>';
+    if (tbody) {
+      tbody.innerHTML = '<tr><td colspan="7" class="admin-loading">Cargando…</td></tr>';
     }
 
     try {
@@ -76,58 +87,39 @@ export const AdminPublications = {
       if (this.currentSearch) params.search = this.currentSearch;
 
       const res = await api.getAdminPublications(params);
-      this.renderTable(container, res.data || []);
+      this.renderTable(res.data || []);
       this.renderPagination(pagination, res.pagination);
     } catch (err) {
-      if (container) {
-        container.innerHTML = `<p class="error-message">${err.message}</p>`;
+      if (tbody) {
+        tbody.innerHTML = `<tr><td colspan="7" class="error-message">${err.message}</td></tr>`;
       }
       if (pagination) pagination.innerHTML = "";
     }
   },
 
-  renderTable(container, pubs) {
-    if (!container) return;
+  renderTable(pubs) {
+    const { tbody } = this.elements;
+    if (!tbody) return;
 
     if (pubs.length === 0) {
-      container.innerHTML = '<p class="empty-state">No hay publicaciones.</p>';
+      tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No hay publicaciones.</td></tr>';
       return;
     }
 
-    container.innerHTML = `
-      <table class="table table--admin">
-        <thead>
-          <tr>
-            <th>Publicación</th>
-            <th>Categoría</th>
-            <th>Estado</th>
-            <th>Precio</th>
-            <th>Usuario</th>
-            <th>Fecha</th>
-            <th class="text-right">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${pubs
-            .map(
-              (p) => `
-            <tr>
-              <td class="font-semibold">${escapeHtml(p.title || "Sin título")}</td>
-              <td>${escapeHtml(p.category || "—")}</td>
-              <td><span class="status-badge status-badge--${p.status}">${this.getStatusLabel(p.status)}</span></td>
-              <td class="text-accent font-medium">$${Number(p.price || 0).toLocaleString("es-CO", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-              <td class="text-muted">${escapeHtml(p.user_name || p.user_id || "—")}</td>
-              <td class="text-muted">${formatDate(p.created_at)}</td>
-              <td class="text-right">
-                <button data-action="delete" data-id="${p.id}" class="btn btn--danger btn--sm">Eliminar</button>
-              </td>
-            </tr>
-          `
-            )
-            .join("")}
-        </tbody>
-      </table>
-    `;
+    tbody.innerHTML = pubs
+      .map(
+        (p) =>
+          this.rowTemplate
+            .replace("{{title}}", escapeHtml(p.title || "Sin título"))
+            .replace("{{category}}", escapeHtml(p.category || "—"))
+            .replace("{{statusLabel}}", this.getStatusLabel(p.status))
+            .replace("{{statusClass}}", p.status)
+            .replace("{{price}}", Number(p.price || 0).toLocaleString("es-CO", { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
+            .replace("{{userName}}", escapeHtml(p.user_name || p.user_id || "—"))
+            .replace("{{date}}", formatDate(p.created_at))
+            .replace("{{id}}", p.id)
+      )
+      .join("");
   },
 
   renderPagination(paginationEl, data) {
