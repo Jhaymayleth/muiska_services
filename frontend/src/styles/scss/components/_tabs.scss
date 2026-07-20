@@ -1,0 +1,196 @@
+@use "../foundations/variables" as *;
+
+// ============================================================
+// TABS - Tabbed interfaces
+// ============================================================
+
+.tabs {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.tabs__list {
+  display: flex;
+  gap: $spacing-xs;
+  border-bottom: 1px solid $color-border;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding-bottom: 1px;
+
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $color-border;
+    border-radius: 2px;
+  }
+}
+
+.tabs__trigger {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-sm $spacing-md;
+  font-family: $font-sans;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $color-text;
+  opacity: 0.7;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  cursor: pointer;
+  transition: all $transition-fast;
+  white-space: nowrap;
+  margin-bottom: -1px;
+
+  &:hover:not(.tabs__trigger--active) {
+    opacity: 1;
+    color: $color-primary;
+  }
+
+  &:focus-visible {
+    outline: none;
+    opacity: 1;
+    color: $color-primary;
+  }
+
+  &--active {
+    opacity: 1;
+    color: $color-primary;
+    border-bottom-color: $color-primary;
+  }
+
+  &--disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.tabs__panel {
+  display: none;
+  animation: tabs-fade-in $transition-normal ease;
+
+  &--active {
+    display: block;
+  }
+}
+
+@keyframes tabs-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Variant: Pills
+.tabs--pills {
+  .tabs__list {
+    border-bottom: none;
+    gap: $spacing-xs;
+    background: $color-muted;
+    padding: $spacing-xs;
+    border-radius: $border-radius-xl;
+  }
+
+  .tabs__trigger {
+    padding: $spacing-sm $spacing-lg;
+    border-radius: $border-radius-lg;
+    border-bottom: none;
+    margin-bottom: 0;
+    color: $color-text;
+
+    &:hover:not(.tabs__trigger--active) {
+      background: white;
+    }
+
+    &--active {
+      background: white;
+      color: $color-primary;
+      box-shadow: $shadow-sm;
+      border-color: transparent;
+    }
+  }
+}
+
+// Variant: Underline (minimal)
+.tabs--underline {
+  .tabs__list {
+    border-bottom-width: 1px;
+  }
+
+  .tabs__trigger {
+    padding: $spacing-sm $spacing-xs;
+    margin-bottom: -1px;
+    border-bottom-width: 2px;
+  }
+}
+
+// Variant: Boxed
+.tabs--boxed {
+  .tabs__list {
+    border: none;
+    background: $color-muted;
+    border-radius: $border-radius-xl;
+    padding: $spacing-xs;
+    gap: 0;
+  }
+
+  .tabs__trigger {
+    border-radius: $border-radius-lg;
+    border: none;
+    margin: 0;
+
+    &:first-child { border-radius: $border-radius-lg 0 0 $border-radius-lg; }
+    &:last-child { border-radius: 0 $border-radius-lg $border-radius-lg 0; }
+
+    &--active {
+      background: white;
+      color: $color-primary;
+      box-shadow: $shadow-sm;
+      z-index: 1;
+    }
+  }
+}
+
+// Vertical tabs
+.tabs--vertical {
+  flex-direction: row;
+  align-items: flex-start;
+
+  .tabs__list {
+    flex-direction: column;
+    border-bottom: none;
+    border-right: 1px solid $color-border;
+    padding-right: $spacing-md;
+    margin-right: $spacing-md;
+    min-width: 180px;
+  }
+
+  .tabs__trigger {
+    justify-content: flex-start;
+    border-bottom: none;
+    border-right: 2px solid transparent;
+    margin-right: -1px;
+    border-radius: 0 $border-radius-md $border-radius-md 0;
+    padding: $spacing-sm $spacing-md;
+
+    &--active {
+      border-right-color: $color-primary;
+      background: $color-primary-light;
+      color: $color-primary;
+    }
+  }
+}

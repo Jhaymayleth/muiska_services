@@ -1,0 +1,146 @@
+@use "../foundations/variables" as *;
+
+// ============================================================
+// TABLES - Data tables
+// ============================================================
+
+@function rgba-hex($color, $alpha) {
+  @return rgba($color, $alpha);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  color: $color-text;
+
+  thead {
+    border-bottom: 1px solid $color-border;
+  }
+
+  th {
+    padding: $spacing-sm $spacing-md;
+    text-align: left;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: $color-text;
+    opacity: 0.5;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: $spacing-sm $spacing-md;
+    border-bottom: 1px solid $color-border;
+    vertical-align: middle;
+
+    &:last-child {
+      text-align: right;
+    }
+  }
+
+  tbody tr {
+    transition: background $transition-fast;
+
+    &:hover {
+      background: rgba-hex($color-background, 0.7);
+    }
+
+    &:last-child td {
+      border-bottom: none;
+    }
+  }
+}
+
+// Variants
+.table--striped tbody tr:nth-child(even) {
+  background: rgba-hex($color-muted, 0.3);
+}
+
+.table--hover tbody tr:hover {
+  background: rgba-hex($color-background, 0.7);
+}
+
+.table--bordered {
+  border: 1px solid $color-border;
+  border-radius: $border-radius-lg;
+  overflow: hidden;
+}
+
+.table--compact th,
+.table--compact td {
+  padding: $spacing-xs $spacing-sm;
+  font-size: 0.8125rem;
+}
+
+// Scroll wrapper
+.table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+// Cell alignment
+.table__cell--center { text-align: center; }
+.table__cell--right { text-align: right; }
+.table__cell--nowrap { white-space: nowrap; }
+
+// Status badges in tables
+.table__status {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  text-transform: capitalize;
+
+  &--active { background: $color-success-light; color: $color-success; }
+  &--pending { background: $color-warning-light; color: $color-warning; }
+  &--inactive { background: $color-muted; color: $color-text; opacity: 0.7; }
+  &--error { background: $color-error-light; color: $color-error; }
+  &--success { background: $color-success-light; color: $color-success; }
+}
+
+// Action buttons in tables
+.table__actions {
+  display: flex;
+  gap: $spacing-xs;
+  justify-content: flex-end;
+}
+
+.table__action-btn {
+  padding: $spacing-xs $spacing-sm;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: $border-radius-md;
+  transition: all $transition-fast;
+
+  &:hover {
+    transform: none;
+  }
+}
+
+// Responsive table (stack on mobile)
+@media (max-width: 767px) {
+  .table--responsive {
+    thead { display: none; }
+    tbody, tr, td { display: block; width: 100%; }
+    tr { margin-bottom: $spacing-md; border: 1px solid $color-border; border-radius: $border-radius-lg; overflow: hidden; }
+    td {
+      display: flex;
+      justify-content: space-between;
+      padding: $spacing-sm $spacing-md;
+      border-bottom: 1px solid $color-border;
+      &:last-child { border-bottom: none; }
+      &::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: $color-text;
+        opacity: 0.5;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+      }
+    }
+  }
+}

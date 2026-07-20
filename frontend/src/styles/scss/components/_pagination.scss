@@ -1,0 +1,105 @@
+@use "../foundations/variables" as *;
+
+// ============================================================
+// PAGINATION - Page navigation
+// ============================================================
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xs;
+  flex-wrap: wrap;
+}
+
+.pagination__link,
+.pagination__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 $spacing-md;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $color-text;
+  background: white;
+  border: 1px solid $color-border;
+  border-radius: $border-radius-lg;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all $transition-fast;
+
+  &:hover:not(:disabled) {
+    background: $color-muted;
+    border-color: $color-border-hover;
+    color: $color-text;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.pagination__link--active,
+.pagination__btn--active {
+  background: $color-primary;
+  border-color: $color-primary;
+  color: white;
+
+  &:hover:not(:disabled) {
+    background: $color-primary-hover;
+    border-color: $color-primary-hover;
+  }
+}
+
+.pagination__ellipsis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  color: $color-text;
+  opacity: 0.5;
+}
+
+.pagination__info {
+  display: flex;
+  align-items: center;
+  margin-left: $spacing-lg;
+  font-size: 0.8125rem;
+  color: $color-text;
+  opacity: 0.7;
+}
+
+// Simple pagination (prev/next only)
+.pagination--simple {
+  justify-content: space-between;
+
+  .pagination__link,
+  .pagination__btn {
+    min-width: auto;
+    padding: $spacing-sm $spacing-lg;
+  }
+}
+
+// Pagination sizes
+.pagination--sm .pagination__link,
+.pagination--sm .pagination__btn {
+  min-width: 32px;
+  height: 32px;
+  font-size: 0.8125rem;
+}
+
+.pagination--lg .pagination__link,
+.pagination--lg .pagination__btn {
+  min-width: 48px;
+  height: 48px;
+  font-size: 1rem;
+}

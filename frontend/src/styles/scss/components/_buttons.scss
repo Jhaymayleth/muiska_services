@@ -1,0 +1,156 @@
+@use "../foundations/variables" as *;
+
+// ============================================================
+// BUTTONS - Semantic button components
+// ============================================================
+
+// Base button styles
+%btn-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xs;
+  font-family: $font-sans;
+  font-weight: 600;
+  border-radius: $border-radius-lg;
+  border: none;
+  cursor: pointer;
+  transition: all $transition-fast;
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 2px;
+  }
+}
+
+// Sizes
+%btn-sm {
+  padding: $spacing-xs $spacing-md;
+  font-size: 0.8125rem;    // ~13px
+  height: 36px;
+}
+
+%btn-md {
+  padding: $spacing-sm $spacing-lg;
+  font-size: 0.875rem;     // text-sm
+  height: 44px;
+}
+
+%btn-lg {
+  padding: $spacing-md $spacing-xl;
+  font-size: 1rem;         // text-base
+  height: 52px;
+}
+
+// Variants
+@mixin btn-variant($bg, $text, $hover-bg, $border: none) {
+  background-color: $bg;
+  color: $text;
+  border: 1px solid $border;
+
+  &:hover:not(:disabled) {
+    background-color: $hover-bg;
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+}
+
+// Primary - main actions
+.btn--primary {
+  @extend %btn-base;
+  @extend %btn-md;
+  @include btn-variant($color-primary, white, $color-primary-hover);
+
+  &.btn--sm { @extend %btn-sm; }
+  &.btn--lg { @extend %btn-lg; }
+}
+
+// Secondary - alternative actions
+.btn--secondary {
+  @extend %btn-base;
+  @extend %btn-md;
+  @include btn-variant($color-muted, $color-text, $color-border, $color-border);
+
+  &.btn--sm { @extend %btn-sm; }
+  &.btn--lg { @extend %btn-lg; }
+}
+
+// Outline - less prominent
+.btn--outline {
+  @extend %btn-base;
+  @extend %btn-md;
+  @include btn-variant(transparent, $color-primary, $color-primary, $color-primary);
+  background-color: $color-primary;
+  color: white;
+
+  &:hover:not(:disabled) {
+    background-color: $color-primary-hover;
+    border-color: $color-primary-hover;
+  }
+
+  &.btn--sm { @extend %btn-sm; }
+  &.btn--lg { @extend %btn-lg; }
+}
+
+// Ghost - minimal, text-only
+.btn--ghost {
+  @extend %btn-base;
+  @extend %btn-md;
+  background: transparent;
+  color: $color-text;
+  padding: $spacing-sm $spacing-md;
+
+  &:hover:not(:disabled) {
+    background: $color-muted;
+    color: $color-primary;
+  }
+
+  &.btn--sm { padding: $spacing-xs $spacing-sm; }
+  &.btn--lg { padding: $spacing-md $spacing-lg; }
+}
+
+// Danger - destructive actions
+.btn--danger {
+  @extend %btn-base;
+  @extend %btn-md;
+  @include btn-variant(#DC2626, white, #B91C1C, #DC2626);
+
+  &.btn--sm { @extend %btn-sm; }
+  &.btn--lg { @extend %btn-lg; }
+}
+
+// Icon button (square)
+.btn--icon {
+  @extend %btn-base;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: $border-radius-md;
+
+  &.btn--sm { width: 32px; height: 32px; }
+  &.btn--lg { width: 48px; height: 48px; }
+}
+
+// Full width utility
+.btn--full {
+  width: 100%;
+}
+
+// Button group
+.btn-group {
+  display: inline-flex;
+  gap: $spacing-xs;
+
+  .btn:not(:first-child) {
+    margin-left: -1px;
+  }
+}
