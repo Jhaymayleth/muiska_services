@@ -31,3 +31,4 @@ uploads/
 # Generated files
 backend-tree.txt
 frontend-tree.txt
+.opencode/

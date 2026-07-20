@@ -1,0 +1,36 @@
+<!-- Tarjeta de publicación - se usa en HomePage y ExplorePage -->
+<article class="publication-card flex flex-col h-full bg-white border border-border rounded-2xl overflow-hidden">
+  <div class="relative">
+    <img src="{{image}}" alt="{{title}}" class="w-full h-56 object-cover" />
+    <span class="absolute top-3 left-3 {{statusClass}} text-xs font-medium px-3 py-1 rounded-full">{{statusLabel}}</span>
+    <input type="checkbox" id="like-{{id}}" class="peer hidden" />
+    <label for="like-{{id}}" class="like-btn absolute top-3 right-3 w-9 h-9 flex items-center justify-center bg-white rounded-full cursor-pointer text-text/40 peer-checked:text-primary transition-transform duration-200 active:scale-75">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 h-5 transition-transform duration-200 peer-checked:scale-125" fill="currentColor">
+        <path d="M12 21s-6.7-4.35-9.3-8.1C1 10.1 1.6 6.6 4.6 5.1c2.1-1 4.4-.3 5.7 1.4l1.7 2.1 1.7-2.1c1.3-1.7 3.6-2.4 5.7-1.4 3 1.5 3.6 5 1.9 7.8C18.7 16.65 12 21 12 21z" />
+      </svg>
+    </label>
+  </div>
+  <div class="p-5 flex flex-col flex-1">
+    <h3 class="font-medium text-text text-lg mb-1">{{title}}</h3>
+    <p class="text-text/60 text-sm mb-4">{{description}}</p>
+    <div class="flex items-center justify-between text-sm text-text/60 border-b border-border pb-3 mb-3">
+      <span class="flex items-center gap-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor">
+          <path d="M12 2C7.6 2 4 5.6 4 10c0 5.4 7 11.4 7.3 11.6.2.2.5.2.7 0C12.3 21.4 20 15.4 20 10c0-4.4-3.6-8-8-8zm0 11c-1.7 0-3-1.3-3-3s1.3-3 3-3 3 1.3 3 3-1.3 3-3 3z" />
+        </svg>
+        {{location}}
+      </span>
+      <span>{{date}}</span>
+    </div>
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full {{userBg}} flex items-center justify-center shrink-0">
+          <span class="text-background text-xs font-bold">{{initials}}</span>
+        </div>
+        <span class="text-sm text-text">{{author}}</span>
+      </div>
+      <span class="font-bold text-primary">{{price}}</span>
+    </div>
+    <button class="w-full mt-auto bg-primary hover:bg-primary-hover text-background font-medium py-2 rounded-full" data-pub-id="{{id}}">Contactar</button>
+  </div>
+</article>
