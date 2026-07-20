@@ -124,6 +124,10 @@ export const api = {
     return this.request("/categories");
   },
 
+  getCategory(id) {
+    return this.request(`/categories/${id}`);
+  },
+
   getAdminUsers(search = "") {
     const query = search ? `?search=${encodeURIComponent(search)}` : "";
     return this.request(`/admin/users${query}`);

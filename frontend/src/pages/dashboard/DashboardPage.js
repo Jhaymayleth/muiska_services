@@ -1,6 +1,7 @@
 import { navigateTo } from "../../router/router.js";
 import { getUser, sessionStore } from "../../utils/auth.js";
 import { getFavorites } from "../../services/publication.service.js";
+import { api } from "../../services/api.js";
 import { loadTemplate } from "../../utils/templateLoader.js";
 import { formatDate } from "../../utils/helpers.js";
 

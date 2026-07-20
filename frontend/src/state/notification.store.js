@@ -22,7 +22,7 @@ export const notificationStore = {
 
   async fetchFromServer() {
     try {
-      const res = await api.get("/notificaciones?limit=20&unreadOnly=true");
+      const res = await api.request("/notificaciones?limit=20&unreadOnly=true");
       this.notifications = res.notifications || [];
       this.unreadCount = res.unreadCount || 0;
       this.notify();
@@ -41,7 +41,7 @@ export const notificationStore = {
 
   async markAsRead(id) {
     try {
-      await api.patch(`/notificaciones/${id}/leer`);
+      await api.request(`/notificaciones/${id}/leer`, { method: "PATCH" });
       const notif = this.notifications.find(n => n.id === id);
       if (notif && !notif.leida) {
         notif.leida = true;
@@ -55,7 +55,7 @@ export const notificationStore = {
 
   async markAllAsRead() {
     try {
-      await api.post("/notificaciones/leer-todas");
+      await api.request("/notificaciones/leer-todas", { method: "POST" });
       this.notifications.forEach(n => n.leida = true);
       this.unreadCount = 0;
       this.notify();

@@ -14,7 +14,7 @@ const VerificacionPendientePage = () => {
 
   const checkVerificationStatus = async () => {
     try {
-      const result = await api.get("/verificaciones/mi-estado");
+      const result = await api.getMyVerificationStatus();
       if (result.estado?.estado_verificacion === "aprobado") {
         sessionStore.setUser({ ...sessionStore.getUser(), estado_verificacion: "aprobado", badge_verificado: true });
         navigateTo("/dashboard");

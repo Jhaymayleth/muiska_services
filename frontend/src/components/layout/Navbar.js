@@ -22,7 +22,7 @@ const Navbar = () => {
       }
     }
     if (dropdown) {
-      const notifications = notificationStore.getNotifications();
+      const notifications = notificationStore.getAll();
       if (notifications.length === 0) {
         dropdown.innerHTML = '<div class="p-4 text-center text-gray-500">No hay notificaciones</div>';
       } else {
