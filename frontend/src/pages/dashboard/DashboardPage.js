@@ -1,6 +1,7 @@
 import { navigateTo } from "../../router/router.js";
 import { getUser, sessionStore } from "../../utils/auth.js";
 import { getFavorites } from "../../services/publication.service.js";
+import { loadTemplate } from "../../utils/templateLoader.js";
 
 const formatDate = (value) =>
   value
@@ -20,7 +21,8 @@ const getInitials = (name = "") =>
     .join("")
     .toUpperCase();
 
-const DashboardPage = () => {
+const DashboardPage = async () => {
+  const template = loadTemplate("DashboardPage");
   const section = document.createElement("section");
   section.className = "space-y-6";
 
@@ -29,6 +31,21 @@ const DashboardPage = () => {
   // Leer URL para determinar qué tab mostrar
   const path = window.location.pathname;
   let activeTab = path === "/dashboard/favoritos" ? "favorites" : "publications";
+
+  const userInitials = getInitials(user.name);
+  const userName = user.name || "Usuario";
+  const userEmail = user.email || "";
+  const userRole = user.role || "user";
+  const userSince = formatDate(user.created_at);
+  const adminButton = user.role === "admin" ? '<a href="/admin" id="btn-admin" class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent-hover">Panel admin</a>' : "";
+
+  section.innerHTML = template
+    .replace("{{userInitials}}", userInitials)
+    .replace("{{userName}}", userName)
+    .replace("{{userEmail}}", userEmail)
+    .replace("{{userRole}}", userRole)
+    .replace("{{userSince}}", userSince)
+    .replace("{{adminButton}}", adminButton);
 
   const renderStats = (pubs) => {
     const total = pubs.length;
@@ -209,57 +226,6 @@ const DashboardPage = () => {
       renderFavList();
     }
   };
-
-  section.innerHTML = `
-    <div class="rounded-2xl border border-border bg-white p-5 shadow-sm">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div class="flex items-center gap-4">
-          <div class="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-background text-2xl font-bold">${getInitials(user.name)}</div>
-          <div>
-            <h2 class="font-display text-2xl font-bold text-text">${user.name || "Usuario"}</h2>
-            <p class="text-sm text-text/60">${user.email}</p>
-            <p class="text-xs text-text/50">Rol: ${user.role || "user"} · Miembro desde ${formatDate(user.created_at)}</p>
-          </div>
-        </div>
-        <div class="flex flex-wrap gap-3">
-          <a href="/crear-publicacion" id="btn-new-pub" class="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-hover">Nueva publicación</a>
-          <a href="/perfil" id="btn-profile" class="rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium text-text transition hover:bg-background">Ver perfil</a>
-          <a href="/explorar" id="btn-explore" class="rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium text-text transition hover:bg-background">Explorar</a>
-          ${user.role === "admin" ? '<a href="/admin" id="btn-admin" class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent-hover">Panel admin</a>' : ""}
-        </div>
-      </div>
-    </div>
-
-    <div id="dashboard-stats" class="rounded-xl border border-border bg-white p-4"></div>
-
-    <!-- Tabs -->
-    <div class="rounded-2xl border border-border bg-white overflow-hidden">
-      <nav class="flex border-b border-border" aria-label="Secciones del dashboard">
-        <button id="tab-publications" class="tab-btn px-6 py-3 text-sm font-medium rounded-t-lg transition bg-primary text-white" data-tab="publications">Mis publicaciones</button>
-        <button id="tab-favorites" class="tab-btn px-6 py-3 text-sm font-medium rounded-t-lg transition text-text/70 hover:bg-muted" data-tab="favorites">Favoritos</button>
-      </nav>
-
-      <div id="publications-section" class="p-5">
-        <div id="dashboard-stats" class="rounded-xl border border-border bg-white p-4"></div>
-        <section>
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-semibold text-text">Mis publicaciones</h2>
-          </div>
-          <div id="dashboard-list" class="space-y-4"></div>
-        </section>
-      </div>
-
-      <div id="favorites-section" class="p-5 hidden">
-        <div id="favorites-stats"></div>
-        <section>
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-semibold text-text">Mis favoritos</h2>
-          </div>
-          <div id="favorites-list" class="space-y-4"></div>
-        </section>
-      </div>
-    </div>
-  `;
 
   section.querySelectorAll("a").forEach((link) => {
     link.addEventListener("click", (e) => {

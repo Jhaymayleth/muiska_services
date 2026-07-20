@@ -1,5 +1,6 @@
 import { api } from "../services/api.js";
 import { navigateTo } from "../router/router.js";
+import { loadTemplate } from "../utils/templateLoader.js";
 import womanImg from "../assets/images/Woman.jpg";
 import vestidorImg from "../assets/images/vestidor.jpg";
 
@@ -40,177 +41,33 @@ const statusClass = (status) => {
   return classes[status] || "bg-muted text-text";
 };
 
-const HomePage = () => {
+const categoryIcons = {
+  "ropa": "👗", "moda": "👗", "ropa & moda": "👗",
+  "comida": "🍽️", "alimentos": "🍽️",
+  "tecnología": "💻", "tecnologia": "💻",
+  "hogar": "🏠", "casa": "🏠",
+  "arte": "🎨", "artesanía": "🎨",
+  "salud": "🧑‍⚕️", "bienestar": "🧑‍⚕️",
+  "educación": "📚", "educacion": "📚",
+  "servicios": "🔧", "servicio": "🔧",
+};
+
+const getCategoryIcon = (name) => {
+  const lower = name.toLowerCase();
+  for (const [key, icon] of Object.entries(categoryIcons)) {
+    if (lower.includes(key)) return icon;
+  }
+  return "📦";
+};
+
+const HomePage = async () => {
+  const template = loadTemplate("HomePage");
   const page = document.createElement("div");
   page.className = "flex flex-col";
-
-  page.innerHTML = `
-    <!-- Header -->
-    <header class="sticky top-0 z-50 w-full bg-background border-b border-border text-sm">
-      <div class="max-w-7xl mx-auto flex items-center justify-between gap-4 px-6 py-3">
-        <a href="/" class="flex items-center gap-2 shrink-0" id="logo-link">
-          <span class="w-9 h-9 flex items-center justify-center rounded-full bg-primary text-background font-display font-bold">M</span>
-          <span class="font-display text-xl font-bold text-text">Muiska</span>
-        </a>
-
-        <input type="checkbox" id="menu-toggle" class="peer hidden" />
-        <label for="menu-toggle" class="lg:hidden text-text text-2xl cursor-pointer">&#9776;</label>
-
-        <nav class="hidden peer-checked:flex lg:flex flex-col lg:flex-row absolute lg:static top-full left-0 w-full lg:w-auto bg-background lg:bg-transparent border-b lg:border-0 border-border px-6 lg:px-0 py-4 lg:py-0 gap-4 lg:gap-6 items-center lg:flex-1 lg:justify-center">
-          <ul class="flex flex-col lg:flex-row items-center gap-1 w-full lg:w-auto">
-            <li class="w-full lg:w-auto"><a href="#Inicio" class="block text-center lg:inline px-4 py-2 rounded-full bg-muted text-primary font-medium">Inicio</a></li>
-            <li class="w-full lg:w-auto"><a href="#Categorias" class="block text-center lg:inline px-4 py-2 text-text/70 hover:text-text font-medium">Categorías</a></li>
-            <li class="w-full lg:w-auto"><a href="#Publicacion" class="block text-center lg:inline px-4 py-2 text-text/70 hover:text-text font-medium">Publicación</a></li>
-            <li class="w-full lg:w-auto"><a href="#Comofunciona" class="block text-center lg:inline px-4 py-2 text-text/70 hover:text-text font-medium">¿Cómo funciona?</a></li>
-            <li class="w-full lg:w-auto"><a href="#Nosotros" class="block text-center lg:inline px-4 py-2 text-text/70 hover:text-text font-medium">Nosotros</a></li>
-          </ul>
-          <div class="flex items-center gap-2 w-full lg:w-auto">
-            <input type="text" placeholder="Buscar..." class="bg-muted text-text placeholder-text/50 rounded-full px-4 py-2 border border-border flex-1 lg:flex-none" />
-            <button class="Search bg-accent hover:opacity-90 text-background font-medium px-4 py-2 rounded-full shrink-0">Buscar</button>
-          </div>
-          <div class="flex items-center gap-4 lg:hidden w-full justify-center pt-2">
-            <button class="Login text-text/70 hover:text-text font-medium" data-path="/login">Iniciar sesión</button>
-            <button class="Register bg-primary hover:bg-primary-hover text-background font-medium px-5 py-2.5 rounded-full" data-path="/registro">Registrarse</button>
-          </div>
-        </nav>
-
-        <div class="hidden lg:flex items-center gap-4 shrink-0">
-          <button class="Login text-text/70 hover:text-text font-medium" data-path="/login">Iniciar sesión</button>
-          <button class="Register bg-primary hover:bg-primary-hover text-background font-medium px-5 py-2.5 rounded-full" data-path="/registro">Registrarse</button>
-        </div>
-      </div>
-    </header>
-
-    <!-- Hero -->
-    <section id="Inicio" class="relative px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32 xl:py-40 overflow-hidden">
-      <img src="${womanImg}" alt="Emprendedora colombiana trabajando en su taller" class="absolute inset-0 w-full h-full object-cover" />
-      <div class="absolute inset-0 bg-background/85"></div>
-      <div class="relative max-w-xl sm:max-w-2xl lg:max-w-4xl xl:max-w-5xl mx-auto flex flex-col items-center text-center">
-        <a class="inline-flex items-center gap-2 bg-muted border border-border rounded-full px-3 py-1 sm:px-4 sm:py-1.5 text-xs sm:text-sm text-text/70 mb-8 sm:mb-10 hover:border-primary transition">Plataforma de intercambio comunitario</a>
-        <h1 class="font-display font-bold leading-none mb-8 sm:mb-10">
-          <span class="block text-text text-4xl sm:text-6xl lg:text-7xl xl:text-8xl">Conecta.</span>
-          <span class="block text-primary text-4xl sm:text-6xl lg:text-7xl xl:text-8xl">Comparte.</span>
-          <span class="block text-text text-4xl sm:text-6xl lg:text-7xl xl:text-8xl">Crece.</span>
-        </h1>
-        <p class="text-base sm:text-lg lg:text-xl text-text/70 max-w-md sm:max-w-2xl mb-8 sm:mb-10">El mercado comunitario donde emprendedores y personas del día a día intercambian bienes, servicios y donaciones con facilidad.</p>
-        <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-          <a href="/explorar" class="w-full sm:w-auto text-center bg-primary hover:bg-primary-hover text-background font-medium px-6 py-3 lg:px-8 lg:py-4 lg:text-lg rounded-full" id="hero-explorar">Explorar ahora &rarr;</a>
-          <a href="/registro" class="w-full sm:w-auto text-center bg-background hover:bg-muted border border-border text-text font-medium px-6 py-3 lg:px-8 lg:py-4 lg:text-lg rounded-full transition" id="hero-registro">Crear cuenta gratis</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- Categorías (dinámicas) -->
-    <section id="Categorias" class="bg-background px-6 py-20">
-      <div class="max-w-6xl mx-auto">
-        <div class="flex items-end justify-between mb-10">
-          <div>
-            <h2 class="font-display text-4xl font-bold text-text mb-2">Categorías</h2>
-            <p class="text-text/60">Explora nuestras categorías principales.</p>
-          </div>
-          <a href="/explorar" class="text-primary font-medium flex items-center gap-1 hover:text-primary-hover transition" id="cat-ver-todo">Ver todo &rarr;</a>
-        </div>
-        <div class="categories grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="categories-container">
-          <div class="col-span-full flex justify-center py-8">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Publicaciones destacadas (dinámicas) -->
-    <section id="Publicacion" class="bg-muted px-6 py-20">
-      <div class="max-w-6xl mx-auto">
-        <div class="flex items-end justify-between mb-10">
-          <div>
-            <h2 class="font-display text-4xl font-bold text-text mb-2">Publicaciones destacadas</h2>
-            <p class="text-text/60">Nuestra selección de publicaciones más recientes.</p>
-          </div>
-          <a href="/explorar" class="text-primary font-medium flex items-center gap-1 hover:text-primary-hover transition" id="pub-ver-mas">Ver más &rarr;</a>
-        </div>
-        <div class="Publicaciones grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="featured-container">
-          <div class="col-span-full flex justify-center py-8">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Cómo funciona -->
-    <section id="Comofunciona" class="bg-background px-6 py-24">
-      <div class="max-w-5xl mx-auto text-center">
-        <h2 class="font-display text-4xl font-bold text-text mb-3">¿Cómo funciona?</h2>
-        <p class="text-text/60 mb-14">Simple y sin complicaciones.</p>
-        <div class="steps grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <div class="step bg-background border border-border rounded-2xl px-8 py-10">
-            <div class="w-16 h-16 mx-auto mb-6 flex items-center justify-center bg-muted rounded-2xl text-3xl">👤</div>
-            <span class="text-primary font-bold text-sm">01</span>
-            <h3 class="font-bold text-text text-xl mt-2 mb-3">Regístrate gratis</h3>
-            <p class="text-text/60">Crea tu cuenta en segundos y configura tu perfil de vendedor o comprador.</p>
-          </div>
-          <div class="step bg-background border border-border rounded-2xl px-8 py-10">
-            <div class="w-16 h-16 mx-auto mb-6 flex items-center justify-center bg-muted rounded-2xl text-3xl">🔍</div>
-            <span class="text-primary font-bold text-sm">02</span>
-            <h3 class="font-bold text-text text-xl mt-2 mb-3">Publica o explora</h3>
-            <p class="text-text/60">Sube tus productos, servicios o donaciones, o encuentra lo que necesitas.</p>
-          </div>
-          <div class="step bg-background border border-border rounded-2xl px-8 py-10">
-            <div class="w-16 h-16 mx-auto mb-6 flex items-center justify-center bg-muted rounded-2xl text-3xl">🤝</div>
-            <span class="text-primary font-bold text-sm">03</span>
-            <h3 class="font-bold text-text text-xl mt-2 mb-3">Conecta y cierra</h3>
-            <p class="text-text/60">Habla directamente con el vendedor, acuerden los detalles y listo.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- CTA -->
-    <section id="CTA" class="bg-primary px-10 py-24">
-      <div class="max-w-4xl mx-auto text-center">
-        <h2 class="font-display text-4xl font-bold text-background mb-4">¡Únete a la comunidad!</h2>
-        <p class="text-background/80 mb-10">Miles de emprendedores ya intercambian en MUISKA.</p>
-        <a href="/registro" class="inline-block bg-background hover:bg-muted text-primary font-bold px-8 py-4 rounded-full transition" id="cta-registro">Crear cuenta gratis &rarr;</a>
-      </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-text px-6 py-8">
-      <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-        <a href="/" class="flex items-center gap-3 shrink-0">
-          <span class="w-9 h-9 flex items-center justify-center rounded-full bg-primary text-background font-display font-bold">M</span>
-          <span class="font-display text-xl font-bold text-background">MUISKA</span>
-        </a>
-        <p class="text-background/60 text-sm text-center">&copy; 2024 MUISKA Community Commerce. Todos los derechos reservados.</p>
-        <nav class="flex items-center gap-6">
-          <a href="#" class="text-background/70 hover:text-background text-sm transition">Términos</a>
-          <a href="#" class="text-background/70 hover:text-background text-sm transition">Privacidad</a>
-          <a href="#" class="text-background/70 hover:text-background text-sm transition">Ayuda</a>
-        </nav>
-      </div>
-    </footer>
-  `;
+  page.innerHTML = template.replace("{{womanImg}}", womanImg);
 
   const categoriesContainer = page.querySelector("#categories-container");
   const featuredContainer = page.querySelector("#featured-container");
-
-  const categoryIcons = {
-    "ropa": "👗", "moda": "👗", "ropa & moda": "👗",
-    "comida": "🍽️", "alimentos": "🍽️",
-    "tecnología": "💻", "tecnologia": "💻",
-    "hogar": "🏠", "casa": "🏠",
-    "arte": "🎨", "artesanía": "🎨",
-    "salud": "🧑‍⚕️", "bienestar": "🧑‍⚕️",
-    "educación": "📚", "educacion": "📚",
-    "servicios": "🔧", "servicio": "🔧",
-  };
-
-  const getCategoryIcon = (name) => {
-    const lower = name.toLowerCase();
-    for (const [key, icon] of Object.entries(categoryIcons)) {
-      if (lower.includes(key)) return icon;
-    }
-    return "📦";
-  };
 
   const renderCategoryLoader = () => {
     categoriesContainer.innerHTML = `
