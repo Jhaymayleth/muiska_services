@@ -1,0 +1,86 @@
+<!-- Panel de Dashboard / Resumen -->
+<div id="panel-dashboard" class="admin-panel admin-panel--active" role="tabpanel" aria-labelledby="tab-dashboard">
+  <!-- Mensaje de error -->
+  <div id="admin-error" class="admin-alert admin-alert--error hidden" role="alert"></div>
+
+  <!-- Tarjetas de estadísticas -->
+  <section class="admin-stats" aria-label="Resumen general">
+    <article class="admin-stat-card">
+      <div class="admin-stat-card__content">
+        <p class="admin-stat-card__label">Publicaciones activas</p>
+        <p id="active-count" class="admin-stat-card__value">—</p>
+      </div>
+      <div class="admin-stat-card__icon" aria-hidden="true">▤</div>
+    </article>
+
+    <article class="admin-stat-card admin-stat-card--accent">
+      <div class="admin-stat-card__content">
+        <p class="admin-stat-card__label">Categorías</p>
+        <p id="category-count" class="admin-stat-card__value">—</p>
+      </div>
+      <div class="admin-stat-card__icon" aria-hidden="true">◇</div>
+    </article>
+
+    <article class="admin-stat-card admin-stat-card--text">
+      <div class="admin-stat-card__content">
+        <p class="admin-stat-card__label">Total publicaciones</p>
+        <p id="total-count" class="admin-stat-card__value">—</p>
+      </div>
+      <div class="admin-stat-card__icon" aria-hidden="true">◷</div>
+    </article>
+
+    <article class="admin-stat-card admin-stat-card--muted">
+      <div class="admin-stat-card__content">
+        <p class="admin-stat-card__label">Servicio</p>
+        <p id="service-status" class="admin-stat-card__status">Cargando</p>
+      </div>
+      <div class="admin-stat-card__icon" aria-hidden="true">●</div>
+    </article>
+  </section>
+
+  <!-- Área principal: publicaciones recientes + sidebar -->
+  <div class="admin-dashboard__grid">
+    <!-- Publicaciones recientes -->
+    <section class="admin-dashboard__main">
+      <div class="admin-section-header">
+        <div>
+          <h2 class="admin-section-header__title">Publicaciones recientes</h2>
+          <p class="admin-section-header__subtitle">Las 5 publicaciones más recientes.</p>
+        </div>
+        <button id="view-listings" class="admin-section-header__link">Ver todas →</button>
+      </div>
+      <div id="recent-publications" class="admin-table-wrapper">
+        <p class="admin-loading">Cargando publicaciones…</p>
+      </div>
+    </section>
+
+    <!-- Sidebar: Acciones rápidas + Categorías -->
+    <aside class="admin-dashboard__sidebar">
+      <section class="admin-quick-actions">
+        <p class="admin-quick-actions__label">Acciones rápidas</p>
+        <h2 class="admin-quick-actions__title">Gestiona la comunidad</h2>
+        <div class="admin-quick-actions__list">
+          <button id="create-listing" class="admin-quick-actions__btn admin-quick-actions__btn--primary">
+            Crear publicación <span aria-hidden="true">→</span>
+          </button>
+          <button id="browse-listings" class="admin-quick-actions__btn admin-quick-actions__btn--secondary">
+            Explorar publicaciones <span class="admin-quick-actions__link-icon" aria-hidden="true">↗</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="admin-categories-summary">
+        <div class="admin-categories-summary__header">
+          <div>
+            <p class="admin-categories-summary__label">Categorías registradas</p>
+            <p class="admin-categories-summary__subtitle">Disponibles para clasificar publicaciones.</p>
+          </div>
+          <span id="category-badge" class="admin-categories-summary__badge">—</span>
+        </div>
+        <div id="category-list" class="admin-categories-summary__list">
+          <span class="admin-loading">Cargando categorías…</span>
+        </div>
+      </section>
+    </aside>
+  </div>
+</div>
