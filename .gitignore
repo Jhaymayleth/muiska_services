@@ -32,3 +32,5 @@ uploads/
 backend-tree.txt
 frontend-tree.txt
 .opencode/
+frontend/src/styles/scss/main.css
+frontend/src/styles/scss/main.css.map
