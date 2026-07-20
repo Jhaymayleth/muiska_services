@@ -247,15 +247,17 @@ CREATE TABLE reviews (
 
 ### FASE 1: SISTEMA DE ROLES Y VERIFICACIÓN (Semana 1-2)
 
-#### Backend
-- [ ] Migración BD: nuevos campos users, tabla verificaciones, notificaciones
-- [ ] Auth Service: registro con `tipo_usuario` (cliente/vendedor)
-- [ ] Verification Service: CRUD verificaciones, notificaciones
-- [ ] Middleware: `requireVerifiedSeller` para crear publicaciones
-- [ ] Admin Controller: asignar/quitar verificadores
-- [ ] Seeds: verificación seeds
+#### Backend ✅ (Completado)
+- [x] Migración BD: nuevos campos users, tabla verificaciones, notificaciones (`006_users_verificacion.sql`)
+- [x] Auth Service: registro con `tipo_usuario` (cliente/vendedor) - `auth.service.js`
+- [x] Verification Service: CRUD verificaciones, notificaciones - `verification.service.js`
+- [x] Notification Service: CRUD notificaciones - `notification.service.js`
+- [x] Middleware: `requireVerifiedSeller` para crear publicaciones - `verification.middleware.js`
+- [x] Admin Controller: asignar/quitar verificadores - `admin.service.js` + `admin.controller.js`
+- [x] Rutas: `/api/verificaciones`, `/api/notificaciones`, `/api/admin/verificadores`
+- [x] Controllers: `verification.controller.js`, `notification.controller.js`
 
-#### Frontend
+#### Frontend (Pendiente)
 - [ ] RegisterPage: selector "Cliente" / "Vendedor/Emprendedor" (NO verificador/admin)
 - [ ] VerificationPendingPage: pantalla loading "Tu perfil en verificación..."
 - [ ] NotificationStore + toast notifications + badge en header
@@ -475,10 +477,15 @@ frontend/
 
 ## ✅ CHECKLIST DE ENTREGA MVP
 
-- [ ] Registro Cliente / Vendedor (NO verificador/admin)
-- [ ] Verificación perfil por Verificador (flujo completo)
+- [x] Migración BD: roles, verificación, notificaciones
+- [x] Auth Service: registro cliente/vendedor con tipo_usuario
+- [x] Verification Service: CRUD + notificaciones
+- [x] Notification Service: CRUD
+- [x] Admin: asignar/quitar verificadores
+- [ ] Registro Cliente / Vendedor (NO verificador/admin) - Frontend
+- [ ] Verificación perfil por Verificador (flujo completo) - Frontend
 - [ ] Moderación publicaciones por Verificador (flujo completo)
-- [ ] Admin asigna Verificadores
+- [ ] Admin asigna Verificadores - Frontend
 - [ ] Barrios Barranquilla + búsqueda por radio/barrio
 - [ ] Perfil público vendedor con contacto WhatsApp
 - [ ] Notificaciones en tiempo real

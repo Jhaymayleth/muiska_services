@@ -12,7 +12,8 @@ export const verifyToken = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || "muiska_jwt_secret_dev_2024");
     const result = await pool.query(
-      "SELECT id, name, email, role, is_banned FROM users WHERE id = $1",
+      `SELECT id, name, email, role, tipo_usuario, estado_verificacion, badge_verificado, is_banned 
+       FROM users WHERE id = $1`,
       [decoded.id],
     );
 
@@ -54,7 +55,8 @@ export const optionalAuth = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || "muiska_jwt_secret_dev_2024");
     const result = await pool.query(
-      "SELECT id, name, email, role, is_banned FROM users WHERE id = $1",
+      `SELECT id, name, email, role, tipo_usuario, estado_verificacion, badge_verificado, is_banned 
+       FROM users WHERE id = $1`,
       [decoded.id],
     );
     req.user = result.rows[0] || null;

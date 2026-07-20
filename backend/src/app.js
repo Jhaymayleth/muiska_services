@@ -9,6 +9,8 @@ import authRouter from "./routes/auth.routes.js";
 import categoryRouter from "./routes/category.routes.js";
 import adminRouter from "./routes/admin.routes.js";
 import favoriteRouter from "./routes/favorite.routes.js";
+import verificationRouter from "./routes/verification.routes.js";
+import notificationRouter from "./routes/notification.routes.js";
 import { errorMiddleware } from "./middlewares/error.middleware.js";
 import { notFoundMiddleware } from "./middlewares/notFound.middleware.js";
 
@@ -30,6 +32,8 @@ app.use("/api", authRouter);
 app.use("/api", categoryRouter);
 app.use("/api", adminRouter);
 app.use("/api/favorites", favoriteRouter);
+app.use("/api/verificaciones", verificationRouter);
+app.use("/api/notificaciones", notificationRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);

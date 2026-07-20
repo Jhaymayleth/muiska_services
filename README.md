@@ -91,14 +91,32 @@ Incluye índices sobre `status` y `created_at` para optimizar listados y filtros
 
 Prefijo base: `/api`
 
-| Método   | Endpoint            | Descripción                                         |
-| -------- | ------------------- | --------------------------------------------------- |
-| `GET`    | `/status`           | Verifica que el backend esté activo                 |
-| `GET`    | `/publications`     | Lista todas las publicaciones (ordenadas por fecha) |
-| `GET`    | `/publications/:id` | Obtiene una publicación por ID                      |
-| `POST`   | `/publications`     | Crea una nueva publicación                          |
-| `PUT`    | `/publications/:id` | Actualiza una publicación existente                 |
-| `DELETE` | `/publications/:id` | Elimina una publicación                             |
+| Método   | Endpoint                      | Descripción                                         |
+| -------- | ----------------------------- | --------------------------------------------------- |
+| `GET`    | `/status`                     | Verifica que el backend esté activo                 |
+| `GET`    | `/publications`               | Lista todas las publicaciones (ordenadas por fecha) |
+| `GET`    | `/publications/:id`           | Obtiene una publicación por ID                      |
+| `POST`   | `/publications`               | Crea una nueva publicación (requiere vendedor verificado) |
+| `PUT`    | `/publications/:id`           | Actualiza una publicación existente                 |
+| `DELETE` | `/publications/:id`           | Elimina una publicación                             |
+
+### Nuevos endpoints FASE 1
+
+| Método   | Endpoint                              | Descripción                                         |
+| -------- | ------------------------------------- | --------------------------------------------------- |
+| `GET`    | `/verificaciones/mi-estado`           | Usuario: su estado de verificación                  |
+| `GET`    | `/verificaciones/pendientes`          | Verificador: lista perfiles pendientes              |
+| `GET`    | `/verificaciones/:id`                 | Verificador: detalle de verificación                |
+| `POST`   | `/verificaciones/:id/aprobar`         | Verificador: aprobar perfil                         |
+| `POST`   | `/verificaciones/:id/rechazar`        | Verificador: rechazar perfil (requiere motivo)      |
+| `GET`    | `/verificaciones/historial/mio`       | Verificador: su historial                           |
+| `GET`    | `/notificaciones`                     | Usuario: listar sus notificaciones                  |
+| `PATCH`  | `/notificaciones/:id/leer`            | Marcar notificación como leída                      |
+| `POST`   | `/notificaciones/leer-todas`          | Marcar todas como leídas                            |
+| `DELETE` | `/notificaciones/:id`                 | Eliminar notificación                               |
+| `GET`    | `/admin/verificadores`                | Admin: listar verificadores                         |
+| `POST`   | `/admin/verificadores/:id`            | Admin: asignar rol verificador                      |
+| `DELETE` | `/admin/verificadores/:id`            | Admin: quitar rol verificador                       |
 
 Todas las rutas cuentan con middleware de manejo de errores (`error.middleware.js`) y de rutas no encontradas (`notFound.middleware.js`).
 
@@ -217,7 +235,20 @@ El frontend en modo desarrollo se sirve en **http://localhost:5173** y usa proxy
 
 ## 📌 Estado actual
 
-El proyecto se encuentra en **fase inicial**: la base del CRUD de publicaciones ya está funcional (frontend, backend y base de datos conectados), y la estructura está preparada para escalar hacia autenticación, roles y nuevas funcionalidades de comercio comunitario.
+El proyecto se encuentra en **FASE 1 (Backend completado)**:
+
+**✅ FASE 0 - BASELINE**: Docker compose, Auth JWT, CRUD Publicaciones, Categorías, Admin panel básico, Tests
+
+**✅ FASE 1 - Backend**: 
+- Migración BD: nuevos campos `users` (`tipo_usuario`, `estado_verificacion`, `badge_verificado`, `barrio_id`, `lat`, `lng`, `telefono`, `whatsapp`, `bio`, `foto_perfil_url`, `rating_promedio`, `total_reviews`), tabla `verificaciones`, tabla `notificaciones`, tabla `barrios`
+- Auth Service: registro con `tipo_usuario` (cliente/vendedor), estado verificación inicial según rol
+- Verification Service: CRUD verificaciones + notificaciones automáticas
+- Notification Service: gestión completa notificaciones
+- Middleware `requireVerifiedSeller`: protege creación de publicaciones
+- Admin: asignar/quitar verificadores
+- Rutas registradas: `/api/verificaciones`, `/api/notificaciones`, `/admin/verificadores`
+
+**🔄 FASE 1 - Frontend (En curso)**: RegisterPage selector, VerificationPendingPage, NotificationStore, Auth guards, Header con notificaciones
 
 ---
 

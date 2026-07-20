@@ -19,17 +19,14 @@ export const updateUser = async (req, res, next) => {
     const { id } = req.params;
     const { role, is_banned, name, email } = req.body;
 
-    // Validar rol si se envía
     if (role !== undefined && !allowedRoles.has(role)) {
       return res.status(400).json({ message: "Rol no válido" });
     }
 
-    // Validar is_banned si se envía
     if (is_banned !== undefined && typeof is_banned !== "boolean") {
       return res.status(400).json({ message: "El estado de suspensión no es válido" });
     }
 
-    // Prevenir auto-gestión
     if (id === req.user.id) {
       return res.status(400).json({ message: "No puedes modificar tu propia cuenta desde este panel" });
     }
@@ -48,7 +45,6 @@ export const deleteUser = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    // Prevenir auto-eliminación
     if (id === req.user.id) {
       return res.status(400).json({ message: "No puedes eliminar tu propia cuenta desde este panel" });
     }
@@ -59,6 +55,48 @@ export const deleteUser = async (req, res, next) => {
     if (error.code === "NOT_FOUND") {
       return res.status(404).json({ message: error.message });
     }
+    next(error);
+  }
+};
+
+// Verificador management
+export const assignVerifier = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (id === req.user.id) {
+      return res.status(400).json({ message: "No puedes asignarte a ti mismo" });
+    }
+    const verifier = await adminService.assignVerifier(id);
+    res.json({ message: "Verificador asignado", verifier });
+  } catch (error) {
+    if (error.code === "NOT_FOUND") {
+      return res.status(404).json({ message: error.message });
+    }
+    next(error);
+  }
+};
+
+export const removeVerifier = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (id === req.user.id) {
+      return res.status(400).json({ message: "No puedes quitarte a ti mismo" });
+    }
+    const user = await adminService.removeVerifier(id);
+    res.json({ message: "Rol de verificador removido", user });
+  } catch (error) {
+    if (error.code === "NOT_FOUND") {
+      return res.status(404).json({ message: error.message });
+    }
+    next(error);
+  }
+};
+
+export const getVerifiers = async (req, res, next) => {
+  try {
+    const verifiers = await adminService.getVerifiers();
+    res.json(verifiers);
+  } catch (error) {
     next(error);
   }
 };

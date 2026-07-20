@@ -5,7 +5,7 @@ export const adminService = {
   // Obtener todos los usuarios (con búsqueda opcional)
   async getUsers(search = "") {
     let query = `
-      SELECT u.id, u.name, u.email, u.role, u.is_banned, u.created_at,
+      SELECT u.id, u.name, u.email, u.role, u.tipo_usuario, u.is_banned, u.created_at,
              COUNT(p.id) as publication_count
       FROM users u
       LEFT JOIN publications p ON p.user_id = u.id
@@ -33,7 +33,7 @@ export const adminService = {
          is_banned = COALESCE($4, is_banned),
          updated_at = NOW()
        WHERE id = $5
-       RETURNING id, name, email, role, is_banned, created_at`,
+       RETURNING id, name, email, role, tipo_usuario, is_banned, created_at`,
       [name, email, role, is_banned, id]
     );
 
@@ -109,6 +109,48 @@ export const adminService = {
     };
   },
 
+  // Asignar rol de verificador (solo admin)
+  async assignVerifier(userId) {
+    const result = await pool.query(
+      `UPDATE users SET role = 'verificador', tipo_usuario = 'verificador', updated_at = NOW()
+       WHERE id = $1 AND role != 'admin'
+       RETURNING id, name, email, role, tipo_usuario`,
+      [userId]
+    );
+    if (result.rows.length === 0) {
+      const error = new Error("Usuario no encontrado o no se puede asignar");
+      error.code = "NOT_FOUND";
+      throw error;
+    }
+    return result.rows[0];
+  },
+
+  // Quitar rol de verificador (solo admin)
+  async removeVerifier(userId) {
+    const result = await pool.query(
+      `UPDATE users SET role = 'user', tipo_usuario = 'cliente', updated_at = NOW()
+       WHERE id = $1 AND role = 'verificador'
+       RETURNING id, name, email, role, tipo_usuario`,
+      [userId]
+    );
+    if (result.rows.length === 0) {
+      const error = new Error("Usuario no encontrado o no es verificador");
+      error.code = "NOT_FOUND";
+      throw error;
+    }
+    return result.rows[0];
+  },
+
+  // Listar verificadores
+  async getVerifiers() {
+    const result = await pool.query(
+      `SELECT id, name, email, role, tipo_usuario, created_at
+       FROM users WHERE role = 'verificador'
+       ORDER BY created_at DESC`
+    );
+    return result.rows;
+  },
+
   // Actualizar publicación (admin)
   async updatePublication(id, { status, title, description, price, category, location, contact_method }) {
     const result = await pool.query(
@@ -147,7 +189,4 @@ export const adminService = {
     }
     return { message: "Publicación eliminada" };
   },
-
-  // CRUD categorías - reutiliza categoryService
-  // createCategory, updateCategory, deleteCategory, getAllCategories, getCategoryById
 };

@@ -6,6 +6,9 @@ import {
   getPublications,
   updatePublication,
   deletePublication,
+  getVerifiers,
+  assignVerifier,
+  removeVerifier,
 } from "../controllers/admin.controller.js";
 import { requireAdmin, verifyToken } from "../middlewares/auth.middleware.js";
 
@@ -15,6 +18,11 @@ router.use("/admin", verifyToken, requireAdmin);
 router.get("/admin/users", getUsers);
 router.patch("/admin/users/:id", updateUser);
 router.delete("/admin/users/:id", deleteUser);
+
+// Admin - Verificadores
+router.get("/admin/verificadores", getVerifiers);
+router.post("/admin/verificadores/:id", assignVerifier);
+router.delete("/admin/verificadores/:id", removeVerifier);
 
 // Admin Publications
 router.get("/admin/publications", getPublications);
