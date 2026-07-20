@@ -1,15 +1,6 @@
 import { renderRoute, navigateTo } from "./router/router.js";
 import Navbar from "./components/layout/Navbar.js";
 import Footer from "./components/layout/Footer.js";
-import { api } from "./services/api.js";
-import {
-  isAdmin,
-  isAuthenticated,
-  isRouteProtected,
-  isGuestRoute,
-  getUser,
-  logout,
-} from "./utils/auth.js";
 
 const App = () => {
   const app = document.createElement("div");
@@ -23,36 +14,8 @@ const App = () => {
 
   const isHome = () => window.location.pathname === "/";
 
-  const refreshUser = async () => {
-    if (!isAuthenticated()) return;
-    const storedUser = getUser();
-    if (storedUser) return;
-
-    try {
-      const currentUser = await api.getMe();
-      localStorage.setItem("user", JSON.stringify(currentUser));
-    } catch (error) {
-      logout();
-    }
-  };
-
   const render = () => {
     const path = window.location.pathname;
-
-    if (isRouteProtected(path) && !isAuthenticated()) {
-      navigateTo("/login");
-      return;
-    }
-
-    if (path === "/admin" && !isAdmin()) {
-      navigateTo("/dashboard");
-      return;
-    }
-
-    if (isGuestRoute(path) && isAuthenticated()) {
-      navigateTo("/dashboard");
-      return;
-    }
 
     layout.innerHTML = "";
     if (isHome()) {
@@ -75,7 +38,7 @@ const App = () => {
   app.appendChild(layout);
 
   window.addEventListener("popstate", render);
-  refreshUser().then(render);
+  render();
 
   return app;
 };
