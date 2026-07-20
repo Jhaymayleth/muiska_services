@@ -88,13 +88,18 @@
 .btn--outline {
   @extend %btn-base;
   @extend %btn-md;
-  @include btn-variant(transparent, $color-primary, $color-primary, $color-primary);
+  // No usar btn-variant porque necesita background sólido + border
   background-color: $color-primary;
   color: white;
+  border: 1px solid $color-primary;
 
   &:hover:not(:disabled) {
     background-color: $color-primary-hover;
     border-color: $color-primary-hover;
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
   }
 
   &.btn--sm { @extend %btn-sm; }
