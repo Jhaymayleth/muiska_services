@@ -21,6 +21,10 @@ const ExplorePage = async () => {
   const categorySelect = section.querySelector("#category");
   const clearBtn = section.querySelector("#clear-filters");
 
+  // Load state templates
+  const emptyStateHtml = section.querySelector("#explore-empty-state").textContent;
+  const errorStateHtml = section.querySelector("#explore-error-state").textContent;
+
   const render = async () => {
     grid.innerHTML = '<div class="col-span-full flex justify-center py-8"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>';
     pagination.innerHTML = "";
@@ -36,11 +40,7 @@ const ExplorePage = async () => {
       totalPages = pagination?.totalPages || 1;
 
       if (pubs.length === 0) {
-        grid.innerHTML = `
-          <div class="col-span-full rounded-xl border border-dashed border-border bg-muted/40 p-8 text-center">
-            <h3 class="text-lg font-semibold">No hay publicaciones</h3>
-            <p class="mt-2 text-sm text-text/70">Intenta ajustar los filtros o sé el primero en crear una.</p>
-          </div>`;
+        grid.innerHTML = emptyStateHtml;
       } else {
         grid.innerHTML = "";
         pubs.forEach((pub) => grid.appendChild(ListingCard(pub)));
@@ -48,10 +48,7 @@ const ExplorePage = async () => {
 
       renderPagination(pagination);
     } catch (err) {
-      grid.innerHTML = `
-        <div class="col-span-full rounded-xl border border-dashed border-red-200 bg-red-50 p-8 text-center">
-          <p class="text-red-600">${err.message || "Error al cargar publicaciones"}</p>
-        </div>`;
+      grid.innerHTML = errorStateHtml.replace("{{errorMessage}}", err.message || "Error al cargar publicaciones");
     }
   };
 
