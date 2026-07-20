@@ -1,9 +1,10 @@
 const templateCache = new Map();
 
-const templateModules = import.meta.glob('../templates/**/*.html', { as: 'raw', eager: true });
+const templateModules = import.meta.glob('../templates/**/*.html', { query: '?raw', import: 'default', eager: true });
 
-for (const [path, content] of Object.entries(templateModules)) {
+for (const [path, module] of Object.entries(templateModules)) {
   const name = path.match(/([^/]+)\.html$/)[1];
+  const content = typeof module === 'string' ? module : (module.default || '');
   templateCache.set(name, content);
 }
 

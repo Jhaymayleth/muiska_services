@@ -89,3 +89,87 @@ VALUES
 ON CONFLICT (slug) DO UPDATE
 SET name = EXCLUDED.name,
     description = EXCLUDED.description;
+
+-- FASE 1: Campos usuarios + verificaciones + notificaciones (de migracion 006)
+ALTER TABLE users ADD COLUMN IF NOT EXISTS tipo_usuario VARCHAR(20) DEFAULT 'cliente';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS estado_verificacion VARCHAR(20) DEFAULT 'pendiente';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS verificado_por UUID REFERENCES users(id);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS verificado_en TIMESTAMP;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS motivo_rechazo_verificacion TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS barrio_id UUID;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS lat DECIMAL(10,8);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS lng DECIMAL(11,8);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS telefono VARCHAR(20);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS whatsapp VARCHAR(20);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS foto_perfil_url TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS rating_promedio DECIMAL(3,2) DEFAULT 0;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS total_reviews INT DEFAULT 0;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS tiempo_respuesta_promedio INTERVAL;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS badge_verificado BOOLEAN DEFAULT FALSE;
+
+CREATE TABLE IF NOT EXISTS barrios (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  nombre VARCHAR(100) NOT NULL,
+  localidad VARCHAR(50) NOT NULL,
+  lat DECIMAL(10,8) NOT NULL,
+  lng DECIMAL(11,8) NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+ALTER TABLE users ADD CONSTRAINT fk_users_barrio
+  FOREIGN KEY (barrio_id) REFERENCES barrios(id);
+
+CREATE TABLE IF NOT EXISTS verificaciones (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  usuario_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  verificador_id UUID REFERENCES users(id),
+  estado VARCHAR(20) NOT NULL,
+  motivo TEXT,
+  creado_en TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_verificaciones_usuario ON verificaciones(usuario_id);
+CREATE INDEX IF NOT EXISTS idx_verificaciones_verificador ON verificaciones(verificador_id);
+CREATE INDEX IF NOT EXISTS idx_verificaciones_estado ON verificaciones(estado);
+
+CREATE TABLE IF NOT EXISTS notificaciones (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  usuario_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  tipo VARCHAR(50) NOT NULL,
+  titulo VARCHAR(255) NOT NULL,
+  mensaje TEXT NOT NULL,
+  datos JSONB,
+  leida BOOLEAN DEFAULT FALSE,
+  creado_en TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_notificaciones_usuario ON notificaciones(usuario_id);
+CREATE INDEX IF NOT EXISTS idx_notificaciones_leida ON notificaciones(leida);
+CREATE INDEX IF NOT EXISTS idx_notificaciones_creado_en ON notificaciones(creado_en DESC);
+
+-- FASE 2: Moderación de publicaciones
+ALTER TABLE publications ADD COLUMN IF NOT EXISTS tipo VARCHAR(20) DEFAULT 'producto';
+ALTER TABLE publications ADD COLUMN IF NOT EXISTS estado_moderacion VARCHAR(20) DEFAULT 'pendiente';
+ALTER TABLE publications ADD COLUMN IF NOT EXISTS moderado_por UUID REFERENCES users(id);
+ALTER TABLE publications ADD COLUMN IF NOT EXISTS moderado_en TIMESTAMP;
+ALTER TABLE publications ADD COLUMN IF NOT EXISTS motivo_rechazo_moderacion TEXT;
+ALTER TABLE publications ADD COLUMN IF NOT EXISTS horario_atencion JSONB;
+ALTER TABLE publications ADD COLUMN IF NOT EXISTS area_cobertura JSONB;
+ALTER TABLE publications ADD COLUMN IF NOT EXISTS precio_tipo VARCHAR(20) DEFAULT 'fijo';
+
+CREATE INDEX IF NOT EXISTS idx_publications_estado_moderacion ON publications(estado_moderacion);
+CREATE INDEX IF NOT EXISTS idx_publications_tipo ON publications(tipo);
+
+CREATE TABLE IF NOT EXISTS moderaciones (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  publicacion_id UUID REFERENCES publications(id) ON DELETE CASCADE,
+  verificador_id UUID REFERENCES users(id),
+  accion VARCHAR(20) NOT NULL,
+  motivo TEXT,
+  creado_en TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_moderaciones_publicacion ON moderaciones(publicacion_id);
+CREATE INDEX IF NOT EXISTS idx_moderaciones_verificador ON moderaciones(verificador_id);
+CREATE INDEX IF NOT EXISTS idx_moderaciones_creado_en ON moderaciones(creado_en DESC);

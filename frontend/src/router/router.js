@@ -67,7 +67,7 @@ const checkAuth = (path) => {
   return true;
 };
 
-export const renderRoute = (container) => {
+export const renderRoute = async (container) => {
   const path = window.location.pathname || "/";
 
   // Verificar autenticación antes de renderizar
@@ -77,16 +77,16 @@ export const renderRoute = (container) => {
 
   const Page = routes[path];
   if (Page) {
-    container.replaceChildren(Page());
+    container.replaceChildren(await Page());
     return;
   }
 
   for (const { pattern, component } of dynamicRoutes) {
     if (pattern.test(path)) {
-      container.replaceChildren(component());
+      container.replaceChildren(await component());
       return;
     }
   }
 
-  container.replaceChildren(NotFoundPage());
+  container.replaceChildren(await NotFoundPage());
 };

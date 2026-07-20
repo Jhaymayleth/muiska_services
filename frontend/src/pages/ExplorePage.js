@@ -5,6 +5,8 @@ import { loadTemplate } from "../utils/templateLoader.js";
 
 const ExplorePage = async () => {
   const template = loadTemplate("ExplorePage");
+  const emptyStateHtml = loadTemplate("ExploreStates").match(/id="explore-empty-state">([\s\S]*?)<\/script>/)[1];
+  const errorStateHtml = loadTemplate("ExploreStates").match(/id="explore-error-state">([\s\S]*?)<\/script>/)[1];
   const section = document.createElement("section");
   section.className = "space-y-6";
 
@@ -20,10 +22,6 @@ const ExplorePage = async () => {
   const form = section.querySelector("#filter-form");
   const categorySelect = section.querySelector("#category");
   const clearBtn = section.querySelector("#clear-filters");
-
-  // Load state templates
-  const emptyStateHtml = section.querySelector("#explore-empty-state").textContent;
-  const errorStateHtml = section.querySelector("#explore-error-state").textContent;
 
   const render = async () => {
     grid.innerHTML = '<div class="col-span-full flex justify-center py-8"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>';
