@@ -8,8 +8,9 @@ import CreateListingPage from "../pages/CreateListingPage.js";
 import EditListingPage from "../pages/EditListingPage.js";
 import PublicationDetailPage from "../pages/PublicationDetailPage.js";
 import ProfilePage from "../pages/ProfilePage.js";
+import VerificacionPendientePage from "../pages/VerificacionPendientePage.js";
 import NotFoundPage from "../pages/NotFoundPage.js";
-import { isAuthenticated, isAdmin, isRouteProtected, isGuestRoute } from "../utils/auth.js";
+import { isAuthenticated, isAdmin, isRouteProtected, isGuestRoute, getUser, sessionStore } from "../utils/auth.js";
 
 const routes = {
   "/": HomePage,
@@ -20,6 +21,7 @@ const routes = {
   "/admin": AdminPage,
   "/crear-publicacion": CreateListingPage,
   "/perfil": ProfilePage,
+  "/verificacion-pendiente": VerificacionPendientePage,
 };
 
 const dynamicRoutes = [
@@ -50,6 +52,16 @@ const checkAuth = (path) => {
   if (path === "/admin" && !isAdmin()) {
     navigateTo("/dashboard");
     return false;
+  }
+
+  // Redirigir vendedor no verificado a /verificacion-pendiente (excepto si ya está ahí)
+  const user = getUser();
+  if (user && user.tipo_usuario === "vendedor" && user.estado_verificacion !== "aprobado") {
+    const allowedPaths = ["/verificacion-pendiente", "/perfil", "/login", "/registro", "/explorar", "/"];
+    if (!allowedPaths.includes(path) && !path.startsWith("/publicacion/")) {
+      navigateTo("/verificacion-pendiente");
+      return false;
+    }
   }
 
   return true;

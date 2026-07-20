@@ -21,6 +21,7 @@ const RegisterPage = () => {
     const email = form.email.value.trim();
     const password = form.password.value;
     const passwordConfirm = form["password-confirm"].value;
+    const tipoUsuario = form.tipoUsuario?.value || "cliente";
 
     // Validaciones
     if (!name || !email || !password || !passwordConfirm) {
@@ -55,10 +56,17 @@ const RegisterPage = () => {
     }
 
     try {
-      const result = await api.register({ name, email, password });
+      const result = await api.register({ name, email, password, tipoUsuario });
       localStorage.setItem("token", result.token);
       localStorage.setItem("user", JSON.stringify(result.user));
-      const redirectPath = result.user.role === "admin" ? "/admin" : "/dashboard";
+      
+      // Redirigir según tipo de usuario y estado de verificación
+      let redirectPath = "/dashboard";
+      if (result.user.tipo_usuario === "vendedor" && result.user.estado_verificacion !== "aprobado") {
+        redirectPath = "/verificacion-pendiente";
+      } else if (result.user.role === "admin") {
+        redirectPath = "/admin";
+      }
       navigateTo(redirectPath);
     } catch (err) {
       errorEl.textContent = err.message || "Error al registrarse.";

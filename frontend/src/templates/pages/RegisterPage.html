@@ -47,6 +47,36 @@
       class="mt-1 w-full rounded-lg border border-border bg-background px-4 py-2 text-sm text-text outline-none focus:border-primary"
     />
   </div>
+  <div>
+    <label class="block text-sm font-medium text-text mb-2">Tipo de cuenta</label>
+    <div class="grid grid-cols-2 gap-3">
+      <label class="relative cursor-pointer">
+        <input
+          type="radio"
+          name="tipoUsuario"
+          value="cliente"
+          checked
+          class="sr-only peer"
+        />
+        <div class="rounded-lg border-2 border-border bg-white p-4 text-center text-sm font-medium text-text peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary">
+          <div class="font-semibold">Cliente</div>
+          <div class="text-xs text-text/60 mt-1">Buscar y contactar vendedores</div>
+        </div>
+      </label>
+      <label class="relative cursor-pointer">
+        <input
+          type="radio"
+          name="tipoUsuario"
+          value="vendedor"
+          class="sr-only peer"
+        />
+        <div class="rounded-lg border-2 border-border bg-white p-4 text-center text-sm font-medium text-text peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary">
+          <div class="font-semibold">Vendedor/Emprendedor</div>
+          <div class="text-xs text-text/60 mt-1">Vender productos/servicios (requiere verificación)</div>
+        </div>
+      </label>
+    </div>
+  </div>
   <button
     type="submit"
     class="w-full rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-hover"
