@@ -130,11 +130,13 @@ El enrutador (`router/router.js`) resuelve las siguientes vistas mediante `histo
 /                          → Home
 /explorar                  → Explorar publicaciones
 /login                     → Inicio de sesión
-/registro                  → Registro de usuario
+/registro                  → Registro de usuario (selector Cliente / Vendedor)
+/verificacion-pendiente    → Pantalla espera verificación vendedor
 /dashboard                 → Panel del usuario
 /admin                     → Panel administrativo
 /crear-publicacion         → Crear nueva publicación
 /editar-publicacion/:id    → Editar publicación existente
+/perfil                    → Perfil del usuario
 *                          → Página no encontrada
 ```
 
@@ -165,22 +167,16 @@ Esto construye y levanta los servicios de `postgres`, `backend` y `frontend`.
 
 La base de datos se inicializa con usuarios de prueba para acceso directo al panel:
 
-- Admin
+- **Admin**
   - Email: `admin@admin.com`
   - Contraseña: `Admin123!`
-- Usuario normal
+- **Usuario normal (cliente)**
   - Email: `user@user.com`
   - Contraseña: `User123!`
 
 Si usas el modo manual con `backend/src/db/init.sql`, esta semilla también aplica.
 
-### 3. Ver el estado de los servicios
-
-```bash
-docker compose ps
-```
-
-### 4. Detener los servicios
+### 4. Ver el estado de los servicios
 
 ```bash
 docker compose down
