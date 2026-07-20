@@ -3,12 +3,13 @@ import { navigateTo } from "../router/router.js";
 import { isAuthenticated, sessionStore } from "../utils/auth.js";
 import { toggleFavorite, checkFavorite } from "../services/publication.service.js";
 import { loadTemplate } from "../utils/templateLoader.js";
+import { formatDate, escapeHtml } from "../utils/helpers.js";
 
 const PublicationDetailPage = () => {
   const section = document.createElement("section");
   section.className = "mx-auto max-w-3xl space-y-6";
 
-  // Load the base template with loading state
+  // Load base template (loading state + detail-template script)
   const baseTemplate = loadTemplate("PublicationDetailPage");
   section.innerHTML = baseTemplate;
 
@@ -18,13 +19,18 @@ const PublicationDetailPage = () => {
   const pathParts = window.location.pathname.split("/");
   const publicationId = pathParts[pathParts.length - 1];
 
+  // Load sub-templates
+  const detailTemplate = loadTemplate("PublicationDetail");
+  const favButtonTemplate = loadTemplate("FavoriteButton");
+
   const renderFavButton = (favorited) => {
-    return `<button class="detail-fav-btn p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-sm transition-all hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary" aria-label="${favorited ? "Quitar de favoritos" : "Agregar a favoritos"}" title="${favorited ? "Quitar de favoritos" : "Agregar a favoritos"}">
-      ${favorited 
-        ? '<svg class="w-6 h-6 text-red-500 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'
-        : '<svg class="w-6 h-6 text-text/40 hover:text-red-500 transition-colors" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'
-      }
-    </button>`;
+    const icon = favorited
+      ? '<svg class="w-6 h-6 text-red-500 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'
+      : '<svg class="w-6 h-6 text-text/40 hover:text-red-500 transition-colors" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
+    return favButtonTemplate
+      .replace("{{icon}}", icon)
+      .replace("{{ariaLabel}}", favorited ? "Quitar de favoritos" : "Agregar a favoritos")
+      .replace("{{title}}", favorited ? "Quitar de favoritos" : "Agregar a favoritos");
   };
 
   api.getPublication(publicationId).then((pub) => {
@@ -37,11 +43,11 @@ const PublicationDetailPage = () => {
     // Build images HTML
     let imagesHtml = "";
     if (images.length > 0) {
-      imagesHtml = `<div class="rounded-xl overflow-hidden"><div class="relative aspect-video overflow-hidden" id="main-image"><img src="${images[0]}" alt="${pub.title}" class="w-full h-full object-cover" /></div>`;
+      imagesHtml = `<div class="rounded-xl overflow-hidden"><div class="relative aspect-video overflow-hidden" id="main-image"><img src="${images[0]}" alt="${escapeHtml(pub.title)}" class="w-full h-full object-cover" /></div>`;
       if (images.length > 1) {
         imagesHtml += `<div class="flex gap-2 mt-3 overflow-x-auto pb-2" id="thumbnails">`;
         images.forEach((img, i) => {
-          imagesHtml += `<button data-index="${i}" class="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition ${i === 0 ? "border-primary" : "border-transparent hover:border-border"}" aria-label="Ver imagen ${i + 1}"><img src="${img}" alt="${pub.title} - miniatura ${i + 1}" class="w-full h-full object-cover" /></button>`;
+          imagesHtml += `<button data-index="${i}" class="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition ${i === 0 ? "border-primary" : "border-transparent hover:border-border"}" aria-label="Ver imagen ${i + 1}"><img src="${img}" alt="${escapeHtml(pub.title)} - miniatura ${i + 1}" class="w-full h-full object-cover" /></button>`;
         });
         imagesHtml += `</div>`;
       }
@@ -52,19 +58,24 @@ const PublicationDetailPage = () => {
 
     // Meta info
     let metaHtml = `<span class="flex items-center gap-1">📅 ${new Date(pub.created_at).toLocaleDateString("es-ES")}</span>`;
-    if (pub.location) metaHtml += `<span class="flex items-center gap-1">📍 ${pub.location}</span>`;
-    if (pub.contact_method) metaHtml += `<span class="flex items-center gap-1">📞 ${pub.contact_method}</span>`;
-    metaHtml += `<span class="flex items-center gap-1 rounded-full bg-${pub.status === "active" ? "green" : pub.status === "sold" ? "blue" : "gray"}-100 px-2 py-1 text-${pub.status === "active" ? "green" : pub.status === "sold" ? "blue" : "gray"}-700 capitalize">${pub.status}</span>`;
+    if (pub.location) metaHtml += `<span class="flex items-center gap-1">📍 ${escapeHtml(pub.location)}</span>`;
+    if (pub.contact_method) metaHtml += `<span class="flex items-center gap-1">📞 ${escapeHtml(pub.contact_method)}</span>`;
+    const statusConfig = {
+      active: { label: "Activa", bg: "green", text: "green" },
+      sold: { label: "Vendida", bg: "blue", text: "blue" },
+      inactive: { label: "Inactiva", bg: "gray", text: "gray" },
+    };
+    const sc = statusConfig[pub.status] || statusConfig.inactive;
+    metaHtml += `<span class="flex items-center gap-1 rounded-full bg-${sc.bg}-100 px-2 py-1 text-${sc.text}-700 capitalize">${sc.label}</span>`;
 
-    // Load detail template and replace placeholders
-    const detailTemplate = section.querySelector("#detail-template").textContent;
+    // Render detail template
     const html = detailTemplate
       .replace("{{imagesHtml}}", imagesHtml)
-      .replace("{{title}}", pub.title)
-      .replace("{{category}}", pub.category || "Sin categoría")
+      .replace("{{title}}", escapeHtml(pub.title))
+      .replace("{{category}}", escapeHtml(pub.category || "Sin categoría"))
       .replace("{{price}}", pub.price ? parseFloat(pub.price).toFixed(2) : "0.00")
       .replace("{{metaHtml}}", metaHtml)
-      .replace("{{description}}", pub.description || "Sin descripción")
+      .replace("{{description}}", escapeHtml(pub.description || "Sin descripción"))
       .replace("<!-- FAV_BTN_PLACEHOLDER -->", renderFavButton(false));
 
     container.innerHTML = html;
@@ -75,7 +86,7 @@ const PublicationDetailPage = () => {
         isFavorited = result.favorited;
         const favBtn = container.querySelector(".detail-fav-btn");
         if (favBtn) {
-          favBtn.innerHTML = isFavorited 
+          favBtn.innerHTML = isFavorited
             ? '<svg class="w-6 h-6 text-red-500 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'
             : '<svg class="w-6 h-6 text-text/40 hover:text-red-500 transition-colors" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
           favBtn.setAttribute("aria-label", isFavorited ? "Quitar de favoritos" : "Agregar a favoritos");
@@ -153,7 +164,7 @@ const PublicationDetailPage = () => {
       });
     }
   }).catch((err) => {
-    container.innerHTML = `<div class="rounded-xl border border-dashed border-border bg-muted/40 p-8 text-center"><svg class="mx-auto h-12 w-12 text-text/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg><h3 class="mt-4 text-lg font-semibold">Publicación no encontrada</h3><p class="mt-2 text-sm text-text/70">${err.message || "No existe o ha sido eliminada"}</p><a href="/explorar" class="mt-4 inline-block rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-hover">Volver a explorar</a></div>`;
+    container.innerHTML = `<div class="rounded-xl border border-dashed border-border bg-muted/40 p-8 text-center"><svg class="mx-auto h-12 w-12 text-text/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg><h3 class="mt-4 text-lg font-semibold">Publicación no encontrada</h3><p class="mt-2 text-sm text-text/70">${escapeHtml(err.message || "No existe o ha sido eliminada")}</p><a href="/explorar" class="mt-4 inline-block rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-hover">Volver a explorar</a></div>`;
   });
 
   return section;
