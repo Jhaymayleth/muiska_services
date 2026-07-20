@@ -141,26 +141,44 @@ export const AdminUsers = {
     tbody.innerHTML = users
       .map((u) => {
         const isMe = u.id === this.currentUser;
-        return this.rowTemplate
-          .replace("{{name}}", escapeHtml(u.name || "Sin nombre"))
-          .replace("{{email}}", escapeHtml(u.email))
-          .replace("{{isMe}}", isMe ? '<span class="text-muted text-xs">(tú)</span>' : "")
-          .replace("{{id}}", u.id)
-          .replace("{{isUser}}", u.role === "user" ? "selected" : "")
-          .replace("{{isAdmin}}", u.role === "admin" ? "selected" : "")
-          .replace("{{statusClass}}", u.is_banned ? "banned" : "active")
-          .replace("{{statusLabel}}", u.is_banned ? "Suspendido" : "Activo")
-          .replace("{{publicationCount}}", u.publication_count)
-          .replace("{{date}}", formatDate(u.created_at))
-          .replace("{{isMe}}", isMe ? '<span class="text-xs text-muted">Tu cuenta está protegida</span>' : `
+        const meLabel = isMe ? ' <span class="text-muted text-xs">(tú)</span>' : "";
+        const rowClass = isMe ? "admin-table__row--current" : "";
+        const meDisabled = isMe ? "disabled" : "";
+        const isUserSelected = u.role === "user" ? "selected" : "";
+        const isAdminSelected = u.role === "admin" ? "selected" : "";
+        const statusClass = u.is_banned ? "banned" : "active";
+        const statusLabel = u.is_banned ? "Suspendido" : "Activo";
+
+        let actions;
+        if (isMe) {
+          actions = '<span class="text-xs text-muted">Tu cuenta está protegida</span>';
+        } else {
+          const banBtnClass = u.is_banned ? "btn--success" : "";
+          const banBtnText = u.is_banned ? "Restablecer" : "Suspender";
+          actions = `
             <div class="flex justify-end gap-2">
-              <button data-action="ban" data-user-id="${u.id}" data-banned="${u.is_banned}" class="btn btn--ghost btn--sm ${u.is_banned ? "btn--success" : ""}">
-                ${u.is_banned ? "Restablecer" : "Suspender"}
+              <button data-action="ban" data-user-id="${u.id}" data-banned="${u.is_banned}" class="btn btn--ghost btn--sm ${banBtnClass}">
+                ${banBtnText}
               </button>
               <button data-action="delete" data-user-id="${u.id}" data-user-name="${escapeHtml(u.name || "Sin nombre")}" class="btn btn--danger btn--sm">Eliminar</button>
             </div>
-          `)
-          .replace("{{isMe}}", isMe ? "admin-table__row--current" : "");
+          `;
+        }
+
+        return this.rowTemplate
+          .replace("{{rowClass}}", rowClass)
+          .replace("{{name}}", escapeHtml(u.name || "Sin nombre"))
+          .replace("{{meLabel}}", meLabel)
+          .replace("{{email}}", escapeHtml(u.email))
+          .replace("{{id}}", u.id)
+          .replace("{{meDisabled}}", meDisabled)
+          .replace("{{isUserSelected}}", isUserSelected)
+          .replace("{{isAdminSelected}}", isAdminSelected)
+          .replace("{{statusClass}}", statusClass)
+          .replace("{{statusLabel}}", statusLabel)
+          .replace("{{publicationCount}}", u.publication_count)
+          .replace("{{date}}", formatDate(u.created_at))
+          .replace("{{actions}}", actions);
       })
       .join("");
   },

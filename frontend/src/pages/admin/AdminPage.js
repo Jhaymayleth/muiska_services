@@ -99,6 +99,7 @@ export default function AdminPage() {
         AdminCategories.init(panel);
         break;
       case "users":
+        panel.dataset.currentUserId = user.id;
         AdminUsers.init(panel);
         break;
     }

@@ -19,15 +19,15 @@
 
 <!-- Fila individual de usuario -->
 <script type="template" id="admin-user-row">
-  <tr class="{{isMe ? 'admin-table__row--current' : ''}}">
+  <tr class="{{rowClass}}">
     <td>
-      <p class="font-semibold">{{name}}{{#if isMe}} <span class="text-muted text-xs">(tú)</span>{{/if}}</p>
+      <p class="font-semibold">{{name}}{{meLabel}}</p>
       <p class="text-xs text-muted">{{email}}</p>
     </td>
     <td>
-      <select data-role-id="{{id}}" {{#if isMe}}disabled{{/if}} class="form-select form-select--sm">
-        <option value="user" {{#if isUser}}selected{{/if}}>Usuario</option>
-        <option value="admin" {{#if isAdmin}}selected{{/if}}>Administrador</option>
+      <select data-role-id="{{id}}" {{meDisabled}} class="form-select form-select--sm">
+        <option value="user" {{isUserSelected}}>Usuario</option>
+        <option value="admin" {{isAdminSelected}}>Administrador</option>
       </select>
     </td>
     <td>
@@ -38,16 +38,7 @@
     <td class="font-medium text-muted">{{publicationCount}}</td>
     <td class="text-muted">{{date}}</td>
     <td class="text-right">
-      {{#if isMe}}
-        <span class="text-xs text-muted">Tu cuenta está protegida</span>
-      {{else}}
-        <div class="flex justify-end gap-2">
-          <button data-action="ban" data-user-id="{{id}}" data-banned="{{isBanned}}" class="btn btn--ghost btn--sm {{#if isBanned}}btn--success{{/if}}">
-            {{#if isBanned}}Restablecer{{else}}Suspender{{/if}}
-          </button>
-          <button data-action="delete" data-user-id="{{id}}" data-user-name="{{name}}" class="btn btn--danger btn--sm">Eliminar</button>
-        </div>
-      {{/if}}
+      {{actions}}
     </td>
   </tr>
 </script>
