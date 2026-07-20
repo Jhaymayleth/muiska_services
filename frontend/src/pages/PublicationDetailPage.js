@@ -61,12 +61,12 @@ const PublicationDetailPage = () => {
     if (pub.location) metaHtml += `<span class="flex items-center gap-1">📍 ${escapeHtml(pub.location)}</span>`;
     if (pub.contact_method) metaHtml += `<span class="flex items-center gap-1">📞 ${escapeHtml(pub.contact_method)}</span>`;
     const statusConfig = {
-      active: { label: "Activa", bg: "green", text: "green" },
-      sold: { label: "Vendida", bg: "blue", text: "blue" },
-      inactive: { label: "Inactiva", bg: "gray", text: "gray" },
+      active: { label: "Activa", classes: "bg-green-100 text-green-700" },
+      sold: { label: "Vendida", classes: "bg-blue-100 text-blue-700" },
+      inactive: { label: "Inactiva", classes: "bg-gray-100 text-gray-700" },
     };
     const sc = statusConfig[pub.status] || statusConfig.inactive;
-    metaHtml += `<span class="flex items-center gap-1 rounded-full bg-${sc.bg}-100 px-2 py-1 text-${sc.text}-700 capitalize">${sc.label}</span>`;
+    metaHtml += `<span class="flex items-center gap-1 rounded-full ${sc.classes} px-2 py-1 capitalize">${sc.label}</span>`;
 
     // Render detail template
     const html = detailTemplate
