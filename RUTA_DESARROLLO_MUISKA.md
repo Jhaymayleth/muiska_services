@@ -257,12 +257,12 @@ CREATE TABLE reviews (
 - [x] Rutas: `/api/verificaciones`, `/api/notificaciones`, `/api/admin/verificadores`
 - [x] Controllers: `verification.controller.js`, `notification.controller.js`
 
-#### Frontend (Pendiente)
-- [ ] RegisterPage: selector "Cliente" / "Vendedor/Emprendedor" (NO verificador/admin)
-- [ ] VerificationPendingPage: pantalla loading "Tu perfil en verificación..."
-- [ ] NotificationStore + toast notifications + badge en header
-- [ ] Auth guard: redirigir vendedor no verificado a /verificacion-pendiente
-- [ ] Header: badge notificaciones + dropdown
+#### Frontend ✅ (Completado)
+- [x] RegisterPage: selector "Cliente" / "Vendedor/Emprendedor" (NO verificador/admin)
+- [x] VerificacionPendientePage: pantalla loading "Tu perfil en verificación..."
+- [x] NotificationStore + toast notifications + badge en header
+- [x] Auth guard: redirigir vendedor no verificado a /verificacion-pendiente
+- [x] Header: badge notificaciones + dropdown
 
 ---
 
