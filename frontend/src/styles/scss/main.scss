@@ -1,0 +1,19 @@
+// Archivo principal SCSS - importa todo y genera el CSS final
+
+// 1. Fundaciones (variables, reset)
+@use "foundations/variables" as *;
+@use "foundations/reset";
+
+// 2. Componentes
+@use "components/card";
+@use "components/badge";
+@use "components/buttons";
+@use "components/forms";
+@use "components/modals";
+@use "components/tables";
+@use "components/pagination";
+@use "components/layout";
+
+// 3. Aquí se pueden agregar estilos globales adicionales si hace falta
+// Por ahora, las utilidades de Tailwind siguen manejando la mayor parte del styling
+// Este archivo compila las clases semánticas (.btn, .form-control, .modal, .table, etc.)

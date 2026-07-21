@@ -1,11 +1,12 @@
-import { pool } from "../config/database.js";
+import { categoryService } from "../services/category.service.js";
+import { validateCreateCategory, validateUpdateCategory } from "../validators/category.validator.js";
 
-export const getAll = async (_req, res, next) => {
+// Controlador de categorías: solo maneja HTTP, delega a categoryService
+
+export const getAll = async (req, res, next) => {
   try {
-    const result = await pool.query(
-      "SELECT id, name, slug, description, created_at FROM categories ORDER BY name ASC"
-    );
-    res.json(result.rows);
+    const categories = await categoryService.getAll();
+    res.json(categories);
   } catch (error) {
     next(error);
   }
@@ -14,40 +15,27 @@ export const getAll = async (_req, res, next) => {
 export const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const result = await pool.query(
-      "SELECT id, name, slug, description, created_at FROM categories WHERE id = $1",
-      [id]
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Categoría no encontrada" });
-    }
-
-    res.json(result.rows[0]);
+    const category = await categoryService.getById(id);
+    res.json(category);
   } catch (error) {
+    if (error.code === "NOT_FOUND") {
+      return res.status(404).json({ message: error.message });
+    }
     next(error);
   }
 };
 
 export const create = async (req, res, next) => {
   try {
-    const { name, description } = req.body;
-
-    if (!name) {
-      return res.status(400).json({ message: "El nombre es obligatorio" });
+    // Validar entrada
+    const errors = validateCreateCategory(req.body);
+    if (errors.length > 0) {
+      return res.status(400).json({ message: errors[0] });
     }
 
-    const slug = name
-      .toLowerCase()
-      .replace(/[^a-z0-9áéíóúñü]+/g, "-")
-      .replace(/^-|-$/g, "");
-
-    const result = await pool.query(
-      "INSERT INTO categories (name, slug, description) VALUES ($1, $2, $3) RETURNING id, name, slug, description, created_at",
-      [name, slug, description || null]
-    );
-
-    res.status(201).json(result.rows[0]);
+    // Delegar al servicio
+    const category = await categoryService.create(req.body);
+    res.status(201).json(category);
   } catch (error) {
     if (error.code === "23505") {
       return res.status(409).json({ message: "La categoría ya existe" });
@@ -59,28 +47,20 @@ export const create = async (req, res, next) => {
 export const update = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { name, description } = req.body;
 
-    if (!name) {
-      return res.status(400).json({ message: "El nombre es obligatorio" });
+    // Validar entrada
+    const errors = validateUpdateCategory(req.body);
+    if (errors.length > 0) {
+      return res.status(400).json({ message: errors[0] });
     }
 
-    const slug = name
-      .toLowerCase()
-      .replace(/[^a-z0-9áéíóúñü]+/g, "-")
-      .replace(/^-|-$/g, "");
-
-    const result = await pool.query(
-      "UPDATE categories SET name = $1, slug = $2, description = COALESCE($3, description) WHERE id = $4 RETURNING id, name, slug, description, created_at",
-      [name, slug, description, id]
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Categoría no encontrada" });
-    }
-
-    res.json(result.rows[0]);
+    // Delegar al servicio
+    const category = await categoryService.update(id, req.body);
+    res.json(category);
   } catch (error) {
+    if (error.code === "NOT_FOUND") {
+      return res.status(404).json({ message: error.message });
+    }
     if (error.code === "23505") {
       return res.status(409).json({ message: "La categoría ya existe" });
     }
@@ -91,17 +71,12 @@ export const update = async (req, res, next) => {
 export const remove = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const result = await pool.query(
-      "DELETE FROM categories WHERE id = $1 RETURNING id",
-      [id]
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Categoría no encontrada" });
-    }
-
-    res.json({ message: "Categoría eliminada" });
+    const result = await categoryService.remove(id);
+    res.json(result);
   } catch (error) {
+    if (error.code === "NOT_FOUND") {
+      return res.status(404).json({ message: error.message });
+    }
     next(error);
   }
 };

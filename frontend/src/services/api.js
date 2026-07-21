@@ -185,4 +185,68 @@ export const api = {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
   },
+
+  // Notificaciones
+  getNotifications(params = {}) {
+    const query = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        query.append(key, value);
+      }
+    });
+    return this.request(`/notificaciones?${query.toString()}`);
+  },
+
+  markNotificationRead(id) {
+    return this.request(`/notificaciones/${id}/leer`, { method: "PATCH" });
+  },
+
+  markAllNotificationsRead() {
+    return this.request("/notificaciones/leer-todas", { method: "POST" });
+  },
+
+  deleteNotification(id) {
+    return this.request(`/notificaciones/${id}`, { method: "DELETE" });
+  },
+
+  // Verificaciones
+  getMyVerificationStatus() {
+    return this.request("/verificaciones/mi-estado");
+  },
+
+  getPendingVerifications() {
+    return this.request("/verificaciones/pendientes");
+  },
+
+  getVerificationById(id) {
+    return this.request(`/verificaciones/${id}`);
+  },
+
+  approveVerification(id) {
+    return this.request(`/verificaciones/${id}/aprobar`, { method: "POST" });
+  },
+
+  rejectVerification(id, motivo) {
+    return this.request(`/verificaciones/${id}/rechazar`, {
+      method: "POST",
+      body: JSON.stringify({ motivo }),
+    });
+  },
+
+  getMyVerificationHistory() {
+    return this.request("/verificaciones/historial/mio");
+  },
+
+  // Admin - Verificadores
+  getVerificadores() {
+    return this.request("/admin/verificadores");
+  },
+
+  assignVerifier(id) {
+    return this.request(`/admin/verificadores/${id}`, { method: "POST" });
+  },
+
+  removeVerifier(id) {
+    return this.request(`/admin/verificadores/${id}`, { method: "DELETE" });
+  },
 };

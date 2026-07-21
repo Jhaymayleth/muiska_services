@@ -1,0 +1,22 @@
+<!-- Panel de Gestión de Usuarios -->
+<div id="panel-users" class="admin-panel" role="tabpanel" aria-labelledby="tab-users" hidden>
+  <section class="admin-card">
+    <div class="admin-card__header admin-card__header--split">
+      <div>
+        <p class="admin-card__label">Administración de acceso</p>
+        <h2 class="admin-card__title">Gestión de usuarios</h2>
+        <p class="admin-card__subtitle">Cambia roles, suspende el acceso o elimina cuentas y sus publicaciones.</p>
+      </div>
+      <form id="user-search-form" class="admin-search-form" role="search">
+        <input id="user-search" type="search" placeholder="Buscar nombre o correo" class="form-input" style="min-width: 0; flex: 1;" aria-label="Buscar usuario">
+        <button type="submit" class="btn btn--primary">Buscar</button>
+      </form>
+    </div>
+
+    <div id="user-management-message" class="admin-message hidden" role="status" aria-live="polite"></div>
+
+    <div id="admin-users" class="admin-table-wrapper">
+      <p class="admin-loading">Cargando usuarios…</p>
+    </div>
+  </section>
+</div>

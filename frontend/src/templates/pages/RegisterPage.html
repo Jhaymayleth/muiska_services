@@ -1,0 +1,91 @@
+<h1 class="text-3xl font-semibold text-primary">Crear Cuenta</h1>
+<form id="register-form" class="space-y-4">
+  <div>
+    <label for="name" class="block text-sm font-medium text-text">Nombre completo</label>
+    <input
+      type="text"
+      id="name"
+      name="name"
+      required
+      placeholder="Juan Pérez"
+      class="mt-1 w-full rounded-lg border border-border bg-background px-4 py-2 text-sm text-text outline-none focus:border-primary"
+    />
+    <p class="mt-1 text-xs text-text/60">Mínimo 3 caracteres</p>
+  </div>
+  <div>
+    <label for="email" class="block text-sm font-medium text-text">Correo electrónico</label>
+    <input
+      type="email"
+      id="email"
+      name="email"
+      required
+      placeholder="tu@correo.com"
+      class="mt-1 w-full rounded-lg border border-border bg-background px-4 py-2 text-sm text-text outline-none focus:border-primary"
+    />
+    <p class="mt-1 text-xs text-text/60">Usarás esto para iniciar sesión</p>
+  </div>
+  <div>
+    <label for="password" class="block text-sm font-medium text-text">Contraseña</label>
+    <input
+      type="password"
+      id="password"
+      name="password"
+      required
+      placeholder="••••••••"
+      class="mt-1 w-full rounded-lg border border-border bg-background px-4 py-2 text-sm text-text outline-none focus:border-primary"
+    />
+    <p class="mt-1 text-xs text-text/60">Mínimo 6 caracteres</p>
+  </div>
+  <div>
+    <label for="password-confirm" class="block text-sm font-medium text-text">Confirmar contraseña</label>
+    <input
+      type="password"
+      id="password-confirm"
+      name="password-confirm"
+      required
+      placeholder="••••••••"
+      class="mt-1 w-full rounded-lg border border-border bg-background px-4 py-2 text-sm text-text outline-none focus:border-primary"
+    />
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-text mb-2">Tipo de cuenta</label>
+    <div class="grid grid-cols-2 gap-3">
+      <label class="relative cursor-pointer">
+        <input
+          type="radio"
+          name="tipoUsuario"
+          value="cliente"
+          checked
+          class="sr-only peer"
+        />
+        <div class="rounded-lg border-2 border-border bg-white p-4 text-center text-sm font-medium text-text peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary">
+          <div class="font-semibold">Cliente</div>
+          <div class="text-xs text-text/60 mt-1">Buscar y contactar vendedores</div>
+        </div>
+      </label>
+      <label class="relative cursor-pointer">
+        <input
+          type="radio"
+          name="tipoUsuario"
+          value="vendedor"
+          class="sr-only peer"
+        />
+        <div class="rounded-lg border-2 border-border bg-white p-4 text-center text-sm font-medium text-text peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary">
+          <div class="font-semibold">Vendedor/Emprendedor</div>
+          <div class="text-xs text-text/60 mt-1">Vender productos/servicios (requiere verificación)</div>
+        </div>
+      </label>
+    </div>
+  </div>
+  <button
+    type="submit"
+    class="w-full rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-hover"
+  >
+    Registrarse
+  </button>
+</form>
+<p id="register-error" class="hidden rounded-lg bg-red-50 p-3 text-sm text-red-600"></p>
+<p class="text-center text-sm text-text/70">
+  ¿Ya tienes cuenta?
+  <a href="/login" class="font-semibold text-primary hover:underline">Inicia sesión</a>
+</p>

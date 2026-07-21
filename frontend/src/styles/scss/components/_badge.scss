@@ -1,0 +1,59 @@
+@use "../foundations/variables" as *;
+
+// Mixin base para badges
+@mixin badge($bg-color: $color-accent, $text-color: white) {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;     // px-2 py-0.5
+  font-size: 0.75rem;           // text-xs
+  font-weight: 600;
+  border-radius: 9999px;        // rounded-full
+  background-color: $bg-color;
+  color: $text-color;
+  white-space: nowrap;
+}
+
+// Clases de utilidad para badges
+.badge {
+  @include badge();
+
+  // Variantes de estado de publicación
+  &--active {
+    @include badge($color-accent, white);
+  }
+
+  &--sold {
+    @include badge($color-primary, white);
+  }
+
+  &--inactive {
+    @include badge($color-muted, $color-text);
+  }
+
+  // Variantes de rol
+  &--admin {
+    @include badge($color-primary, white);
+  }
+
+  &--user {
+    @include badge($color-accent, white);
+  }
+
+  // Tamaños
+  &--sm {
+    padding: 0.125rem 0.375rem;
+    font-size: 0.625rem;
+  }
+
+  &--lg {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+  }
+}
+
+// Badge específico para precios (si se necesita)
+.price-badge {
+  @include badge($color-primary, white);
+  font-family: $font-display;
+  font-weight: 700;
+}

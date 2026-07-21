@@ -1,0 +1,187 @@
+@use "../foundations/variables" as *;
+
+// ============================================================
+// LAYOUT - Page structure utilities
+// ============================================================
+
+// Container
+.container {
+  width: 100%;
+  max-width: 80rem;    // max-w-7xl
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: $spacing-lg;   // px-4
+  padding-right: $spacing-lg;
+
+  @media (min-width: 640px) {
+    padding-left: $spacing-xl;  // md:px-6
+    padding-right: $spacing-xl;
+  }
+
+  @media (min-width: 1024px) {
+    padding-left: $spacing-2xl;  // lg:px-8
+    padding-right: $spacing-2xl;
+  }
+
+  // Sizes
+  &--sm { max-width: 40rem; }   // max-w-2xl
+  &--md { max-width: 48rem; }   // max-w-3xl
+  &--lg { max-width: 64rem; }   // max-w-5xl
+  &--xl { max-width: 80rem; }   // max-w-7xl
+  &--full { max-width: 100%; }  // max-w-full
+}
+
+// Section spacing
+.section {
+  padding-top: $spacing-3xl;   // py-16
+  padding-bottom: $spacing-3xl;
+
+  @media (min-width: 640px) {
+    padding-top: $spacing-4xl;   // sm:py-24
+    padding-bottom: $spacing-4xl;
+  }
+
+  @media (min-width: 1024px) {
+    padding-top: $spacing-5xl;   // lg:py-32
+    padding-bottom: $spacing-5xl;
+  }
+
+  &--sm { padding-top: $spacing-xl; padding-bottom: $spacing-xl; }
+  &--lg { padding-top: $spacing-5xl; padding-bottom: $spacing-5xl; }
+  &--xl { padding-top: 10rem; padding-bottom: 10rem; }
+}
+
+// Grid utilities
+.grid {
+  display: grid;
+  gap: $spacing-lg;
+
+  @media (min-width: 640px) {
+    &--cols-2-sm { grid-template-columns: repeat(2, 1fr); }
+    &--cols-3-sm { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  @media (min-width: 768px) {
+    &--cols-2-md { grid-template-columns: repeat(2, 1fr); }
+    &--cols-3-md { grid-template-columns: repeat(3, 1fr); }
+    &--cols-4-md { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  @media (min-width: 1024px) {
+    &--cols-2-lg { grid-template-columns: repeat(2, 1fr); }
+    &--cols-3-lg { grid-template-columns: repeat(3, 1fr); }
+    &--cols-4-lg { grid-template-columns: repeat(4, 1fr); }
+    &--cols-5-lg { grid-template-columns: repeat(5, 1fr); }
+  }
+
+  // Responsive variants
+  &--1 { grid-template-columns: 1fr; }
+  &--2 { grid-template-columns: repeat(2, 1fr); }
+  &--3 { grid-template-columns: repeat(3, 1fr); }
+  &--4 { grid-template-columns: repeat(4, 1fr); }
+  &--5 { grid-template-columns: repeat(5, 1fr); }
+  &--6 { grid-template-columns: repeat(6, 1fr); }
+
+  // Gap variants
+  &--gap-none { gap: 0; }
+  &--gap-xs { gap: $spacing-xs; }
+  &--gap-sm { gap: $spacing-sm; }
+  &--gap-md { gap: $spacing-md; }
+  &--gap-lg { gap: $spacing-lg; }
+  &--gap-xl { gap: $spacing-xl; }
+  &--gap-2xl { gap: $spacing-2xl; }
+}
+
+// Flex utilities
+.flex {
+  display: flex;
+
+  &--center {
+    align-items: center;
+    justify-content: center;
+  }
+
+  &--between { justify-content: space-between; }
+  &--around { justify-content: space-around; }
+  &--start { justify-content: flex-start; }
+  &--end { justify-content: flex-end; }
+
+  &--col { flex-direction: column; }
+  &--wrap { flex-wrap: wrap; }
+
+  &--gap-xs { gap: $spacing-xs; }
+  &--gap-sm { gap: $spacing-sm; }
+  &--gap-md { gap: $spacing-md; }
+  &--gap-lg { gap: $spacing-lg; }
+  &--gap-xl { gap: $spacing-xl; }
+
+  &--items-start { align-items: flex-start; }
+  &--items-center { align-items: center; }
+  &--items-end { align-items: flex-end; }
+  &--items-stretch { align-items: stretch; }
+}
+
+// Spacing utilities
+.mt-auto { margin-top: auto; }
+.mb-auto { margin-bottom: auto; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+.my-auto { margin-top: auto; margin-bottom: auto; }
+
+// Visibility
+.hidden { display: none !important; }
+.invisible { visibility: hidden; }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// Overflow
+.overflow-hidden { overflow: hidden; }
+.overflow-auto { overflow: auto; }
+.overflow-x-auto { overflow-x: auto; }
+.overflow-y-auto { overflow-y: auto; }
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Position
+.relative { position: relative; }
+.absolute { position: absolute; }
+.fixed { position: fixed; }
+.sticky { position: sticky; }
+.inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+
+// Z-index
+.z-10 { z-index: 10; }
+.z-20 { z-index: 20; }
+.z-30 { z-index: 30; }
+.z-40 { z-index: 40; }
+.z-50 { z-index: 50; }
+
+// Aspect ratios
+.aspect-square { aspect-ratio: 1 / 1; }
+.aspect-video { aspect-ratio: 16 / 9; }
+.aspect-photo { aspect-ratio: 4 / 3; }
+
+// Screen readers
+@media (max-width: 639px) {
+  .hidden-sm { display: none !important; }
+}
+@media (min-width: 640px) and (max-width: 767px) {
+  .hidden-md { display: none !important; }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .hidden-lg { display: none !important; }
+}
+@media (min-width: 1024px) {
+  .hidden-xl { display: none !important; }
+}

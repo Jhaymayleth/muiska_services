@@ -1,0 +1,26 @@
+<!-- Panel de Gestión de Publicaciones -->
+<div id="panel-publications" class="admin-panel" role="tabpanel" aria-labelledby="tab-publications" hidden>
+  <div class="admin-card">
+    <div class="admin-card__header">
+      <div>
+        <h2 class="admin-card__title">Gestión de publicaciones</h2>
+        <p class="admin-card__subtitle">Lista, filtra y elimina cualquier publicación.</p>
+      </div>
+      <div class="admin-card__filters">
+        <select id="pub-status-filter" class="form-select" aria-label="Filtrar por estado">
+          <option value="">Todos los estados</option>
+          <option value="active">Activas</option>
+          <option value="sold">Vendidas</option>
+          <option value="inactive">Inactivas</option>
+        </select>
+        <input type="search" id="pub-search" placeholder="Buscar título…" class="form-input" style="min-width: 200px;" aria-label="Buscar por título">
+      </div>
+    </div>
+
+    <div id="publications-container" class="admin-table-wrapper">
+      <p class="admin-loading">Cargando publicaciones…</p>
+    </div>
+
+    <div id="publications-pagination" class="admin-pagination" aria-label="Paginación de publicaciones"></div>
+  </div>
+</div>

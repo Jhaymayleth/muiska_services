@@ -1,7 +1,15 @@
 import { renderRoute, navigateTo } from "./router/router.js";
 import Navbar from "./components/layout/Navbar.js";
 import Footer from "./components/layout/Footer.js";
-import { isAdmin, isAuthenticated, isRouteProtected, isGuestRoute } from "./utils/auth.js";
+import { api } from "./services/api.js";
+import {
+  isAdmin,
+  isAuthenticated,
+  isRouteProtected,
+  isGuestRoute,
+  getUser,
+  logout,
+} from "./utils/auth.js";
 
 const App = () => {
   const app = document.createElement("div");
@@ -15,10 +23,22 @@ const App = () => {
 
   const isHome = () => window.location.pathname === "/";
 
+  const refreshUser = async () => {
+    if (!isAuthenticated()) return;
+    const storedUser = getUser();
+    if (storedUser) return;
+
+    try {
+      const currentUser = await api.getMe();
+      localStorage.setItem("user", JSON.stringify(currentUser));
+    } catch (error) {
+      logout();
+    }
+  };
+
   const render = () => {
     const path = window.location.pathname;
 
-    // Proteger rutas que requieren autenticación
     if (isRouteProtected(path) && !isAuthenticated()) {
       navigateTo("/login");
       return;
@@ -29,7 +49,6 @@ const App = () => {
       return;
     }
 
-    // Redirigir a dashboard si ya está autenticado e intenta ir a login/registro
     if (isGuestRoute(path) && isAuthenticated()) {
       navigateTo("/dashboard");
       return;
@@ -56,7 +75,7 @@ const App = () => {
   app.appendChild(layout);
 
   window.addEventListener("popstate", render);
-  render();
+  refreshUser().then(render);
 
   return app;
 };

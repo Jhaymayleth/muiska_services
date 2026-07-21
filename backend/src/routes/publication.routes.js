@@ -7,7 +7,8 @@ import {
   update,
   remove,
 } from "../controllers/publication.controller.js";
-import { verifyToken, optionalAuth } from "../middlewares/auth.middleware.js";
+import { verifyToken } from "../middlewares/auth.middleware.js";
+import { requireVerifiedSeller } from "../middlewares/verification.middleware.js";
 import { upload, handleUploadError } from "../middlewares/upload.middleware.js";
 
 const router = Router();
@@ -18,6 +19,7 @@ router.get("/publications/:id", getById);
 router.post(
   "/publications",
   verifyToken,
+  requireVerifiedSeller,
   upload.array("images", 5),
   handleUploadError,
   create,
