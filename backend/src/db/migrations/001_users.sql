@@ -1,11 +1,9 @@
--- Migración 001: Crear tabla de usuarios
--- Esta es la primera migración, no tiene dependencias
+-- 001_users.sql
+-- Core users table with authentication fields
 
--- Extensión para generar UUIDs aleatorios
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- Tabla de usuarios
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -16,5 +14,7 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- Índice para búsquedas rápidas por email (el UNIQUE ya crea índice, pero lo dejamos explícito)
-CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_role ON users(role);
+CREATE INDEX idx_users_is_banned ON users(is_banned);
+CREATE INDEX idx_users_created_at ON users(created_at DESC);

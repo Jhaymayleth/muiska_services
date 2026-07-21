@@ -81,7 +81,7 @@ export const AdminPublications = {
     this.currentPage = page;
 
     if (tbody) {
-      tbody.innerHTML = '<tr><td colspan="7" class="admin-loading">Cargando…</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" class="admin-loading">Loading…</td></tr>';
     }
 
     try {
@@ -105,7 +105,7 @@ export const AdminPublications = {
     if (!tbody) return;
 
     if (pubs.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No hay publicaciones.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No publications.</td></tr>';
       return;
     }
 
@@ -113,7 +113,7 @@ export const AdminPublications = {
       .map(
         (p) =>
           this.rowTemplate
-            .replace("{{title}}", escapeHtml(p.title || "Sin título"))
+            .replace("{{title}}", escapeHtml(p.title || "No title"))
             .replace("{{category}}", escapeHtml(p.category || "—"))
             .replace("{{statusLabel}}", this.getStatusLabel(p.status))
             .replace("{{statusClass}}", p.status)
@@ -132,10 +132,10 @@ export const AdminPublications = {
     }
 
     const { page, totalPages } = data;
-    let html = '<nav class="pagination" aria-label="Paginación">';
+    let html = '<nav class="pagination" aria-label="Pagination">';
 
     if (page > 1) {
-      html += `<button data-page="${page - 1}" class="pagination__btn">Anterior</button>`;
+      html += `<button data-page="${page - 1}" class="pagination__btn">Previous</button>`;
     }
 
     const start = Math.max(1, page - 2);
@@ -146,7 +146,7 @@ export const AdminPublications = {
     }
 
     if (page < totalPages) {
-      html += `<button data-page="${page + 1}" class="pagination__btn">Siguiente</button>`;
+      html += `<button data-page="${page + 1}" class="pagination__btn">Next</button>`;
     }
 
     html += "</nav>";
@@ -154,7 +154,7 @@ export const AdminPublications = {
   },
 
   async deletePublication(id) {
-    if (!confirm("¿Eliminar esta publicación? Esta acción no se puede deshacer.")) return;
+    if (!confirm("Delete this publication? This action cannot be undone.")) return;
 
     try {
       await api.deleteAdminPublication(id);
@@ -165,7 +165,7 @@ export const AdminPublications = {
   },
 
   getStatusLabel(status) {
-    const labels = { active: "Activa", sold: "Vendida", inactive: "Inactiva" };
+    const labels = { active: "Active", sold: "Sold", inactive: "Inactive" };
     return labels[status] || status;
   },
 };

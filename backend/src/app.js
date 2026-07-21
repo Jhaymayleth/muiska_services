@@ -12,8 +12,10 @@ import favoriteRouter from "./routes/favorite.routes.js";
 import verificationRouter from "./routes/verification.routes.js";
 import notificationRouter from "./routes/notification.routes.js";
 import moderationRouter from "./routes/moderation.routes.js";
+import healthRouter from "./routes/health.routes.js";
 import { errorMiddleware } from "./middlewares/error.middleware.js";
 import { notFoundMiddleware } from "./middlewares/notFound.middleware.js";
+import { createRequestLogger } from "./config/logger.js";
 
 dotenv.config();
 
@@ -24,6 +26,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(createRequestLogger);
 
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
@@ -33,8 +36,8 @@ app.use("/api", authRouter);
 app.use("/api", categoryRouter);
 app.use("/api", adminRouter);
 app.use("/api/favorites", favoriteRouter);
-app.use("/api/verificaciones", verificationRouter);
-app.use("/api/notificaciones", notificationRouter);
+app.use("/api/verifications", verificationRouter);
+app.use("/api/notifications", notificationRouter);
 app.use("/api", moderationRouter);
 
 app.use(notFoundMiddleware);

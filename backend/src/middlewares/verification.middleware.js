@@ -1,34 +1,34 @@
-// Middleware para requerir vendedor verificado (para crear publicaciones)
+// Middleware to require verified seller (for creating publications)
 export const requireVerifiedSeller = async (req, res, next) => {
   if (!req.user) {
-    return res.status(401).json({ message: "No autenticado" });
+    return res.status(401).json({ message: "Not authenticated" });
   }
 
-  // Admin y verificador pueden crear publicaciones (para testing/admin)
-  if (req.user.role === "admin" || req.user.role === "verificador") {
+  // Admin and verifier can create publications (for testing/admin)
+  if (req.user.role === "admin" || req.user.role === "verifier") {
     return next();
   }
 
-  // Solo vendedores verificados
-  if (req.user.tipo_usuario !== "vendedor") {
+  // Only verified sellers
+  if (req.user.user_type !== "seller") {
     return res.status(403).json({ 
-      message: "Solo los vendedores pueden crear publicaciones",
+      message: "Only sellers can create publications",
       code: "NOT_SELLER"
     });
   }
 
-  if (req.user.estado_verificacion !== "aprobado") {
+  if (req.user.verification_status !== "approved") {
     return res.status(403).json({ 
-      message: "Tu perfil está en verificación. No puedes crear publicaciones hasta que sea aprobado.",
+      message: "Your profile is under verification. You cannot create publications until it is approved.",
       code: "NOT_VERIFIED",
-      estado: req.user.estado_verificacion,
-      motivo: req.user.motivo_rechazo_verificacion
+      status: req.user.verification_status,
+      reason: req.user.rejection_reason
     });
   }
 
-  if (!req.user.badge_verificado) {
+  if (!req.user.is_verified_badge) {
     return res.status(403).json({ 
-      message: "Tu perfil no está verificado",
+      message: "Your profile is not verified",
       code: "NOT_VERIFIED"
     });
   }

@@ -1,28 +1,60 @@
 import { Router } from "express";
 import { verifyToken, requireRole } from "../middlewares/auth.middleware.js";
+import { validateBody, validateParams } from "../middlewares/validate.middleware.js";
+import { z } from "zod";
 import { verificationController } from "../controllers/verification.controller.js";
 
 const router = Router();
 
-// Todas las rutas requieren autenticación
 router.use(verifyToken);
 
-// Usuario: obtener su estado de verificación
-router.get("/mi-estado", verificationController.getMyVerificationStatus);
+const idParamSchema = z.object({
+  id: z.string().uuid(),
+});
 
-// Verificador: lista perfiles pendientes
-router.get("/pendientes", requireRole("verificador", "admin"), verificationController.getPendingVerifications);
+const rejectVerificationSchema = z.object({
+  reason: z.string().min(1, "Reason is required"),
+});
 
-// Verificador: ver detalle
-router.get("/:id", requireRole("verificador", "admin"), verificationController.getVerificationById);
+const approveVerificationSchema = z.object({
+  reason: z.string().optional(),
+});
 
-// Verificador: aprobar
-router.post("/:id/aprobar", requireRole("verificador", "admin"), verificationController.approveVerification);
+router.get("/my-status", verificationController.getMyVerificationStatus);
 
-// Verificador: rechazar
-router.post("/:id/rechazar", requireRole("verificador", "admin"), verificationController.rejectVerification);
+router.get(
+  "/pending",
+  requireRole("verifier", "admin"),
+  verificationController.getPendingVerifications
+);
 
-// Verificador: historial
-router.get("/historial/mio", requireRole("verificador", "admin"), verificationController.getMyVerifications);
+router.get(
+  "/:id",
+  requireRole("verifier", "admin"),
+  validateParams(idParamSchema),
+  verificationController.getVerificationById
+);
+
+router.post(
+  "/:id/approve",
+  requireRole("verifier", "admin"),
+  validateParams(idParamSchema),
+  validateBody(approveVerificationSchema),
+  verificationController.approveVerification
+);
+
+router.post(
+  "/:id/reject",
+  requireRole("verifier", "admin"),
+  validateParams(idParamSchema),
+  validateBody(rejectVerificationSchema),
+  verificationController.rejectVerification
+);
+
+router.get(
+  "/my-history",
+  requireRole("verifier", "admin"),
+  verificationController.getMyVerifications
+);
 
 export default router;

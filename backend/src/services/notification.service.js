@@ -1,26 +1,26 @@
 import { pool } from "../config/database.js";
 
 export const notificationService = {
-  async createNotification({ usuarioId, tipo, titulo, mensaje, datos = {} }) {
+  async createNotification({ userId, type, title, message, data = {} }) {
     const result = await pool.query(
-      `INSERT INTO notificaciones (usuario_id, tipo, titulo, mensaje, datos)
+      `INSERT INTO notifications (user_id, type, title, message, data)
        VALUES ($1, $2, $3, $4, $5)
        RETURNING *`,
-      [usuarioId, tipo, titulo, mensaje, JSON.stringify(datos)]
+      [userId, type, title, message, JSON.stringify(data)]
     );
     return result.rows[0];
   },
 
   async getUserNotifications(userId, { limit = 20, offset = 0, unreadOnly = false } = {}) {
-    let query = `SELECT * FROM notificaciones WHERE usuario_id = $1`;
+    let query = `SELECT * FROM notifications WHERE user_id = $1`;
     const params = [userId];
     let paramIndex = 2;
 
     if (unreadOnly) {
-      query += ` AND leida = FALSE`;
+      query += ` AND is_read = FALSE`;
     }
 
-    query += ` ORDER BY creado_en DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
+    query += ` ORDER BY created_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
     params.push(limit, offset);
 
     const result = await pool.query(query, params);
@@ -29,7 +29,7 @@ export const notificationService = {
 
   async getUnreadCount(userId) {
     const result = await pool.query(
-      `SELECT COUNT(*) FROM notificaciones WHERE usuario_id = $1 AND leida = FALSE`,
+      `SELECT COUNT(*) FROM notifications WHERE user_id = $1 AND is_read = FALSE`,
       [userId]
     );
     return parseInt(result.rows[0].count, 10);
@@ -37,7 +37,7 @@ export const notificationService = {
 
   async markAsRead(notificationId, userId) {
     const result = await pool.query(
-      `UPDATE notificaciones SET leida = TRUE WHERE id = $1 AND usuario_id = $2 RETURNING *`,
+      `UPDATE notifications SET is_read = TRUE WHERE id = $1 AND user_id = $2 RETURNING *`,
       [notificationId, userId]
     );
     return result.rows[0];
@@ -45,7 +45,7 @@ export const notificationService = {
 
   async markAllAsRead(userId) {
     const result = await pool.query(
-      `UPDATE notificaciones SET leida = TRUE WHERE usuario_id = $1 AND leida = FALSE RETURNING *`,
+      `UPDATE notifications SET is_read = TRUE WHERE user_id = $1 AND is_read = FALSE RETURNING *`,
       [userId]
     );
     return result.rows;
@@ -53,7 +53,7 @@ export const notificationService = {
 
   async deleteNotification(notificationId, userId) {
     const result = await pool.query(
-      `DELETE FROM notificaciones WHERE id = $1 AND usuario_id = $2 RETURNING *`,
+      `DELETE FROM notifications WHERE id = $1 AND user_id = $2 RETURNING *`,
       [notificationId, userId]
     );
     return result.rows[0];

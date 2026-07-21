@@ -1,16 +1,8 @@
 import { publicationService } from "../services/publication.service.js";
 import { normalizePublicationPayload } from "../utils/publication.utils.js";
-import { 
-  validateCreatePublication, 
-  validateUpdatePublication,
-  isValidPublicationPrice 
-} from "../validators/publication.validator.js";
-
-// Controlador de publicaciones: solo maneja HTTP, delega a publicationService
 
 export const getAll = async (req, res, next) => {
   try {
-    // Pasar query params al servicio
     const result = await publicationService.getAll(req.query);
     res.json(result);
   } catch (error) {
@@ -42,22 +34,13 @@ export const getMine = async (req, res, next) => {
 
 export const create = async (req, res, next) => {
   try {
-    // Normalizar payload
     const normalized = normalizePublicationPayload(req.body);
 
-    // Validar usando validator
-    const errors = validateCreatePublication(normalized);
-    if (errors.length > 0) {
-      return res.status(400).json({ message: errors[0] });
-    }
-
-    // Preparar imágenes si hay archivos subidos
     let images = normalized.images;
     if (req.files && req.files.length > 0) {
       images = req.files.map((f) => `/uploads/${f.filename}`);
     }
 
-    // Delegar al servicio
     const publication = await publicationService.create(req.user.id, {
       ...normalized,
       images,
@@ -77,19 +60,11 @@ export const update = async (req, res, next) => {
     const { id } = req.params;
     const normalized = normalizePublicationPayload(req.body);
 
-    // Validar usando validator
-    const errors = validateUpdatePublication(normalized);
-    if (errors.length > 0) {
-      return res.status(400).json({ message: errors[0] });
-    }
-
-    // Preparar imágenes
     let images = normalized.images;
     if (req.files && req.files.length > 0) {
       images = req.files.map((f) => `/uploads/${f.filename}`);
     }
 
-    // Delegar al servicio
     const publication = await publicationService.update(req.user.id, id, {
       ...normalized,
       images,

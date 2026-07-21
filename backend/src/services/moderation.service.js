@@ -1,9 +1,9 @@
 import { pool } from "../config/database.js";
 
 const publicationSelectFields = `
-  p.id, p.title, p.description, p.price, p.tipo, p.category_id,
+  p.id, p.title, p.description, p.price, p.type, p.category_id,
   c.name as category, p.images, p.location, p.contact_method,
-  p.user_id, p.status, p.estado_moderacion, p.motivo_rechazo_moderacion,
+  p.user_id, p.status, p.moderation_status, p.rejection_reason,
   p.created_at, p.updated_at
 `;
 
@@ -14,7 +14,7 @@ export const moderationService = {
     const offset = (pageNum - 1) * limitNum;
 
     const params = [];
-    let whereClause = "WHERE p.estado_moderacion = 'pendiente'";
+    let whereClause = "WHERE p.moderation_status = 'pending'";
     let paramIndex = 1;
 
     if (search) {
@@ -66,47 +66,47 @@ export const moderationService = {
       [id],
     );
     if (result.rows.length === 0) {
-      const error = new Error("Publicación no encontrada");
+      const error = new Error("Publication not found");
       error.code = "NOT_FOUND";
       throw error;
     }
     return result.rows[0];
   },
 
-  async approvePublication(id, verificadorId) {
+  async approvePublication(id, moderatorId) {
     const client = await pool.connect();
     try {
       await client.query("BEGIN");
 
       const pubResult = await client.query(
         `UPDATE publications
-         SET estado_moderacion = 'aprobada', moderado_por = $1, moderado_en = NOW(), 
-             motivo_rechazo_moderacion = NULL, status = 'active'
-         WHERE id = $2 AND estado_moderacion = 'pendiente'
+         SET moderation_status = 'approved', moderated_by = $1, moderated_at = NOW(), 
+             rejection_reason = NULL, status = 'active'
+         WHERE id = $2 AND moderation_status = 'pending'
          RETURNING *`,
-        [verificadorId, id],
+        [moderatorId, id],
       );
 
       if (pubResult.rows.length === 0) {
-        throw new Error("Publicación no encontrada o ya procesada");
+        throw new Error("Publication not found or already processed");
       }
 
       const publication = pubResult.rows[0];
 
       await client.query(
-        `INSERT INTO moderaciones (publicacion_id, verificador_id, accion, motivo)
-         VALUES ($1, $2, 'aprobada', $3)`,
-        [id, verificadorId, "Publicación aprobada"],
+        `INSERT INTO moderations (publication_id, moderator_id, action, reason)
+         VALUES ($1, $2, 'approved', $3)`,
+        [id, moderatorId, "Publication approved"],
       );
 
       await client.query(
-        `INSERT INTO notificaciones (usuario_id, tipo, titulo, mensaje, datos)
-         VALUES ($1, 'publicacion_aprobada', $2, $3, $4)`,
+        `INSERT INTO notifications (user_id, type, title, message, data)
+         VALUES ($1, 'publication_approved', $2, $3, $4)`,
         [
           publication.user_id,
-          "¡Publicación aprobada!",
-          "Tu publicación ha sido aprobada y ya está visible en la plataforma.",
-          JSON.stringify({ publicacion_id: id }),
+          "Publication Approved!",
+          "Your publication has been approved and is now visible on the platform.",
+          JSON.stringify({ publication_id: id }),
         ],
       );
 
@@ -120,9 +120,9 @@ export const moderationService = {
     }
   },
 
-  async rejectPublication(id, verificadorId, motivo) {
-    if (!motivo || motivo.trim() === "") {
-      const error = new Error("El motivo de rechazo es obligatorio");
+  async rejectPublication(id, moderatorId, reason) {
+    if (!reason || reason.trim() === "") {
+      const error = new Error("Rejection reason is required");
       error.code = "MISSING_REASON";
       throw error;
     }
@@ -133,33 +133,33 @@ export const moderationService = {
 
       const pubResult = await client.query(
         `UPDATE publications
-         SET estado_moderacion = 'rechazada', moderado_por = $1, moderado_en = NOW(), 
-             motivo_rechazo_moderacion = $2, status = 'inactive'
-         WHERE id = $3 AND estado_moderacion = 'pendiente'
+         SET moderation_status = 'rejected', moderated_by = $1, moderated_at = NOW(),
+             rejection_reason = $2, status = 'inactive'
+         WHERE id = $3 AND moderation_status = 'pending'
          RETURNING *`,
-        [verificadorId, motivo, id],
+        [moderatorId, reason, id],
       );
 
       if (pubResult.rows.length === 0) {
-        throw new Error("Publicación no encontrada o ya procesada");
+        throw new Error("Publication not found or already processed");
       }
 
       const publication = pubResult.rows[0];
 
       await client.query(
-        `INSERT INTO moderaciones (publicacion_id, verificador_id, accion, motivo)
-         VALUES ($1, $2, 'rechazada', $3)`,
-        [id, verificadorId, motivo],
+        `INSERT INTO moderations (publication_id, moderator_id, action, reason)
+         VALUES ($1, $2, 'rejected', $3)`,
+        [id, moderatorId, reason],
       );
 
       await client.query(
-        `INSERT INTO notificaciones (usuario_id, tipo, titulo, mensaje, datos)
-         VALUES ($1, 'publicacion_rechazada', $2, $3, $4)`,
+        `INSERT INTO notifications (user_id, type, title, message, data)
+         VALUES ($1, 'publication_rejected', $2, $3, $4)`,
         [
           publication.user_id,
-          "Publicación rechazada",
-          `Tu publicación no fue aprobada: ${motivo}. Puedes corregirla e intentarlo de nuevo.`,
-          JSON.stringify({ publicacion_id: id, motivo }),
+          "Publication Rejected",
+          `Your publication was rejected: ${reason}. You can correct the information and try again.`,
+          JSON.stringify({ publication_id: id, reason }),
         ],
       );
 
@@ -173,15 +173,14 @@ export const moderationService = {
     }
   },
 
-  async getModerationHistory(verificadorId) {
+  async getMyModerations(moderatorId) {
     const result = await pool.query(
-      `SELECT m.*, p.title as publicacion_titulo, u.name as usuario_nombre
-       FROM moderaciones m
-       JOIN publications p ON m.publicacion_id = p.id
-       JOIN users u ON p.user_id = u.id
-       WHERE m.verificador_id = $1
-       ORDER BY m.creado_en DESC`,
-      [verificadorId],
+      `SELECT m.*, p.title, p.price, p.status
+       FROM moderations m
+       JOIN publications p ON m.publication_id = p.id
+       WHERE m.moderator_id = $1
+       ORDER BY m.created_at DESC`,
+      [moderatorId],
     );
     return result.rows;
   },

@@ -46,7 +46,7 @@ const ExplorePage = async () => {
 
       renderPagination(pagination);
     } catch (err) {
-      grid.innerHTML = errorStateHtml.replace("{{errorMessage}}", err.message || "Error al cargar publicaciones");
+      grid.innerHTML = errorStateHtml.replace("{{errorMessage}}", err.message || "Error loading listings");
     }
   };
 
@@ -54,10 +54,10 @@ const ExplorePage = async () => {
     if (!pagination || pagination.totalPages <= 1) return;
 
     const { page, totalPages } = pagination;
-    let html = '<nav class="flex items-center justify-center gap-2" aria-label="Paginación">';
+    let html = '<nav class="flex items-center justify-center gap-2" aria-label="Pagination">';
 
     if (page > 1) {
-      html += `<button data-page="${page - 1}" class="pagination-btn rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-muted transition">Anterior</button>`;
+      html += `<button data-page="${page - 1}" class="pagination-btn rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-muted transition">Previous</button>`;
     }
 
     const start = Math.max(1, page - 2);
@@ -68,7 +68,7 @@ const ExplorePage = async () => {
     }
 
     if (page < totalPages) {
-      html += `<button data-page="${page + 1}" class="pagination-btn rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-muted transition">Siguiente</button>`;
+      html += `<button data-page="${page + 1}" class="pagination-btn rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-muted transition">Next</button>`;
     }
 
     html += "</nav>";

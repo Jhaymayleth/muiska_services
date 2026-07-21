@@ -1,11 +1,11 @@
-<!-- Card de publicación para Dashboard -->
+<!-- Publication card for Dashboard -->
 <div class="flex items-center justify-between rounded-xl border border-border bg-white p-4">
   <div>
     <h3 class="font-semibold">{{title}}</h3>
     <p class="text-sm text-text/70">${{price}}{{#if category}} · {{category}}{{/if}} · {{statusBadge}}</p>
   </div>
   <div class="flex gap-2">
-    <button data-id="{{id}}" class="edit-btn rounded bg-accent/10 px-3 py-1 text-sm text-accent transition hover:bg-accent/20">Editar</button>
-    <button data-id="{{id}}" class="delete-btn rounded bg-red-50 px-3 py-1 text-sm text-red-600 transition hover:bg-red-100">Eliminar</button>
+    <button data-id="{{id}}" class="edit-btn rounded bg-accent/10 px-3 py-1 text-sm text-accent transition hover:bg-accent/20">Edit</button>
+    <button data-id="{{id}}" class="delete-btn rounded bg-red-50 px-3 py-1 text-sm text-red-600 transition hover:bg-red-100">Delete</button>
   </div>
 </div>

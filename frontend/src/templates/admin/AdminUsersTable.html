@@ -1,14 +1,14 @@
-<!-- Tabla de usuarios para AdminUsers -->
+<!-- Users table for AdminUsers -->
 <div class="admin-table-wrapper">
   <table class="admin-table">
     <thead>
       <tr>
-        <th>Usuario</th>
-        <th>Rol</th>
-        <th>Estado</th>
-        <th>Publicaciones</th>
-        <th>Registro</th>
-        <th class="text-right">Acciones</th>
+        <th>User</th>
+        <th>Role</th>
+        <th>Status</th>
+        <th>Listings</th>
+        <th>Registered</th>
+        <th class="text-right">Actions</th>
       </tr>
     </thead>
     <tbody id="admin-users-tbody">
@@ -17,7 +17,7 @@
   </table>
 </div>
 
-<!-- Fila individual de usuario -->
+<!-- Individual user row -->
 <script type="template" id="admin-user-row">
   <tr class="{{rowClass}}">
     <td>
@@ -26,8 +26,8 @@
     </td>
     <td>
       <select data-role-id="{{id}}" {{meDisabled}} class="form-select form-select--sm">
-        <option value="user" {{isUserSelected}}>Usuario</option>
-        <option value="admin" {{isAdminSelected}}>Administrador</option>
+        <option value="user" {{isUserSelected}}>User</option>
+        <option value="admin" {{isAdminSelected}}>Admin</option>
       </select>
     </td>
     <td>

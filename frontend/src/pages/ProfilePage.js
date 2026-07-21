@@ -39,11 +39,11 @@ const ProfilePage = () => {
     try {
       const updatedUser = await api.updateProfile(data);
       sessionStore.setUser(updatedUser);
-      profileMessage.textContent = "Perfil actualizado correctamente";
+      profileMessage.textContent = "Profile updated successfully";
       profileMessage.className = "flex items-center text-sm text-green-600";
       profileMessage.classList.remove("hidden");
     } catch (err) {
-      profileMessage.textContent = err.message || "Error al actualizar perfil";
+      profileMessage.textContent = err.message || "Error updating profile";
       profileMessage.className = "flex items-center text-sm text-red-600";
       profileMessage.classList.remove("hidden");
     }
@@ -60,7 +60,7 @@ const ProfilePage = () => {
     const confirmPassword = formData.get("confirmPassword");
 
     if (newPassword !== confirmPassword) {
-      passwordMessage.textContent = "Las contraseñas no coinciden";
+      passwordMessage.textContent = "Passwords do not match";
       passwordMessage.className = "flex items-center text-sm text-red-600";
       passwordMessage.classList.remove("hidden");
       return;
@@ -69,21 +69,21 @@ const ProfilePage = () => {
     try {
       await api.changePassword({ currentPassword, newPassword });
       passwordForm.reset();
-      passwordMessage.textContent = "Contraseña actualizada correctamente";
+      passwordMessage.textContent = "Password updated successfully";
       passwordMessage.className = "flex items-center text-sm text-green-600";
       passwordMessage.classList.remove("hidden");
     } catch (err) {
-      passwordMessage.textContent = err.message || "Error al cambiar contraseña";
+      passwordMessage.textContent = err.message || "Error changing password";
       passwordMessage.className = "flex items-center text-sm text-red-600";
       passwordMessage.classList.remove("hidden");
     }
   });
 
   deleteBtn.addEventListener("click", async () => {
-    if (!confirm("¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer.")) {
+    if (!confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
       return;
     }
-    if (!confirm("Última confirmación: Se eliminarán TODAS tus publicaciones y datos. ¿Continuar?")) {
+    if (!confirm("Final confirmation: ALL your publications and data will be deleted. Continue?")) {
       return;
     }
 
@@ -92,7 +92,7 @@ const ProfilePage = () => {
       sessionStore.logout();
       navigateTo("/");
     } catch (err) {
-      alert(err.message || "Error al eliminar cuenta");
+      alert(err.message || "Error deleting account");
     }
   });
 

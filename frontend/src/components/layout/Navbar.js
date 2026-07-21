@@ -24,13 +24,13 @@ const Navbar = () => {
     if (dropdown) {
       const notifications = notificationStore.getAll();
       if (notifications.length === 0) {
-        dropdown.innerHTML = '<div class="p-4 text-center text-gray-500">No hay notificaciones</div>';
+        dropdown.innerHTML = '<div class="p-4 text-center text-gray-500">No notifications</div>';
       } else {
         dropdown.innerHTML = notifications.slice(0, 10).map(n => `
-          <a href="#" class="block p-3 hover:bg-gray-50 border-b border-gray-100 ${!n.leida ? "bg-blue-50" : ""}" data-id="${n.id}">
-            <p class="font-medium text-sm ${!n.leida ? "font-bold" : ""}">${n.titulo}</p>
-            <p class="text-xs text-gray-600 mt-1">${n.mensaje}</p>
-            <p class="text-xs text-gray-400 mt-1">${new Date(n.creado_en).toLocaleString()}</p>
+          <a href="#" class="block p-3 hover:bg-gray-50 border-b border-gray-100 ${!n.is_read ? "bg-blue-50" : ""}" data-id="${n.id}">
+            <p class="font-medium text-sm ${!n.is_read ? "font-bold" : ""}">${n.title}</p>
+            <p class="text-xs text-gray-600 mt-1">${n.message}</p>
+            <p class="text-xs text-gray-400 mt-1">${new Date(n.created_at).toLocaleString()}</p>
           </a>
         `).join("");
       }
@@ -41,13 +41,13 @@ const Navbar = () => {
     <div class="flex items-center justify-between">
       <a href="/" class="text-xl font-semibold text-primary">MUISKA</a>
       <div class="flex items-center gap-3 text-sm">
-        <a href="/explorar" class="rounded px-3 py-2 hover:bg-muted">Explorar</a>
+        <a href="/explore" class="rounded px-3 py-2 hover:bg-muted">Explore</a>
         ${authenticated ? `
-          <a href="/crear-publicacion" class="rounded px-3 py-2 hover:bg-muted">Crear</a>
+          <a href="/create" class="rounded px-3 py-2 hover:bg-muted">Create</a>
           <a href="/dashboard" class="rounded px-3 py-2 hover:bg-muted">Dashboard</a>
           ${isAdmin() ? '<a href="/admin" class="rounded px-3 py-2 hover:bg-muted">Admin</a>' : ""}
           
-          <!-- Notificaciones -->
+          <!-- Notifications -->
           <div class="relative" id="notif-container">
             <button id="notif-btn" class="relative rounded-full p-2 hover:bg-gray-100 transition-colors">
               <svg class="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -60,22 +60,22 @@ const Navbar = () => {
           </div>
 
           <div class="flex items-center gap-3 border-l border-border pl-3">
-            <span class="text-text/70">${user?.name || "Usuario"}</span>
-            <button id="btn-logout" class="rounded px-3 py-2 text-red-600 hover:bg-red-50">Salir</button>
+            <span class="text-text/70">${user?.name || "User"}</span>
+            <button id="btn-logout" class="rounded px-3 py-2 text-red-600 hover:bg-red-50">Logout</button>
           </div>
         ` : `
-          <a href="/login" class="rounded px-3 py-2 hover:bg-muted">Iniciar sesión</a>
-          <a href="/registro" class="rounded px-3 py-2 bg-primary text-white hover:bg-primary-hover">Registrarse</a>
+          <a href="/login" class="rounded px-3 py-2 hover:bg-muted">Login</a>
+          <a href="/register" class="rounded px-3 py-2 bg-primary text-white hover:bg-primary-hover">Register</a>
         `}
       </div>
     </div>
   `;
 
-  // Event listeners para navegación
-  nav.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", (event) => {
+  // Event listeners for navigation - handle both <a> and <button data-path>
+  nav.querySelectorAll("a[href], button[data-path]").forEach((el) => {
+    el.addEventListener("click", (event) => {
       event.preventDefault();
-      const path = link.getAttribute("href");
+      const path = el.getAttribute("href") || el.getAttribute("data-path");
       window.history.pushState({}, "", path);
       window.dispatchEvent(new PopStateEvent("popstate"));
     });
@@ -89,7 +89,7 @@ const Navbar = () => {
     });
   }
 
-  // Notificaciones dropdown
+  // Notifications dropdown
   const notifBtn = nav.querySelector("#notif-btn");
   const notifDropdown = nav.querySelector("#notif-dropdown");
   const notifContainer = nav.querySelector("#notif-container");
@@ -103,14 +103,14 @@ const Navbar = () => {
       }
     });
 
-    // Cerrar dropdown al hacer click fuera
+    // Close dropdown when clicking outside
     document.addEventListener("click", (e) => {
       if (notifContainer && !notifContainer.contains(e.target)) {
         notifDropdown.classList.add("hidden");
       }
     });
 
-    // Click en notificación
+    // Click on notification
     notifDropdown.addEventListener("click", async (e) => {
       const link = e.target.closest("a[data-id]");
       if (link) {
@@ -119,17 +119,17 @@ const Navbar = () => {
         notificationStore.markAsRead(id);
         renderNotifications(notificationStore.getUnreadCount());
         notifDropdown.classList.add("hidden");
-        // TODO: Navegar según tipo de notificación
+        // TODO: Navigate based on notification type
       }
     });
   }
 
-  // Escuchar actualizaciones de notificaciones
+  // Listen for notification updates
   window.addEventListener("notifications:updated", (e) => {
     renderNotifications(e.detail.count);
   });
 
-  // Cargar notificaciones iniciales
+  // Load initial notifications
   if (authenticated) {
     notificationStore.fetchFromServer().then(() => {
       renderNotifications(notificationStore.getUnreadCount());

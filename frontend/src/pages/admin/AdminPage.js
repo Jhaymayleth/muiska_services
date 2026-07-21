@@ -30,7 +30,7 @@ export default function AdminPage() {
   // Cargar template base
   const template = loadTemplate("AdminPage");
   section.innerHTML = template
-    .replace("{{adminName}}", escapeHtml(user.name || "Administrador"));
+    .replace("{{adminName}}", escapeHtml(user.name || "Administrator"));
 
   // Elementos de navegación
   const tabButtons = section.querySelectorAll(".admin-tabs__btn");

@@ -8,26 +8,26 @@ import CreateListingPage from "../pages/CreateListingPage.js";
 import EditListingPage from "../pages/EditListingPage.js";
 import PublicationDetailPage from "../pages/PublicationDetailPage.js";
 import ProfilePage from "../pages/ProfilePage.js";
-import VerificacionPendientePage from "../pages/VerificacionPendientePage.js";
+import VerificationPendingPage from "../pages/VerificationPendingPage.js";
 import NotFoundPage from "../pages/NotFoundPage.js";
 import { isAuthenticated, isAdmin, isRouteProtected, isGuestRoute, getUser, sessionStore } from "../utils/auth.js";
 
 const routes = {
   "/": HomePage,
-  "/explorar": ExplorePage,
+  "/explore": ExplorePage,
   "/login": LoginPage,
-  "/registro": RegisterPage,
+  "/register": RegisterPage,
   "/dashboard": DashboardPage,
   "/admin": AdminPage,
-  "/crear-publicacion": CreateListingPage,
-  "/perfil": ProfilePage,
-  "/verificacion-pendiente": VerificacionPendientePage,
+  "/create": CreateListingPage,
+  "/profile": ProfilePage,
+  "/verification-pending": VerificationPendingPage,
 };
 
 const dynamicRoutes = [
-  { pattern: /^\/editar-publicacion\/(.+)$/, component: EditListingPage },
-  { pattern: /^\/publicacion\/(.+)$/, component: PublicationDetailPage },
-  { pattern: /^\/dashboard\/favoritos$/, component: DashboardPage },
+  { pattern: /^\/edit\/(.+)$/, component: EditListingPage },
+  { pattern: /^\/listing\/(.+)$/, component: PublicationDetailPage },
+  { pattern: /^\/dashboard\/favorites$/, component: DashboardPage },
 ];
 
 export const navigateTo = (path) => {
@@ -36,30 +36,30 @@ export const navigateTo = (path) => {
 };
 
 const checkAuth = (path) => {
-  // Si es ruta de guest (login/registro) y ya está autenticado, redirigir a dashboard
+  // If guest route (login/register) and already authenticated, redirect to dashboard
   if (isGuestRoute(path) && isAuthenticated()) {
     navigateTo("/dashboard");
     return false;
   }
 
-  // Si es ruta protegida y no está autenticado, redirigir a login
+  // If protected route and not authenticated, redirect to login
   if (isRouteProtected(path) && !isAuthenticated()) {
     navigateTo("/login");
     return false;
   }
 
-  // Si es /admin y no es admin, redirigir a dashboard
+  // If /admin and not admin, redirect to dashboard
   if (path === "/admin" && !isAdmin()) {
     navigateTo("/dashboard");
     return false;
   }
 
-  // Redirigir vendedor no verificado a /verificacion-pendiente (excepto si ya está ahí)
+  // Redirect unverified seller to /verification-pending (except if already there)
   const user = getUser();
-  if (user && user.tipo_usuario === "vendedor" && user.estado_verificacion !== "aprobado") {
-    const allowedPaths = ["/verificacion-pendiente", "/perfil", "/login", "/registro", "/explorar", "/"];
-    if (!allowedPaths.includes(path) && !path.startsWith("/publicacion/")) {
-      navigateTo("/verificacion-pendiente");
+  if (user && user.user_type === "seller" && user.verification_status !== "approved") {
+    const allowedPaths = ["/verification-pending", "/profile", "/login", "/register", "/explore", "/"];
+    if (!allowedPaths.includes(path) && !path.startsWith("/listing/")) {
+      navigateTo("/verification-pending");
       return false;
     }
   }
@@ -70,7 +70,7 @@ const checkAuth = (path) => {
 export const renderRoute = async (container) => {
   const path = window.location.pathname || "/";
 
-  // Verificar autenticación antes de renderizar
+  // Verify auth before rendering
   if (!checkAuth(path)) {
     return;
   }

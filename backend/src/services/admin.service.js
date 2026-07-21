@@ -1,11 +1,9 @@
 import { pool } from "../config/database.js";
 
-// Servicio de administración: lógica para panel de admin
 export const adminService = {
-  // Obtener todos los usuarios (con búsqueda opcional)
   async getUsers(search = "") {
     let query = `
-      SELECT u.id, u.name, u.email, u.role, u.tipo_usuario, u.is_banned, u.created_at,
+      SELECT u.id, u.name, u.email, u.role, u.user_type, u.is_banned, u.created_at,
              COUNT(p.id) as publication_count
       FROM users u
       LEFT JOIN publications p ON p.user_id = u.id
@@ -23,7 +21,6 @@ export const adminService = {
     return result.rows;
   },
 
-  // Actualizar usuario (admin puede cambiar rol, ban/desban)
   async updateUser(id, { name, email, role, is_banned }) {
     const result = await pool.query(
       `UPDATE users SET 
@@ -33,33 +30,31 @@ export const adminService = {
          is_banned = COALESCE($4, is_banned),
          updated_at = NOW()
        WHERE id = $5
-       RETURNING id, name, email, role, tipo_usuario, is_banned, created_at`,
+       RETURNING id, name, email, role, user_type, is_banned, created_at`,
       [name, email, role, is_banned, id]
     );
 
     if (result.rows.length === 0) {
-      const error = new Error("Usuario no encontrado");
+      const error = new Error("User not found");
       error.code = "NOT_FOUND";
       throw error;
     }
     return result.rows[0];
   },
 
-  // Eliminar usuario (admin)
   async deleteUser(id) {
     const result = await pool.query(
       "DELETE FROM users WHERE id = $1 RETURNING id",
       [id]
     );
     if (result.rows.length === 0) {
-      const error = new Error("Usuario no encontrado");
+      const error = new Error("User not found");
       error.code = "NOT_FOUND";
       throw error;
     }
-    return { message: "Usuario eliminado" };
+    return { message: "User deleted" };
   },
 
-  // Obtener todas las publicaciones (admin ve todas, sin importar estado)
   async getPublications({ page = 1, limit = 20, status, search }) {
     const pageNum = Math.max(1, parseInt(page, 10));
     const limitNum = Math.min(50, Math.max(1, parseInt(limit, 10)));
@@ -109,84 +104,87 @@ export const adminService = {
     };
   },
 
-  // Asignar rol de verificador (solo admin)
-  async assignVerifier(userId) {
+async assignVerifier(userId) {
     const result = await pool.query(
-      `UPDATE users SET role = 'verificador', tipo_usuario = 'verificador', updated_at = NOW()
+      `UPDATE users SET role = 'verifier', user_type = 'verifier', updated_at = NOW()
        WHERE id = $1 AND role != 'admin'
-       RETURNING id, name, email, role, tipo_usuario`,
+       RETURNING id, name, email, role, user_type`,
       [userId]
     );
     if (result.rows.length === 0) {
-      const error = new Error("Usuario no encontrado o no se puede asignar");
+      const error = new Error("User not found or cannot be assigned");
       error.code = "NOT_FOUND";
       throw error;
     }
     return result.rows[0];
   },
 
-  // Quitar rol de verificador (solo admin)
   async removeVerifier(userId) {
     const result = await pool.query(
-      `UPDATE users SET role = 'user', tipo_usuario = 'cliente', updated_at = NOW()
-       WHERE id = $1 AND role = 'verificador'
-       RETURNING id, name, email, role, tipo_usuario`,
+      `UPDATE users SET role = 'user', user_type = 'client', updated_at = NOW()
+       WHERE id = $1 AND role = 'verifier'
+       RETURNING id, name, email, role, user_type`,
       [userId]
     );
     if (result.rows.length === 0) {
-      const error = new Error("Usuario no encontrado o no es verificador");
+      const error = new Error("User not found or not a verifier");
       error.code = "NOT_FOUND";
       throw error;
     }
     return result.rows[0];
   },
 
-  // Listar verificadores
   async getVerifiers() {
     const result = await pool.query(
-      `SELECT id, name, email, role, tipo_usuario, created_at
-       FROM users WHERE role = 'verificador'
+      `SELECT id, name, email, role, user_type, created_at
+       FROM users WHERE role = 'verifier'
        ORDER BY created_at DESC`
     );
     return result.rows;
   },
 
-  // Actualizar publicación (admin)
   async updatePublication(id, { status, title, description, price, category, location, contact_method }) {
+    let categoryId = undefined;
+    if (category) {
+      const catResult = await pool.query("SELECT id FROM categories WHERE name = $1", [category]);
+      if (catResult.rows.length > 0) {
+        categoryId = catResult.rows[0].id;
+      }
+    }
+
     const result = await pool.query(
       `UPDATE publications
        SET status = COALESCE($1, status),
            title = COALESCE($2, title),
            description = COALESCE($3, description),
            price = COALESCE($4, price),
-           category = COALESCE($5, category),
+           category_id = COALESCE($5, category_id),
            location = COALESCE($6, location),
            contact_method = COALESCE($7, contact_method),
            updated_at = NOW()
        WHERE id = $8
        RETURNING *`,
-      [status, title, description, price, category, location, contact_method, id]
+      [status, title, description, price, categoryId, location, contact_method, id]
     );
 
     if (result.rows.length === 0) {
-      const error = new Error("Publicación no encontrada");
+      const error = new Error("Publication not found");
       error.code = "NOT_FOUND";
       throw error;
     }
     return result.rows[0];
   },
 
-  // Eliminar publicación (admin)
   async deletePublication(id) {
     const result = await pool.query(
       "DELETE FROM publications WHERE id = $1 RETURNING id",
       [id]
     );
     if (result.rows.length === 0) {
-      const error = new Error("Publicación no encontrada");
+      const error = new Error("Publication not found");
       error.code = "NOT_FOUND";
       throw error;
     }
-    return { message: "Publicación eliminada" };
+    return { message: "Publication deleted" };
   },
 };

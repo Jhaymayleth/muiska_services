@@ -25,6 +25,9 @@ export default {
     "text-blue-700",
     "bg-gray-100",
     "text-gray-700",
+    "peer-checked:flex",
+    "peer-checked:block",
+    "peer-checked:hidden",
   ],
   plugins: [],
 };

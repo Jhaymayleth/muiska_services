@@ -1,64 +1,71 @@
 import { pool } from "../config/database.js";
 
 export const verificationService = {
-  // Obtener solicitudes de verificación pendientes (para verificador)
+  // Get pending verifications (for verifier)
   async getPendingVerifications() {
     const result = await pool.query(
-      `SELECT v.*, u.name, u.email, u.tipo_usuario, u.telefono, u.whatsapp, u.bio, u.foto_perfil_url,
-              b.nombre as barrio_nombre, b.localidad
-       FROM verificaciones v
-       JOIN users u ON v.usuario_id = u.id
-       LEFT JOIN barrios b ON u.barrio_id = b.id
-       WHERE v.estado = 'pendiente'
-       ORDER BY v.creado_en ASC`
+      `SELECT v.*, u.name, u.email, u.user_type, u.phone, u.whatsapp, u.bio, u.profile_image_url,
+              n.name as neighborhood_name, n.locality
+       FROM verifications v
+       JOIN users u ON v.user_id = u.id
+       LEFT JOIN neighborhoods n ON u.neighborhood_id = n.id
+       WHERE v.status = 'pending'
+       ORDER BY v.created_at ASC`
     );
     return result.rows;
   },
 
-  // Aprobar verificación
-  async approveVerification(verificationId, verificadorId, motivo = "") {
+  // Get user's verification status
+  async getMyVerificationStatus(userId) {
+    const result = await pool.query(
+      `SELECT verification_status, rejection_reason, verified_at, is_verified_badge
+       FROM users WHERE id = $1`,
+      [userId]
+    );
+    return result.rows[0] || null;
+  },
+
+  // Approve verification
+  async approveVerification(verificationId, verifierId, reason = "") {
     const client = await pool.connect();
     try {
       await client.query("BEGIN");
 
-      // Actualizar verificación
       const verifResult = await client.query(
-        `UPDATE verificaciones 
-         SET estado = 'aprobado', verificador_id = $1, motivo = $2
-         WHERE id = $3 AND estado = 'pendiente'
+        `UPDATE verifications 
+         SET status = 'approved', verifier_id = $1, reason = $2
+         WHERE id = $3 AND status = 'pending'
          RETURNING *`,
-        [verificadorId, motivo, verificationId]
+        [verifierId, reason, verificationId]
       );
 
       if (verifResult.rows.length === 0) {
-        throw new Error("Verificación no encontrada o ya procesada");
+        throw new Error("Verification not found or already processed");
       }
 
-      const verificacion = verifResult.rows[0];
+      const verification = verifResult.rows[0];
 
-      // Actualizar usuario
       await client.query(
         `UPDATE users 
-         SET estado_verificacion = 'aprobado', verificado_por = $1, verificado_en = NOW(), 
-             badge_verificado = TRUE, motivo_rechazo_verificacion = NULL
+         SET verification_status = 'approved', verified_by = $1, verified_at = NOW(), 
+             is_verified_badge = TRUE, rejection_reason = NULL
          WHERE id = $2`,
-        [verificadorId, verificacion.usuario_id]
+        [verifierId, verification.user_id]
       );
 
-      // Crear notificación
       await client.query(
-        `INSERT INTO notificaciones (usuario_id, tipo, titulo, mensaje, datos)
-         VALUES ($1, 'verificacion_aprobada', $2, $3, $4)`,
+        `INSERT INTO notifications (user_id, type, title, message, data)
+         VALUES ($1, 'verification_approved', $2, $3, $4)`,
         [
-          verificacion.usuario_id,
-          "¡Perfil verificado!",
-          "Tu perfil ha sido verificado y aprobado. Ya puedes crear publicaciones.",
-          JSON.stringify({ verificacion_id: verificationId })
+          verification.user_id,
+          "Profile Verified!",
+          "Your profile has been verified and approved. You can now create listings.",
+          JSON.stringify({ verification_id: verificationId })
         ]
       );
 
       await client.query("COMMIT");
-      return { success: true, verification: verificacion };
+      return { success: true, verification };
     } catch (error) {
       await client.query("ROLLBACK");
       throw error;
@@ -67,10 +74,10 @@ export const verificationService = {
     }
   },
 
-  // Rechazar verificación
-  async rejectVerification(verificationId, verificadorId, motivo) {
-    if (!motivo || motivo.trim() === "") {
-      const error = new Error("El motivo de rechazo es obligatorio");
+  // Reject verification
+  async rejectVerification(verificationId, verifierId, reason) {
+    if (!reason || reason.trim() === "") {
+      const error = new Error("Rejection reason is required");
       error.code = "MISSING_REASON";
       throw error;
     }
@@ -80,40 +87,40 @@ export const verificationService = {
       await client.query("BEGIN");
 
       const verifResult = await client.query(
-        `UPDATE verificaciones 
-         SET estado = 'rechazado', verificador_id = $1, motivo = $2
-         WHERE id = $3 AND estado = 'pendiente'
+        `UPDATE verifications 
+         SET status = 'rejected', verifier_id = $1, reason = $2
+         WHERE id = $3 AND status = 'pending'
          RETURNING *`,
-        [verificadorId, motivo, verificationId]
+        [verifierId, reason, verificationId]
       );
 
       if (verifResult.rows.length === 0) {
-        throw new Error("Verificación no encontrada o ya procesada");
+        throw new Error("Verification not found or already processed");
       }
 
-      const verificacion = verifResult.rows[0];
+      const verification = verifResult.rows[0];
 
       await client.query(
         `UPDATE users 
-         SET estado_verificacion = 'rechazado', verificado_por = $1, verificado_en = NOW(),
-             badge_verificado = FALSE, motivo_rechazo_verificacion = $2
+         SET verification_status = 'rejected', verified_by = $1, verified_at = NOW(),
+             is_verified_badge = FALSE, rejection_reason = $2
          WHERE id = $3`,
-        [verificadorId, motivo, verificacion.usuario_id]
+        [verifierId, reason, verification.user_id]
       );
 
       await client.query(
-        `INSERT INTO notificaciones (usuario_id, tipo, titulo, mensaje, datos)
-         VALUES ($1, 'verificacion_rechazada', $2, $3, $4)`,
+        `INSERT INTO notifications (user_id, type, title, message, data)
+         VALUES ($1, 'verification_rejected', $2, $3, $4)`,
         [
-          verificacion.usuario_id,
-          "Perfil no verificado",
-          `Tu perfil no fue verificado: ${motivo}. Puedes corregir la información e intentarlo de nuevo.`,
-          JSON.stringify({ verificacion_id: verificationId, motivo })
+          verification.user_id,
+          "Profile Not Verified",
+          `Your profile was not verified: ${reason}. You can correct the information and try again.`,
+          JSON.stringify({ verification_id: verificationId, reason })
         ]
       );
 
       await client.query("COMMIT");
-      return { success: true, verification: verificacion };
+      return { success: true, verification };
     } catch (error) {
       await client.query("ROLLBACK");
       throw error;
@@ -122,38 +129,67 @@ export const verificationService = {
     }
   },
 
-  // Crear solicitud de verificación (cuando vendedor completa perfil)
-  async createVerificationRequest(usuarioId) {
+  // Create verification request (when seller completes profile)
+  async createVerificationRequest(userId) {
     const result = await pool.query(
-      `INSERT INTO verificaciones (usuario_id, estado)
-       VALUES ($1, 'pendiente')
+      `INSERT INTO verifications (user_id, status)
+       VALUES ($1, 'pending')
        ON CONFLICT DO NOTHING
        RETURNING *`,
-      [usuarioId]
+      [userId]
     );
     return result.rows[0] || null;
   },
 
-  async createPendingVerification(usuarioId) {
+  async createPendingVerification(userId) {
     const result = await pool.query(
-      `INSERT INTO verificaciones (usuario_id, estado)
-       VALUES ($1, 'pendiente')
+      `INSERT INTO verifications (user_id, status)
+       VALUES ($1, 'pending')
        ON CONFLICT DO NOTHING
        RETURNING *`,
-      [usuarioId]
+      [userId]
     );
     return result.rows[0] || null;
   },
 
-  // Obtener historial de verificaciones de un usuario
-  async getUserVerifications(usuarioId) {
+  // Get verification by ID (for detailed view)
+  async getVerificationById(verificationId) {
     const result = await pool.query(
-      `SELECT v.*, u.name as verificador_nombre
-       FROM verificaciones v
-       LEFT JOIN users u ON v.verificador_id = u.id
-       WHERE v.usuario_id = $1
-       ORDER BY v.creado_en DESC`,
-      [usuarioId]
+      `SELECT v.*, u.name, u.email, u.user_type, u.phone, u.whatsapp, u.bio, u.profile_image_url,
+              n.name as neighborhood_name, n.locality
+       FROM verifications v
+       JOIN users u ON v.user_id = u.id
+       LEFT JOIN neighborhoods n ON u.neighborhood_id = n.id
+       WHERE v.id = $1`,
+      [verificationId]
+    );
+    return result.rows[0] || null;
+  },
+
+  // Get user's verification history
+  async getUserVerifications(userId) {
+    const result = await pool.query(
+      `SELECT v.*, u.name as verifier_name
+       FROM verifications v
+       LEFT JOIN users u ON v.verifier_id = u.id
+       WHERE v.user_id = $1
+       ORDER BY v.created_at DESC`,
+      [userId]
+    );
+    return result.rows;
+  },
+
+  // Get verifications by verifier
+  async getVerificationsByVerifier(verifierId) {
+    const result = await pool.query(
+      `SELECT v.*, u.name, u.email, u.user_type, u.phone, u.whatsapp, u.bio, u.profile_image_url,
+              n.name as neighborhood_name, n.locality
+       FROM verifications v
+       JOIN users u ON v.user_id = u.id
+       LEFT JOIN neighborhoods n ON u.neighborhood_id = n.id
+       WHERE v.verifier_id = $1
+       ORDER BY v.created_at DESC`,
+      [verifierId]
     );
     return result.rows;
   }

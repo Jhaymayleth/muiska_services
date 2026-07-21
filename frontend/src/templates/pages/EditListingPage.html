@@ -1,41 +1,41 @@
-<h1 class="text-3xl font-semibold text-primary">Editar Publicación</h1>
+<h1 class="text-3xl font-semibold text-primary">Edit Listing</h1>
 <form id="edit-listing-form" class="space-y-4 rounded-2xl border border-border bg-white p-8 shadow-sm">
   <div class="space-y-2">
-    <label class="text-sm font-medium text-text" for="title">Título</label>
+    <label class="text-sm font-medium text-text" for="title">Title</label>
     <input id="title" name="title" required class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary" />
   </div>
   <div class="space-y-2">
-    <label class="text-sm font-medium text-text" for="description">Descripción</label>
+    <label class="text-sm font-medium text-text" for="description">Description</label>
     <textarea id="description" name="description" rows="4" class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary"></textarea>
   </div>
   <div class="grid gap-4 md:grid-cols-2">
     <div class="space-y-2">
-      <label class="text-sm font-medium text-text" for="price">Precio</label>
+      <label class="text-sm font-medium text-text" for="price">Price</label>
       <input id="price" name="price" type="number" step="0.01" required class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary" />
     </div>
     <div class="space-y-2">
-      <label class="text-sm font-medium text-text" for="category">Categoría</label>
+      <label class="text-sm font-medium text-text" for="category">Category</label>
       <select id="category" name="category" class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary">
-        <option value="">Seleccionar categoría</option>
+        <option value="">Select category</option>
       </select>
     </div>
   </div>
   <div class="grid gap-4 md:grid-cols-2">
     <div class="space-y-2">
-      <label class="text-sm font-medium text-text" for="location">Ubicación</label>
+      <label class="text-sm font-medium text-text" for="location">Location</label>
       <input id="location" name="location" class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary" />
     </div>
     <div class="space-y-2">
-      <label class="text-sm font-medium text-text" for="contactMethod">Método de contacto</label>
+      <label class="text-sm font-medium text-text" for="contactMethod">Contact method</label>
       <input id="contactMethod" name="contactMethod" class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary" />
     </div>
   </div>
   <div class="space-y-2">
-    <label class="text-sm font-medium text-text" for="images">Imágenes</label>
+    <label class="text-sm font-medium text-text" for="images">Images</label>
     <input id="images" name="images" type="file" accept="image/*" multiple class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary" />
-    <p class="text-xs text-text/60">Selecciona nuevas imágenes para reemplazar las actuales</p>
+    <p class="text-xs text-text/60">Select new images to replace current ones</p>
   </div>
   <button type="submit" class="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-white transition hover:bg-primary-hover">
-    Guardar cambios
+    Save changes
   </button>
 </form>

@@ -29,7 +29,7 @@ export const api = {
 
     if (!res.ok) {
       const error = await res.json().catch(() => ({ message: res.statusText }));
-      throw new Error(error.message || "Error en la solicitud");
+      throw new Error(error.message || "Request failed");
     }
     return res.json();
   },
@@ -56,7 +56,9 @@ export const api = {
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
       if (value !== null && value !== undefined) {
-        formData.append(key, value);
+        // Convert camelCase to snake_case for backend
+        const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+        formData.append(snakeKey, value);
       }
     });
     images.forEach((image) => formData.append("images", image));
@@ -71,7 +73,8 @@ export const api = {
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
       if (value !== null && value !== undefined) {
-        formData.append(key, value);
+        const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+        formData.append(snakeKey, value);
       }
     });
     images.forEach((image) => formData.append("images", image));
@@ -107,9 +110,15 @@ export const api = {
   },
 
   updateProfile(data) {
+    // Convert camelCase to snake_case
+    const snakeData = {};
+    Object.entries(data).forEach(([key, value]) => {
+      const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+      snakeData[snakeKey] = value;
+    });
     return this.request("/auth/me", {
       method: "PUT",
-      body: JSON.stringify(data),
+      body: JSON.stringify(snakeData),
     });
   },
 
@@ -190,7 +199,7 @@ export const api = {
     localStorage.removeItem("user");
   },
 
-  // Notificaciones
+  // Notifications
   getNotifications(params = {}) {
     const query = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
@@ -198,59 +207,59 @@ export const api = {
         query.append(key, value);
       }
     });
-    return this.request(`/notificaciones?${query.toString()}`);
+    return this.request(`/notifications?${query.toString()}`);
   },
 
   markNotificationRead(id) {
-    return this.request(`/notificaciones/${id}/leer`, { method: "PATCH" });
+    return this.request(`/notifications/${id}/read`, { method: "PATCH" });
   },
 
   markAllNotificationsRead() {
-    return this.request("/notificaciones/leer-todas", { method: "POST" });
+    return this.request("/notifications/read-all", { method: "POST" });
   },
 
   deleteNotification(id) {
-    return this.request(`/notificaciones/${id}`, { method: "DELETE" });
+    return this.request(`/notifications/${id}`, { method: "DELETE" });
   },
 
-  // Verificaciones
+  // Verifications
   getMyVerificationStatus() {
-    return this.request("/verificaciones/mi-estado");
+    return this.request("/verifications/my-status");
   },
 
   getPendingVerifications() {
-    return this.request("/verificaciones/pendientes");
+    return this.request("/verifications/pending");
   },
 
   getVerificationById(id) {
-    return this.request(`/verificaciones/${id}`);
+    return this.request(`/verifications/${id}`);
   },
 
   approveVerification(id) {
-    return this.request(`/verificaciones/${id}/aprobar`, { method: "POST" });
+    return this.request(`/verifications/${id}/approve`, { method: "POST" });
   },
 
-  rejectVerification(id, motivo) {
-    return this.request(`/verificaciones/${id}/rechazar`, {
+  rejectVerification(id, reason) {
+    return this.request(`/verifications/${id}/reject`, {
       method: "POST",
-      body: JSON.stringify({ motivo }),
+      body: JSON.stringify({ reason }),
     });
   },
 
   getMyVerificationHistory() {
-    return this.request("/verificaciones/historial/mio");
+    return this.request("/verifications/history/me");
   },
 
-  // Admin - Verificadores
-  getVerificadores() {
-    return this.request("/admin/verificadores");
+  // Admin - Verifiers
+  getVerifiers() {
+    return this.request("/admin/verifiers");
   },
 
   assignVerifier(id) {
-    return this.request(`/admin/verificadores/${id}`, { method: "POST" });
+    return this.request(`/admin/verifiers/${id}`, { method: "POST" });
   },
 
   removeVerifier(id) {
-    return this.request(`/admin/verificadores/${id}`, { method: "DELETE" });
+    return this.request(`/admin/verifiers/${id}`, { method: "DELETE" });
   },
 };

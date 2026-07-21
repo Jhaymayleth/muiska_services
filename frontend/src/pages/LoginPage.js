@@ -21,7 +21,7 @@ const LoginPage = () => {
     const password = form.password.value.trim();
 
     if (!email || !password) {
-      errorEl.textContent = "Todos los campos son obligatorios.";
+      errorEl.textContent = "All fields are required.";
       errorEl.classList.remove("hidden");
       return;
     }
@@ -33,7 +33,7 @@ const LoginPage = () => {
       const redirectPath = result.user.role === "admin" ? "/admin" : "/dashboard";
       navigateTo(redirectPath);
     } catch (err) {
-      errorEl.textContent = err.message || "Error al iniciar sesión.";
+      errorEl.textContent = err.message || "Error logging in.";
       errorEl.classList.remove("hidden");
     }
   });
