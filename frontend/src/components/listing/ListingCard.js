@@ -1,6 +1,7 @@
 import { navigateTo } from "../../router/router.js";
 import { toggleFavorite, checkFavorite } from "../../services/publication.service.js";
 import { isAuthenticated } from "../../utils/auth.js";
+import { getIcon } from "../../utils/icons.js";
 
 const ListingCard = (pub = {}) => {
   const card = document.createElement("article");
@@ -48,8 +49,8 @@ const ListingCard = (pub = {}) => {
       </div>
       <p class="line-clamp-3 text-sm text-text/70">${pub.description || "No description"}</p>
       <div class="flex flex-wrap gap-2 text-xs text-text/60">
-        ${pub.location ? `<span class="rounded-full bg-muted px-2 py-1">📍 ${pub.location}</span>` : ""}
-        ${pub.contact_method ? `<span class="rounded-full bg-muted px-2 py-1">📞 ${pub.contact_method}</span>` : ""}
+        ${pub.location ? `<span class="rounded-full bg-muted px-2 py-1"><span class="inline-flex align-middle">${getIcon("location", 14)}</span> ${pub.location}</span>` : ""}
+        ${pub.contact_method ? `<span class="rounded-full bg-muted px-2 py-1"><span class="inline-flex align-middle">${getIcon("phone", 14)}</span> ${pub.contact_method}</span>` : ""}
       </div>
       ${
         Array.isArray(pub.images) && pub.images.length > 0

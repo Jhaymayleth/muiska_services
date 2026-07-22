@@ -4,6 +4,7 @@ import { isAuthenticated } from "../utils/auth.js";
 import { chatService } from "../services/chat.service.js";
 import { sessionStore } from "../state/session.store.js";
 import { loadTemplate, renderTemplate } from "../utils/templateLoader.js";
+import { getCategoryIcon } from "../utils/icons.js";
 import womanImg from "../assets/images/Woman.jpg";
 import vestidorImg from "../assets/images/vestidor.jpg";
 
@@ -42,25 +43,6 @@ const statusClass = (status) => {
     inactive: "bg-text text-background",
   };
   return classes[status] || "bg-muted text-text";
-};
-
-const categoryIcons = {
-  "clothing": "👗", "fashion": "👗",
-  "food": "🍽️", "beverage": "🍽️",
-  "electronics": "💻", "tech": "💻",
-  "home": "🏠", "garden": "🏠",
-  "art": "🎨", "craft": "🎨",
-  "health": "🧑‍⚕️", "beauty": "🧑‍⚕️",
-  "education": "📚",
-  "service": "🔧",
-};
-
-const getCategoryIcon = (name) => {
-  const lower = name.toLowerCase();
-  for (const [key, icon] of Object.entries(categoryIcons)) {
-    if (lower.includes(key)) return icon;
-  }
-  return "📦";
 };
 
 const HomePage = async () => {

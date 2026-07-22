@@ -5,6 +5,7 @@ import { toggleFavorite, checkFavorite } from "../services/publication.service.j
 import { loadTemplate } from "../utils/templateLoader.js";
 import { formatDate, escapeHtml } from "../utils/helpers.js";
 import { chatService } from "../services/chat.service.js";
+import { getIcon } from "../utils/icons.js";
 
 const PublicationDetailPage = () => {
   const section = document.createElement("section");
@@ -58,9 +59,9 @@ const PublicationDetailPage = () => {
     }
 
     // Meta info
-    let metaHtml = `<span class="flex items-center gap-1">📅 ${new Date(pub.created_at).toLocaleDateString("en-US")}</span>`;
-    if (pub.location) metaHtml += `<span class="flex items-center gap-1">📍 ${escapeHtml(pub.location)}</span>`;
-    if (pub.contact_method) metaHtml += `<span class="flex items-center gap-1">📞 ${escapeHtml(pub.contact_method)}</span>`;
+    let metaHtml = `<span class="flex items-center gap-1"><span class="inline-flex">${getIcon("calendar", 16)}</span> ${new Date(pub.created_at).toLocaleDateString("en-US")}</span>`;
+    if (pub.location) metaHtml += `<span class="flex items-center gap-1"><span class="inline-flex">${getIcon("location", 16)}</span> ${escapeHtml(pub.location)}</span>`;
+    if (pub.contact_method) metaHtml += `<span class="flex items-center gap-1"><span class="inline-flex">${getIcon("phone", 16)}</span> ${escapeHtml(pub.contact_method)}</span>`;
     const statusConfig = {
       active: { label: "Active", classes: "bg-green-100 text-green-700" },
       sold: { label: "Sold", classes: "bg-blue-100 text-blue-700" },
