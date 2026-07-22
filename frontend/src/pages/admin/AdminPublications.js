@@ -26,7 +26,7 @@ export const AdminPublications = {
     this.cacheElements(panel);
 
     // Cargar el template de la tabla y extraer la fila
-    const tableTemplate = loadTemplate("AdminPublicationsTable");
+    const tableTemplate = loadTemplate("AdminPublicationsTable").replace("{{rows}}", '<tr><td colspan="7" class="admin-loading">Loading…</td></tr>');
     if (this.elements.container) {
       this.elements.container.innerHTML = tableTemplate;
       this.elements.tbody = this.elements.container.querySelector("#publications-tbody");
