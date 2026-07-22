@@ -1,0 +1,88 @@
+<div class="max-w-7xl mx-auto px-4 md:px-6 py-8">
+  <div class="mb-8">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-display font-bold text-text">Verifier Dashboard</h1>
+        <p class="text-sm text-text-secondary mt-1">Review and moderate profiles and publications</p>
+      </div>
+      <div class="text-sm text-text-tertiary">
+        <span id="verifier-name" class="font-medium text-text"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="mb-6 border-b border-border/60">
+    <nav class="-mb-px flex gap-6" id="verifier-tabs">
+      <button
+        data-tab="profiles"
+        class="border-primary text-primary whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium transition-colors"
+      >
+        Profiles to Verify
+      </button>
+      <button
+        data-tab="publications"
+        class="border-transparent text-text-secondary hover:border-border hover:text-text whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium transition-colors"
+      >
+        Publications Pending
+      </button>
+      <button
+        data-tab="history"
+        class="border-transparent text-text-secondary hover:border-border hover:text-text whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium transition-colors"
+      >
+        My History
+      </button>
+    </nav>
+  </div>
+
+  <!-- Content -->
+  <div id="verifier-tab-content">
+    <div data-tab-panel="profiles" class="space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-text">Profiles Pending Verification</h2>
+        <div class="text-sm text-text-tertiary" id="profiles-count"></div>
+      </div>
+      <div id="profiles-list" class="space-y-3">
+        <p class="text-text-tertiary">Loading profiles...</p>
+      </div>
+    </div>
+
+    <div data-tab-panel="publications" class="hidden space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-text">Publications Pending Moderation</h2>
+        <div class="text-sm text-text-tertiary" id="publications-count"></div>
+      </div>
+      <div id="publications-list" class="space-y-3">
+        <p class="text-text-tertiary">Loading publications...</p>
+      </div>
+    </div>
+
+    <div data-tab-panel="history" class="hidden space-y-4">
+      <h2 class="text-lg font-semibold text-text">My Activity</h2>
+      <div class="mb-4 border-b border-border/60">
+        <nav class="-mb-px flex gap-6" id="history-subtabs">
+          <button
+            data-subtab="verifications"
+            class="border-primary text-primary whitespace-nowrap border-b-2 px-4 py-2 text-sm font-medium"
+          >
+            Verifications
+          </button>
+          <button
+            data-subtab="moderations"
+            class="border-transparent text-text-secondary hover:border-border hover:text-text whitespace-nowrap border-b-2 px-4 py-2 text-sm font-medium"
+          >
+            Moderations
+          </button>
+        </nav>
+      </div>
+      <div id="history-content">
+        <div data-history-panel="verifications" class="space-y-3">
+          <p class="text-text-tertiary">Loading...</p>
+        </div>
+        <div data-history-panel="moderations" class="hidden space-y-3">
+          <p class="text-text-tertiary">Loading...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

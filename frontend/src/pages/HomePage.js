@@ -1,6 +1,6 @@
 import { api } from "../services/api.js";
 import { navigateTo } from "../router/router.js";
-import { loadTemplate } from "../utils/templateLoader.js";
+import { loadTemplate, renderTemplate } from "../utils/templateLoader.js";
 import womanImg from "../assets/images/Woman.jpg";
 import vestidorImg from "../assets/images/vestidor.jpg";
 
@@ -16,7 +16,7 @@ const formatDate = (value) =>
         month: "short",
         year: "numeric",
       }).format(new Date(value))
-    : "Sin fecha";
+    : "No date";
 
 const getInitials = (name = "") =>
   name
@@ -28,7 +28,7 @@ const getInitials = (name = "") =>
     .toUpperCase();
 
 const statusLabel = (status) => {
-  const labels = { active: "Venta", sold: "Vendido", inactive: "Inactivo" };
+  const labels = { active: "For Sale", sold: "Sold", inactive: "Inactive" };
   return labels[status] || status;
 };
 
@@ -73,20 +73,12 @@ const HomePage = async () => {
   const featuredLoaderTemplate = loadTemplate("FeaturedSkeleton");
   const publicationCardTemplate = loadTemplate("PublicationCard");
 
-  const renderCategoryLoader = () => {
-    categoriesContainer.innerHTML = categoryLoaderTemplate;
-  };
-
-  const renderFeaturedLoader = () => {
-    featuredContainer.innerHTML = featuredLoaderTemplate;
-  };
-
   const loadCategories = async () => {
-    renderCategoryLoader();
+    categoriesContainer.innerHTML = renderTemplate("CategorySkeleton", { count: 4 });
     try {
       const categories = await api.getCategories();
       if (categories.length === 0) {
-        categoriesContainer.innerHTML = '<p class="col-span-full text-center text-sm text-text/60">No hay categorías disponibles.</p>';
+        categoriesContainer.innerHTML = '<p class="col-span-full text-center text-sm text-text/60">No categories available.</p>';
         return;
       }
       categoriesContainer.innerHTML = categories
@@ -101,12 +93,16 @@ const HomePage = async () => {
         )
         .join("");
     } catch (err) {
-      categoriesContainer.innerHTML = '<p class="col-span-full text-center text-sm text-red-600">Error al cargar categorías.</p>';
+      categoriesContainer.innerHTML = '<p class="col-span-full text-center text-sm text-red-600">Error loading categories.</p>';
     }
   };
 
+  const renderFeaturedLoader = () => {
+    featuredContainer.innerHTML = renderTemplate("FeaturedSkeleton", { count: 3 });
+  };
+
   const createPublicationCard = (pub) => {
-    const initials = getInitials(pub.user?.name || pub.user_name || "Usuario");
+    const initials = getInitials(pub.user?.name || pub.user_name || "User");
     const userBg = pub.user?.name ? "bg-primary" : "bg-muted";
     const typeLabel = statusLabel(pub.status || "active");
     const typeClass = statusClass(pub.status || "active");
@@ -118,11 +114,11 @@ const HomePage = async () => {
       .replace("{{title}}", pub.title)
       .replace("{{description}}", pub.description?.slice(0, 100) || "")
       .replace("{{descriptionMore}}", pub.description?.length > 100 ? "..." : "")
-      .replace("{{location}}", pub.location || "Sin ubicación")
+      .replace("{{location}}", pub.location || "No location")
       .replace("{{date}}", formatDate(pub.created_at))
       .replace("{{initials}}", initials)
       .replace("{{userBg}}", userBg)
-      .replace("{{author}}", pub.user?.name || pub.user_name || "Usuario")
+      .replace("{{author}}", pub.user?.name || pub.user_name || "User")
       .replace("{{price}}", Number(pub.price || 0).toLocaleString("es-CO", { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
       .replace("{{statusLabel}}", typeLabel)
       .replace("{{statusClass}}", typeClass);
@@ -137,8 +133,8 @@ const HomePage = async () => {
       if (pubs.length === 0) {
         featuredContainer.innerHTML = `
           <div class="col-span-full rounded-xl border border-dashed border-border bg-background p-8 text-center">
-            <h3 class="text-lg font-semibold">No hay publicaciones destacadas</h3>
-            <p class="mt-2 text-sm text-text/70">Sé el primero en crear una.</p>
+            <h3 class="text-lg font-semibold">No featured listings</h3>
+            <p class="mt-2 text-sm text-text/70">Be the first to create one.</p>
           </div>`;
         return;
       }
@@ -153,7 +149,7 @@ const HomePage = async () => {
     } catch (err) {
       featuredContainer.innerHTML = `
         <div class="col-span-full rounded-xl border border-dashed border-red-200 bg-red-50 p-8 text-center">
-          <p class="text-red-600">${err.message || "Error al cargar publicaciones"}</p>
+          <p class="text-red-600">${err.message || "Error loading listings"}</p>
         </div>`;
     }
   };

@@ -13,6 +13,7 @@ export const AdminUsers = {
   elements: {},
 
   init(panel) {
+    panel.innerHTML = loadTemplate("AdminUsers");
     this.currentUser = panel.dataset.currentUserId || null;
     this.cacheElements(panel);
     this.loadTableTemplate();
@@ -66,10 +67,10 @@ export const AdminUsers = {
 
       try {
         await api.updateAdminUser(userId, { role: newRole });
-        this.showMessage("Rol actualizado correctamente.", "success");
+        this.showMessage("Role updated successfully.", "success");
         this.loadUsers();
       } catch (err) {
-        this.showMessage(err.message || "No se pudo actualizar el rol.", "error");
+        this.showMessage(err.message || "Could not update role.", "error");
         this.loadUsers(); // Resetear select
       }
     });
@@ -83,28 +84,28 @@ export const AdminUsers = {
 
       if (action === "ban") {
         const willBan = banned !== "true";
-        if (!confirm(willBan ? "¿Suspender esta cuenta? La persona perderá acceso inmediatamente." : "¿Restablecer el acceso a esta cuenta?")) return;
+        if (!confirm(willBan ? "Suspend this account? They will lose access immediately." : "Restore access to this account?")) return;
 
         try {
           await api.updateAdminUser(userId, { is_banned: willBan });
-          this.showMessage(willBan ? "Cuenta suspendida correctamente." : "Acceso restablecido correctamente.", "success");
+          this.showMessage(willBan ? "Account suspended successfully." : "Access restored successfully.", "success");
           this.loadUsers();
         } catch (err) {
-          this.showMessage(err.message || "No se pudo actualizar el estado.", "error");
+          this.showMessage(err.message || "Could not update status.", "error");
         }
       }
 
       if (action === "delete") {
-        if (!confirm(`¿Eliminar a ${userName}? También se eliminarán todas sus publicaciones. Esta acción no se puede deshacer.`)) return;
+        if (!confirm(`Delete ${userName}? All their listings will also be deleted. This cannot be undone.`)) return;
 
         try {
           await api.deleteAdminUser(userId);
-          this.showMessage("Usuario eliminado correctamente.", "success");
+          this.showMessage("User deleted successfully.", "success");
           this.loadUsers();
           // Notificar al dashboard si está activo
           window.dispatchEvent(new CustomEvent("admin:userDeleted"));
         } catch (err) {
-          this.showMessage(err.message || "No se pudo eliminar el usuario.", "error");
+          this.showMessage(err.message || "Could not delete user.", "error");
         }
       }
     });
@@ -114,15 +115,15 @@ export const AdminUsers = {
     const { container, searchInput } = this.elements;
     if (!container) return;
 
-    container.innerHTML = '<p class="admin-loading">Cargando usuarios…</p>';
+    container.innerHTML = '<p class="admin-loading">Loading users…</p>';
 
     try {
       const search = searchInput?.value.trim() || "";
       const users = await api.getAdminUsers(search);
       this.renderTable(users);
     } catch (err) {
-      container.innerHTML = '<p class="admin-error">No se pudieron cargar los usuarios.</p>';
-      this.showMessage(err.message || "No se pudieron cargar los usuarios.", "error");
+      container.innerHTML = '<p class="admin-error">Could not load users.</p>';
+      this.showMessage(err.message || "Could not load users.", "error");
     }
   },
 
@@ -134,33 +135,51 @@ export const AdminUsers = {
     if (!tbody) return;
 
     if (users.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" class="admin-empty">No se encontraron usuarios.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" class="admin-empty">No users found.</td></tr>';
       return;
     }
 
     tbody.innerHTML = users
       .map((u) => {
         const isMe = u.id === this.currentUser;
+        const meLabel = isMe ? ' <span class="text-muted text-xs">(you)</span>' : "";
+        const rowClass = isMe ? "admin-table__row--current" : "";
+        const meDisabled = isMe ? "disabled" : "";
+        const isUserSelected = u.role === "user" ? "selected" : "";
+        const isAdminSelected = u.role === "admin" ? "selected" : "";
+        const statusClass = u.is_banned ? "banned" : "active";
+        const statusLabel = u.is_banned ? "Suspended" : "Active";
+
+        let actions;
+        if (isMe) {
+          actions = '<span class="text-xs text-muted">Your account is protected</span>';
+        } else {
+          const banBtnClass = u.is_banned ? "btn--success" : "";
+          const banBtnText = u.is_banned ? "Restore" : "Suspend";
+          actions = `
+            <div class="flex justify-end gap-2">
+              <button data-action="ban" data-user-id="${u.id}" data-banned="${u.is_banned}" class="btn btn--ghost btn--sm ${banBtnClass}">
+                ${banBtnText}
+              </button>
+              <button data-action="delete" data-user-id="${u.id}" data-user-name="${escapeHtml(u.name || "No name")}" class="btn btn--danger btn--sm">Delete</button>
+            </div>
+          `;
+        }
+
         return this.rowTemplate
-          .replace("{{name}}", escapeHtml(u.name || "Sin nombre"))
+          .replace("{{rowClass}}", rowClass)
+          .replace("{{name}}", escapeHtml(u.name || "No name"))
+          .replace("{{meLabel}}", meLabel)
           .replace("{{email}}", escapeHtml(u.email))
-          .replace("{{isMe}}", isMe ? '<span class="text-muted text-xs">(tú)</span>' : "")
           .replace("{{id}}", u.id)
-          .replace("{{isUser}}", u.role === "user" ? "selected" : "")
-          .replace("{{isAdmin}}", u.role === "admin" ? "selected" : "")
-          .replace("{{statusClass}}", u.is_banned ? "banned" : "active")
-          .replace("{{statusLabel}}", u.is_banned ? "Suspendido" : "Activo")
+          .replace("{{meDisabled}}", meDisabled)
+          .replace("{{isUserSelected}}", isUserSelected)
+          .replace("{{isAdminSelected}}", isAdminSelected)
+          .replace("{{statusClass}}", statusClass)
+          .replace("{{statusLabel}}", statusLabel)
           .replace("{{publicationCount}}", u.publication_count)
           .replace("{{date}}", formatDate(u.created_at))
-          .replace("{{isMe}}", isMe ? '<span class="text-xs text-muted">Tu cuenta está protegida</span>' : `
-            <div class="flex justify-end gap-2">
-              <button data-action="ban" data-user-id="${u.id}" data-banned="${u.is_banned}" class="btn btn--ghost btn--sm ${u.is_banned ? "btn--success" : ""}">
-                ${u.is_banned ? "Restablecer" : "Suspender"}
-              </button>
-              <button data-action="delete" data-user-id="${u.id}" data-user-name="${escapeHtml(u.name || "Sin nombre")}" class="btn btn--danger btn--sm">Eliminar</button>
-            </div>
-          `)
-          .replace("{{isMe}}", isMe ? "admin-table__row--current" : "");
+          .replace("{{actions}}", actions);
       })
       .join("");
   },

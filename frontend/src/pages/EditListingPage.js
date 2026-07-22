@@ -40,7 +40,7 @@ const EditListingPage = () => {
           .slice(0, 5)
           .map(
             (image) =>
-              `<img src="${image}" alt="imagen actual" class="h-20 w-20 rounded-lg object-cover" />`,
+              `<img src="${image}" alt="current image" class="h-20 w-20 rounded-lg object-cover" />`,
           )
           .join("");
         form.prepend(imagesContainer);
@@ -69,7 +69,7 @@ const EditListingPage = () => {
     })
     .catch(() => {
       section.innerHTML =
-        '<p class="text-sm text-red-500">Error al cargar la publicación.</p>';
+        '<p class="text-sm text-red-500">Error loading publication.</p>';
     });
 
   return section;

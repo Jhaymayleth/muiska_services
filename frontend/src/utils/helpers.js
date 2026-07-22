@@ -13,7 +13,7 @@ export function formatNumber(value, decimals = 2) {
 
 // Formatear fecha para locale es-CO
 export function formatDate(value) {
-  if (!value) return "Sin fecha";
+  if (!value) return "No date";
   return new Intl.DateTimeFormat("es-CO", {
     day: "2-digit",
     month: "short",
@@ -58,7 +58,7 @@ export function debounce(fn, delay = 300) {
 
 // Clase para manejo de estados de carga
 export class LoadingState {
-  constructor(element, loadingHtml = '<span class="admin-spinner"></span>Cargando...') {
+  constructor(element, loadingHtml = '<span class="admin-spinner"></span>Loading...') {
     this.element = element;
     this.originalHtml = element?.innerHTML || "";
     this.loadingHtml = loadingHtml;

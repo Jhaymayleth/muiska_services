@@ -18,5 +18,16 @@ export default {
       },
     },
   },
+  safelist: [
+    "bg-green-100",
+    "text-green-700",
+    "bg-blue-100",
+    "text-blue-700",
+    "bg-gray-100",
+    "text-gray-700",
+    "peer-checked:flex",
+    "peer-checked:block",
+    "peer-checked:hidden",
+  ],
   plugins: [],
 };

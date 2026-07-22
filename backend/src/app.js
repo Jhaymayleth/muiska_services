@@ -11,8 +11,15 @@ import adminRouter from "./routes/admin.routes.js";
 import favoriteRouter from "./routes/favorite.routes.js";
 import verificationRouter from "./routes/verification.routes.js";
 import notificationRouter from "./routes/notification.routes.js";
-import { errorMiddleware } from "./middlewares/error.middleware.js";
-import { notFoundMiddleware } from "./middlewares/notFound.middleware.js";
+import moderationRouter from "./routes/moderation.routes.js";
+import healthRouter from "./routes/health.routes.js";
+import chatRouter from "./routes/chat.routes.js";
+import barrioRouter from "./routes/barrio.routes.js";
+import { errorMiddleware, notFoundMiddleware } from "./middlewares/error.middleware.js";
+import { createRequestLogger } from "./config/logger.js";
+import { apiLimiter } from "./middlewares/rateLimit.middleware.js";
+
+import { config } from "./config/index.js";
 
 dotenv.config();
 
@@ -20,9 +27,11 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
-app.use(cors());
+app.use(cors({ origin: config.cors.origin }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(createRequestLogger);
+app.use(apiLimiter);
 
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
@@ -32,8 +41,11 @@ app.use("/api", authRouter);
 app.use("/api", categoryRouter);
 app.use("/api", adminRouter);
 app.use("/api/favorites", favoriteRouter);
-app.use("/api/verificaciones", verificationRouter);
-app.use("/api/notificaciones", notificationRouter);
+app.use("/api/verifications", verificationRouter);
+app.use("/api/notifications", notificationRouter);
+app.use("/api", moderationRouter);
+app.use("/api", chatRouter);
+app.use("/api", barrioRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);

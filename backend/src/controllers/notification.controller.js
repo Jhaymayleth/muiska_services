@@ -21,7 +21,7 @@ export const notificationController = {
       const { id } = req.params;
       const notification = await notificationService.markAsRead(id, req.user.id);
       if (!notification) {
-        return res.status(404).json({ message: "Notificación no encontrada" });
+        return res.status(404).json({ message: "Notification not found" });
       }
       res.json({ notification });
     } catch (error) {
@@ -32,7 +32,7 @@ export const notificationController = {
   async markAllAsRead(req, res, next) {
     try {
       await notificationService.markAllAsRead(req.user.id);
-      res.json({ message: "Todas las notificaciones marcadas como leídas" });
+      res.json({ message: "All notifications marked as read" });
     } catch (error) {
       next(error);
     }
@@ -43,9 +43,9 @@ export const notificationController = {
       const { id } = req.params;
       const notification = await notificationService.deleteNotification(id, req.user.id);
       if (!notification) {
-        return res.status(404).json({ message: "Notificación no encontrada" });
+        return res.status(404).json({ message: "Notification not found" });
       }
-      res.json({ message: "Notificación eliminada" });
+      res.json({ message: "Notification deleted" });
     } catch (error) {
       next(error);
     }

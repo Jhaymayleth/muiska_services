@@ -1,10 +1,11 @@
 import { pool } from "../config/database.js";
 
-// Campos a seleccionar en consultas de publicaciones (con JOIN a categories)
 const publicationSelectFields = `
   p.id, p.title, p.description, p.price, p.category_id, 
   c.name as category, p.images, p.location, p.contact_method, 
-  p.user_id, p.status, p.created_at, p.updated_at
+  p.user_id, p.status, p.type, p.moderation_status, p.moderated_by, p.moderated_at,
+  p.rejection_reason, p.business_hours, p.coverage_area, p.price_type,
+  p.created_at, p.updated_at
 `;
 
 const MAX_PUBLICATION_PRICE = 99_999_999.99;
@@ -12,9 +13,7 @@ const MAX_PUBLICATION_PRICE = 99_999_999.99;
 const isValidPublicationPrice = (price) =>
   Number.isFinite(price) && price > 0 && price <= MAX_PUBLICATION_PRICE;
 
-// Servicio de publicaciones: toda la lógica de negocio + SQL
 export const publicationService = {
-  // Obtener todas las publicaciones con filtros y paginación
   async getAll({ category, minPrice, maxPrice, location, search, status, page = 1, limit = 12, user_id }) {
     const pageNum = Math.max(1, parseInt(page, 10));
     const limitNum = Math.min(50, Math.max(1, parseInt(limit, 10)));
@@ -67,14 +66,12 @@ export const publicationService = {
       paramIndex++;
     }
 
-    // Contar total
     const countResult = await pool.query(
       `SELECT COUNT(*) FROM publications p LEFT JOIN categories c ON p.category_id = c.id ${whereClause}`,
       params,
     );
     const total = parseInt(countResult.rows[0].count);
 
-    // Obtener datos paginados
     params.push(limitNum, offset);
     const result = await pool.query(
       `SELECT ${publicationSelectFields} 
@@ -97,7 +94,6 @@ export const publicationService = {
     };
   },
 
-  // Obtener publicación por ID
   async getById(id) {
     const result = await pool.query(
       `SELECT ${publicationSelectFields} 
@@ -107,14 +103,13 @@ export const publicationService = {
       [id],
     );
     if (result.rows.length === 0) {
-      const error = new Error("Publicación no encontrada");
+      const error = new Error("Publication not found");
       error.code = "NOT_FOUND";
       throw error;
     }
     return result.rows[0];
   },
 
-  // Obtener publicaciones del usuario autenticado
   async getMine(userId) {
     const result = await pool.query(
       `SELECT ${publicationSelectFields}
@@ -127,15 +122,13 @@ export const publicationService = {
     return result.rows;
   },
 
-  // Crear publicación
-  async create(userId, { title, description, price, category, images, location, contact_method }) {
+  async create(userId, { title, description, price, category, images, location, contact_method, type, business_hours, coverage_area, price_type }) {
     if (!isValidPublicationPrice(price)) {
-      const error = new Error("El precio debe ser mayor que 0 y no superar 99.999.999,99");
+      const error = new Error("Price must be greater than 0 and not exceed 99,999,999.99");
       error.code = "INVALID_PRICE";
       throw error;
     }
 
-    // Buscar category_id por nombre de categoría
     let categoryId = null;
     if (category) {
       const catResult = await pool.query("SELECT id FROM categories WHERE name = $1", [category]);
@@ -145,25 +138,22 @@ export const publicationService = {
     }
 
     const result = await pool.query(
-      `INSERT INTO publications (title, description, price, category_id, images, location, contact_method, user_id)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      `INSERT INTO publications (title, description, price, category_id, images, location, contact_method, user_id, type, business_hours, coverage_area, price_type)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
        RETURNING *`,
-      [title, description, price, categoryId, images, location, contact_method, userId],
+      [title, description, price, categoryId, images, location, contact_method, userId, type, business_hours, coverage_area, price_type],
     );
 
-    // Retornar con nombre de categoría incluido
     return this.getById(result.rows[0].id);
   },
 
-  // Actualizar publicación
-  async update(id, userId, { title, description, price, category, images, location, contact_method, status }) {
+  async update(id, userId, { title, description, price, category, images, location, contact_method, status, type, business_hours, coverage_area, price_type }) {
     if (price !== undefined && !isValidPublicationPrice(price)) {
-      const error = new Error("El precio debe ser mayor que 0 y no superar 99.999.999,99");
+      const error = new Error("Price must be greater than 0 and not exceed 99,999,999.99");
       error.code = "INVALID_PRICE";
       throw error;
     }
 
-    // Buscar category_id si se envía categoría
     let categoryId = undefined;
     if (category) {
       const catResult = await pool.query("SELECT id FROM categories WHERE name = $1", [category]);
@@ -182,33 +172,35 @@ export const publicationService = {
            location = COALESCE($6, location),
            contact_method = COALESCE($7, contact_method),
            status = COALESCE($8, status),
+           type = COALESCE($9, type),
+           business_hours = COALESCE($10, business_hours),
+           coverage_area = COALESCE($11, coverage_area),
+           price_type = COALESCE($12, price_type),
            updated_at = NOW()
-       WHERE id = $9 AND user_id = $10
+       WHERE id = $13 AND user_id = $14
        RETURNING *`,
-      [title || null, description || null, price || null, categoryId, images, location, contact_method, status || null, id, userId],
+      [title || null, description || null, price || null, categoryId, images, location, contact_method, status || null, type || null, business_hours || null, coverage_area || null, price_type || null, id, userId],
     );
 
     if (result.rows.length === 0) {
-      const error = new Error("Publicación no encontrada");
+      const error = new Error("Publication not found");
       error.code = "NOT_FOUND";
       throw error;
     }
 
-    // Retornar con nombre de categoría incluido
     return this.getById(id);
   },
 
-  // Eliminar publicación
   async remove(id, userId) {
     const result = await pool.query(
       "DELETE FROM publications WHERE id = $1 AND user_id = $2 RETURNING id",
       [id, userId],
     );
     if (result.rows.length === 0) {
-      const error = new Error("Publicación no encontrada");
+      const error = new Error("Publication not found");
       error.code = "NOT_FOUND";
       throw error;
     }
-    return { message: "Publicación eliminada correctamente" };
+    return { message: "Publication deleted successfully" };
   },
 };

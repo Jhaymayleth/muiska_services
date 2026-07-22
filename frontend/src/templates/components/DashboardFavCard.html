@@ -1,4 +1,4 @@
-<!-- Card de favorito para Dashboard -->
+<!-- Favorite card for Dashboard -->
 <div class="flex items-center justify-between rounded-xl border border-border bg-white p-4">
   <div class="flex items-center gap-4">
     {{#if hasImage}}
@@ -13,11 +13,11 @@
     <div>
       <h3 class="font-semibold">{{title}}</h3>
       <p class="text-sm text-text/70">${{price}}{{#if category}} · {{category}}{{/if}} · {{statusBadge}}</p>
-      <p class="text-xs text-text/50">Por: {{userName}}</p>
+      <p class="text-xs text-text/50">By: {{userName}}</p>
     </div>
   </div>
   <div class="flex gap-2">
-    <a href="/publicacion/{{id}}" class="rounded bg-accent/10 px-3 py-1 text-sm text-accent transition hover:bg-accent/20">Ver</a>
-    <button data-id="{{id}}" class="unfav-btn rounded bg-red-50 px-3 py-1 text-sm text-red-600 transition hover:bg-red-100">Quitar</button>
+    <a href="/publicacion/{{id}}" class="rounded bg-accent/10 px-3 py-1 text-sm text-accent transition hover:bg-accent/20">View</a>
+    <button data-id="{{id}}" class="unfav-btn rounded bg-red-50 px-3 py-1 text-sm text-red-600 transition hover:bg-red-100">Remove</button>
   </div>
 </div>

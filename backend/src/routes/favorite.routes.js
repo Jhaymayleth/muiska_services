@@ -5,19 +5,24 @@ import {
   checkFavorite,
 } from "../controllers/favorite.controller.js";
 import { verifyToken } from "../middlewares/auth.middleware.js";
+import { validateParams, validateQuery } from "../middlewares/validate.middleware.js";
+import { z } from "zod";
 
 const router = Router();
 
-// Todas las rutas requieren autenticación
 router.use(verifyToken);
 
-// POST /api/favorites/:publicationId/toggle - Agregar/quitar favorito
-router.post("/:publicationId/toggle", toggleFavorite);
+const publicationIdParamSchema = z.object({
+  publicationId: z.string().uuid("Invalid publication ID"),
+});
 
-// GET /api/favorites - Listar mis favoritos (paginado)
-router.get("/", getMyFavorites);
+const favoritesQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(50).default(12),
+});
 
-// GET /api/favorites/:publicationId/check - Verificar si es favorito
-router.get("/:publicationId/check", checkFavorite);
+router.post("/:publicationId/toggle", validateParams(publicationIdParamSchema), toggleFavorite);
+router.get("/", validateQuery(favoritesQuerySchema), getMyFavorites);
+router.get("/:publicationId/check", validateParams(publicationIdParamSchema), checkFavorite);
 
 export default router;

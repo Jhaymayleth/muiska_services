@@ -1,86 +1,107 @@
-<!-- Panel de Dashboard / Resumen -->
+<!-- Admin Dashboard Panel -->
 <div id="panel-dashboard" class="admin-panel admin-panel--active" role="tabpanel" aria-labelledby="tab-dashboard">
-  <!-- Mensaje de error -->
-  <div id="admin-error" class="admin-alert admin-alert--error hidden" role="alert"></div>
-
-  <!-- Tarjetas de estadísticas -->
-  <section class="admin-stats" aria-label="Resumen general">
-    <article class="admin-stat-card">
-      <div class="admin-stat-card__content">
-        <p class="admin-stat-card__label">Publicaciones activas</p>
-        <p id="active-count" class="admin-stat-card__value">—</p>
-      </div>
-      <div class="admin-stat-card__icon" aria-hidden="true">▤</div>
-    </article>
-
-    <article class="admin-stat-card admin-stat-card--accent">
-      <div class="admin-stat-card__content">
-        <p class="admin-stat-card__label">Categorías</p>
-        <p id="category-count" class="admin-stat-card__value">—</p>
-      </div>
-      <div class="admin-stat-card__icon" aria-hidden="true">◇</div>
-    </article>
-
-    <article class="admin-stat-card admin-stat-card--text">
-      <div class="admin-stat-card__content">
-        <p class="admin-stat-card__label">Total publicaciones</p>
-        <p id="total-count" class="admin-stat-card__value">—</p>
-      </div>
-      <div class="admin-stat-card__icon" aria-hidden="true">◷</div>
-    </article>
-
-    <article class="admin-stat-card admin-stat-card--muted">
-      <div class="admin-stat-card__content">
-        <p class="admin-stat-card__label">Servicio</p>
-        <p id="service-status" class="admin-stat-card__status">Cargando</p>
-      </div>
-      <div class="admin-stat-card__icon" aria-hidden="true">●</div>
-    </article>
-  </section>
-
-  <!-- Área principal: publicaciones recientes + sidebar -->
-  <div class="admin-dashboard__grid">
-    <!-- Publicaciones recientes -->
-    <section class="admin-dashboard__main">
-      <div class="admin-section-header">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <!-- Stat: Active listings -->
+    <div class="admin-stat-card rounded-xl border border-border bg-white p-5">
+      <div class="flex items-center justify-between">
         <div>
-          <h2 class="admin-section-header__title">Publicaciones recientes</h2>
-          <p class="admin-section-header__subtitle">Las 5 publicaciones más recientes.</p>
+          <p class="text-sm text-text/60">Active</p>
+          <p id="active-count" class="text-3xl font-bold text-text">0</p>
         </div>
-        <button id="view-listings" class="admin-section-header__link">Ver todas →</button>
-      </div>
-      <div id="recent-publications" class="admin-table-wrapper">
-        <p class="admin-loading">Cargando publicaciones…</p>
-      </div>
-    </section>
-
-    <!-- Sidebar: Acciones rápidas + Categorías -->
-    <aside class="admin-dashboard__sidebar">
-      <section class="admin-quick-actions">
-        <p class="admin-quick-actions__label">Acciones rápidas</p>
-        <h2 class="admin-quick-actions__title">Gestiona la comunidad</h2>
-        <div class="admin-quick-actions__list">
-          <button id="create-listing" class="admin-quick-actions__btn admin-quick-actions__btn--primary">
-            Crear publicación <span aria-hidden="true">→</span>
-          </button>
-          <button id="browse-listings" class="admin-quick-actions__btn admin-quick-actions__btn--secondary">
-            Explorar publicaciones <span class="admin-quick-actions__link-icon" aria-hidden="true">↗</span>
-          </button>
+        <div class="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center">
+          <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
         </div>
-      </section>
+      </div>
+    </div>
 
-      <section class="admin-categories-summary">
-        <div class="admin-categories-summary__header">
-          <div>
-            <p class="admin-categories-summary__label">Categorías registradas</p>
-            <p class="admin-categories-summary__subtitle">Disponibles para clasificar publicaciones.</p>
+    <!-- Stat: Categories -->
+    <div class="admin-stat-card rounded-xl border border-border bg-white p-5">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-text/60">Categories</p>
+          <p id="category-count" class="text-3xl font-bold text-text">0</p>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+          <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stat: Total listings -->
+    <div class="admin-stat-card rounded-xl border border-border bg-white p-5">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-text/60">Total listings</p>
+          <p id="total-count" class="text-3xl font-bold text-text">0</p>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-muted/10 flex items-center justify-center">
+          <svg class="w-6 h-6 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stat: Service status -->
+    <div class="admin-stat-card rounded-xl border border-border bg-white p-5">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-text/60">Service status</p>
+          <div id="service-status" class="admin-stat-card__status admin-stat-card__status--loading">
+            <span class="admin-spinner"></span>Loading
           </div>
-          <span id="category-badge" class="admin-categories-summary__badge">—</span>
         </div>
-        <div id="category-list" class="admin-categories-summary__list">
-          <span class="admin-loading">Cargando categorías…</span>
+        <div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center">
+          <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
         </div>
-      </section>
-    </aside>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Categories + Quick actions -->
+    <div class="lg:col-span-1 space-y-6">
+      <!-- Registered categories -->
+      <div class="admin-card rounded-xl border border-border bg-white p-5">
+        <div class="admin-card__header mb-4">
+          <h3 class="admin-card__title">Registered categories</h3>
+          <p class="admin-card__subtitle">
+            <span id="category-badge" class="admin-chip">0</span> categories
+          </p>
+        </div>
+        <div id="category-list" class="flex flex-wrap gap-2">
+          <span class="text-muted">No categories registered.</span>
+        </div>
+      </div>
+
+      <!-- Quick actions -->
+      <div class="admin-card rounded-xl border border-border bg-white p-5">
+        <h3 class="admin-card__title mb-4">Quick actions</h3>
+        <div class="space-y-3">
+          <button id="view-listings" class="btn btn--secondary w-full justify-start">View listings</button>
+          <button id="create-listing" class="btn btn--primary w-full justify-start">Create listing</button>
+          <button id="browse-listings" class="btn btn--ghost w-full justify-start">Browse categories</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent listings -->
+    <div class="lg:col-span-2">
+      <div class="admin-card rounded-xl border border-border bg-white p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="admin-card__title">Recent listings</h3>
+          <div id="admin-error" class="admin-error hidden" role="alert"></div>
+        </div>
+        <div id="recent-publications">
+          <p class="admin-loading">Loading listings…</p>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

@@ -12,36 +12,39 @@ export const AdminPublications = {
   currentStatus: "",
   currentSearch: "",
 
-  async render() {
-    const section = document.createElement("section");
-    section.className = "admin-publications";
-
+  /**
+   * Inicializa el módulo de publicaciones dentro del panel
+   * @param {HTMLElement} panel - Contenedor del panel
+   */
+  init(panel) {
+    // Cargar el template y colocarlo dentro del panel recibido
     const template = loadTemplate("AdminPublications");
-    section.innerHTML = template;
+    panel.innerHTML = template;
 
-    // Load table template and extract row template
+    // Guardar referencias a los elementos del DOM
+    this.cacheElements(panel);
+
+    // Cargar el template de la tabla y extraer la fila
     const tableTemplate = loadTemplate("AdminPublicationsTable");
-    this.rowTemplate = section.querySelector("#admin-publication-row").textContent;
-
-    // Referencias
-    this.elements = {
-      container: section.querySelector("#publications-container"),
-      tbody: section.querySelector("#publications-tbody"),
-      pagination: section.querySelector("#publications-pagination"),
-      statusFilter: section.querySelector("#pub-status-filter"),
-      searchInput: section.querySelector("#pub-search"),
-    };
-
-    // Inject table template into container
     if (this.elements.container) {
       this.elements.container.innerHTML = tableTemplate;
       this.elements.tbody = this.elements.container.querySelector("#publications-tbody");
+      // Extraer la plantilla de la fila después de insertar la tabla
+      this.rowTemplate = this.elements.container.querySelector("#admin-publication-row")?.textContent || "";
     }
 
     this.attachListeners();
-    await this.loadPublications(1);
+    this.loadPublications(1);
+  },
 
-    return section;
+  cacheElements(panel) {
+    this.elements = {
+      container: panel.querySelector("#publications-container"),
+      tbody: panel.querySelector("#publications-tbody"),
+      pagination: panel.querySelector("#publications-pagination"),
+      statusFilter: panel.querySelector("#pub-status-filter"),
+      searchInput: panel.querySelector("#pub-search"),
+    };
   },
 
   attachListeners() {
@@ -78,7 +81,7 @@ export const AdminPublications = {
     this.currentPage = page;
 
     if (tbody) {
-      tbody.innerHTML = '<tr><td colspan="7" class="admin-loading">Cargando…</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" class="admin-loading">Loading…</td></tr>';
     }
 
     try {
@@ -102,7 +105,7 @@ export const AdminPublications = {
     if (!tbody) return;
 
     if (pubs.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No hay publicaciones.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No publications.</td></tr>';
       return;
     }
 
@@ -110,7 +113,7 @@ export const AdminPublications = {
       .map(
         (p) =>
           this.rowTemplate
-            .replace("{{title}}", escapeHtml(p.title || "Sin título"))
+            .replace("{{title}}", escapeHtml(p.title || "No title"))
             .replace("{{category}}", escapeHtml(p.category || "—"))
             .replace("{{statusLabel}}", this.getStatusLabel(p.status))
             .replace("{{statusClass}}", p.status)
@@ -129,10 +132,10 @@ export const AdminPublications = {
     }
 
     const { page, totalPages } = data;
-    let html = '<nav class="pagination" aria-label="Paginación">';
+    let html = '<nav class="pagination" aria-label="Pagination">';
 
     if (page > 1) {
-      html += `<button data-page="${page - 1}" class="pagination__btn">Anterior</button>`;
+      html += `<button data-page="${page - 1}" class="pagination__btn">Previous</button>`;
     }
 
     const start = Math.max(1, page - 2);
@@ -143,7 +146,7 @@ export const AdminPublications = {
     }
 
     if (page < totalPages) {
-      html += `<button data-page="${page + 1}" class="pagination__btn">Siguiente</button>`;
+      html += `<button data-page="${page + 1}" class="pagination__btn">Next</button>`;
     }
 
     html += "</nav>";
@@ -151,7 +154,7 @@ export const AdminPublications = {
   },
 
   async deletePublication(id) {
-    if (!confirm("¿Eliminar esta publicación? Esta acción no se puede deshacer.")) return;
+    if (!confirm("Delete this publication? This action cannot be undone.")) return;
 
     try {
       await api.deleteAdminPublication(id);
@@ -162,7 +165,7 @@ export const AdminPublications = {
   },
 
   getStatusLabel(status) {
-    const labels = { active: "Activa", sold: "Vendida", inactive: "Inactiva" };
+    const labels = { active: "Active", sold: "Sold", inactive: "Inactive" };
     return labels[status] || status;
   },
 };

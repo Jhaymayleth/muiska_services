@@ -1,31 +1,31 @@
 <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-  <h1 class="text-3xl font-semibold text-primary">Explorar</h1>
+  <h1 class="text-3xl font-semibold text-primary">Explore</h1>
 </div>
 
 <div class="rounded-2xl border border-border bg-white p-4 shadow-sm">
   <form id="filter-form" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
     <div class="sm:col-span-2">
-      <label for="search" class="block text-sm font-medium text-text mb-1">Buscar</label>
+      <label for="search" class="block text-sm font-medium text-text mb-1">Search</label>
       <input
         type="search"
         id="search"
         name="search"
-        placeholder="Título, descripción..."
+        placeholder="Title, description..."
         class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary"
       />
     </div>
     <div>
-      <label for="category" class="block text-sm font-medium text-text mb-1">Categoría</label>
+      <label for="category" class="block text-sm font-medium text-text mb-1">Category</label>
       <select
         id="category"
         name="category"
         class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary"
       >
-        <option value="">Todas</option>
+        <option value="">All</option>
       </select>
     </div>
     <div>
-      <label for="minPrice" class="block text-sm font-medium text-text mb-1">Precio mínimo</label>
+      <label for="minPrice" class="block text-sm font-medium text-text mb-1">Min price</label>
       <input
         type="number"
         id="minPrice"
@@ -37,7 +37,7 @@
       />
     </div>
     <div>
-      <label for="maxPrice" class="block text-sm font-medium text-text mb-1">Precio máximo</label>
+      <label for="maxPrice" class="block text-sm font-medium text-text mb-1">Max price</label>
       <input
         type="number"
         id="maxPrice"
@@ -49,12 +49,12 @@
       />
     </div>
     <div class="sm:col-span-2 lg:col-span-1">
-      <label for="location" class="block text-sm font-medium text-text mb-1">Ubicación</label>
+      <label for="location" class="block text-sm font-medium text-text mb-1">Location</label>
       <input
         type="text"
         id="location"
         name="location"
-        placeholder="Ciudad, barrio..."
+        placeholder="City, neighborhood..."
         class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary"
       />
     </div>
@@ -63,7 +63,7 @@
         type="submit"
         class="w-full rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-hover"
       >
-        Filtrar
+        Filter
       </button>
     </div>
     <div class="sm:col-span-2 lg:col-span-1 flex items-end">
@@ -72,7 +72,7 @@
         id="clear-filters"
         class="w-full rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium text-text hover:bg-muted transition"
       >
-        Limpiar
+        Clear
       </button>
     </div>
   </form>

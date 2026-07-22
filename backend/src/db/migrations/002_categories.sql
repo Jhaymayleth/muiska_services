@@ -1,7 +1,7 @@
--- Migración 002: Crear tabla de categorías
--- Dependencia: ninguna (tabla independiente)
+-- 002_categories.sql
+-- Categories table
 
-CREATE TABLE IF NOT EXISTS categories (
+CREATE TABLE categories (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(100) UNIQUE NOT NULL,
     slug VARCHAR(100) UNIQUE NOT NULL,
@@ -9,6 +9,5 @@ CREATE TABLE IF NOT EXISTS categories (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Índices para búsquedas rápidas
-CREATE INDEX IF NOT EXISTS idx_categories_name ON categories(name);
-CREATE INDEX IF NOT EXISTS idx_categories_slug ON categories(slug);
+CREATE INDEX idx_categories_name ON categories(name);
+CREATE INDEX idx_categories_slug ON categories(slug);

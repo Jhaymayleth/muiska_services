@@ -1,15 +1,15 @@
-<!-- Tabla de publicaciones para AdminPublications -->
+<!-- Publications table for AdminPublications -->
 <div class="admin-table-wrapper">
   <table class="admin-table">
     <thead>
       <tr>
-        <th>Publicación</th>
-        <th>Categoría</th>
-        <th>Estado</th>
-        <th>Precio</th>
-        <th>Usuario</th>
-        <th>Fecha</th>
-        <th class="text-right">Acciones</th>
+        <th>Publication</th>
+        <th>Category</th>
+        <th>Status</th>
+        <th>Price</th>
+        <th>User</th>
+        <th>Date</th>
+        <th class="text-right">Actions</th>
       </tr>
     </thead>
     <tbody id="publications-tbody">
@@ -18,7 +18,7 @@
   </table>
 </div>
 
-<!-- Fila individual de publicación -->
+<!-- Individual publication row -->
 <script type="template" id="admin-publication-row">
   <tr class="transition hover:bg-background/70">
     <td class="py-4 pr-4 font-semibold text-text">{{title}}</td>
@@ -28,7 +28,7 @@
     <td class="py-4 pr-4 text-text/70">{{userName}}</td>
     <td class="py-4 text-text/60">{{date}}</td>
     <td class="py-4 text-right">
-      <button data-action="delete" data-id="{{id}}" class="btn btn--danger btn--sm">Eliminar</button>
+      <button data-action="delete" data-id="{{id}}" class="btn btn--danger btn--sm">Delete</button>
     </td>
   </tr>
 </script>

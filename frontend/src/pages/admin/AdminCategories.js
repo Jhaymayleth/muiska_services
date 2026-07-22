@@ -16,6 +16,7 @@ export const AdminCategories = {
    * @param {HTMLElement} panel - Contenedor del panel
    */
   init(panel) {
+    panel.innerHTML = loadTemplate("AdminCategories");
     this.cacheElements(panel);
     this.attachListeners();
     this.loadCategories();
@@ -72,7 +73,7 @@ export const AdminCategories = {
     const { container } = this.elements;
     if (!container) return;
 
-    container.innerHTML = '<p class="admin-loading">Cargando…</p>';
+    container.innerHTML = '<p class="admin-loading">Loading…</p>';
 
     try {
       const categories = await api.getCategories();
@@ -90,7 +91,7 @@ export const AdminCategories = {
     if (!container) return;
 
     if (categories.length === 0) {
-      container.innerHTML = '<p class="admin-empty">No hay categorías.</p>';
+      container.innerHTML = '<p class="admin-empty">No categories.</p>';
       return;
     }
 
@@ -99,9 +100,9 @@ export const AdminCategories = {
         <table class="admin-table">
           <thead>
             <tr>
-              <th>Nombre</th>
-              <th>Descripción</th>
-              <th>Fecha</th>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Date</th>
               <th class="text-right">Acciones</th>
             </tr>
           </thead>
@@ -114,8 +115,8 @@ export const AdminCategories = {
                 <td class="text-muted">${escapeHtml(c.description || "—")}</td>
                 <td class="text-muted">${formatDate(c.created_at)}</td>
                 <td class="text-right">
-                  <button data-action="edit" data-id="${c.id}" class="btn btn--ghost btn--sm">Editar</button>
-                  <button data-action="delete" data-id="${c.id}" class="btn btn--danger btn--sm">Eliminar</button>
+                  <button data-action="edit" data-id="${c.id}" class="btn btn--ghost btn--sm">Edit</button>
+                  <button data-action="delete" data-id="${c.id}" class="btn btn--danger btn--sm">Delete</button>
                 </td>
               </tr>
             `
@@ -135,12 +136,12 @@ export const AdminCategories = {
     this.elements.idInput.value = "";
 
     if (category) {
-      this.elements.titleEl.textContent = "Editar categoría";
+      this.elements.titleEl.textContent = "Edit Category";
       this.elements.idInput.value = category.id;
       this.elements.nameInput.value = category.name;
       this.elements.descInput.value = category.description || "";
     } else {
-      this.elements.titleEl.textContent = "Nueva categoría";
+      this.elements.titleEl.textContent = "New Category";
     }
 
     this.elements.modal?.classList.remove("hidden");
@@ -193,7 +194,7 @@ export const AdminCategories = {
    * Elimina categoría tras confirmación
    */
   async deleteCategory(id) {
-    if (!confirm("¿Eliminar esta categoría? Las publicaciones que la usan quedarán sin categoría.")) return;
+    if (!confirm("Delete this category? Listings using it will become uncategorized.")) return;
 
     try {
       await api.deleteCategory(id);

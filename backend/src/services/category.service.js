@@ -26,10 +26,21 @@ export const categoryService = {
 
   // Crear categoría
   async create({ name, description }) {
-    const slug = name
+    let slug = name
       .toLowerCase()
       .replace(/[^a-z0-9áéíóúñü]+/g, "-")
       .replace(/^-|-$/g, "");
+
+    // Handle slug collision
+    let finalSlug = slug;
+    let counter = 1;
+    while (true) {
+      const existing = await pool.query("SELECT id FROM categories WHERE slug = $1", [finalSlug]);
+      if (existing.rows.length === 0) break;
+      finalSlug = `${slug}-${counter}`;
+      counter++;
+    }
+    slug = finalSlug;
 
     const result = await pool.query(
       "INSERT INTO categories (name, slug, description) VALUES ($1, $2, $3) RETURNING id, name, slug, description, created_at",
@@ -40,10 +51,21 @@ export const categoryService = {
 
   // Actualizar categoría
   async update(id, { name, description }) {
-    const slug = name
+    let slug = name
       .toLowerCase()
       .replace(/[^a-z0-9áéíóúñü]+/g, "-")
       .replace(/^-|-$/g, "");
+
+    // Handle slug collision (excluding current category)
+    let finalSlug = slug;
+    let counter = 1;
+    while (true) {
+      const existing = await pool.query("SELECT id FROM categories WHERE slug = $1 AND id != $2", [finalSlug, id]);
+      if (existing.rows.length === 0) break;
+      finalSlug = `${slug}-${counter}`;
+      counter++;
+    }
+    slug = finalSlug;
 
     const result = await pool.query(
       "UPDATE categories SET name = $1, slug = $2, description = COALESCE($3, description) WHERE id = $4 RETURNING id, name, slug, description, created_at",

@@ -17,7 +17,10 @@ export const AdminDashboard = {
    * @param {HTMLElement} panel - Elemento contenedor del panel
    */
   init(panel) {
+    panel.innerHTML = loadTemplate("AdminDashboard");
     this.cacheElements(panel);
+    // El botón "Actualizar" está en el header (fuera del AdminPage.html), lo buscamos globalmente
+    this.elements.refreshBtn = document.querySelector("#refresh-dashboard");
     this.attachListeners();
     this.loadDashboard();
   },
@@ -35,7 +38,6 @@ export const AdminDashboard = {
       categoryList: panel.querySelector("#category-list"),
       recentPublications: panel.querySelector("#recent-publications"),
       errorBox: panel.querySelector("#admin-error"),
-      refreshBtn: panel.querySelector("#refresh-dashboard"),
       viewListingsBtn: panel.querySelector("#view-listings"),
       createListingBtn: panel.querySelector("#create-listing"),
       browseListingsBtn: panel.querySelector("#browse-listings"),
@@ -63,7 +65,7 @@ export const AdminDashboard = {
     // Reset UI
     errorBox?.classList.add("hidden");
     if (serviceStatus) {
-      serviceStatus.innerHTML = '<span class="admin-spinner"></span>Cargando';
+      serviceStatus.innerHTML = '<span class="admin-spinner"></span>Loading';
       serviceStatus.className = "admin-stat-card__status admin-stat-card__status--loading";
     }
 
@@ -93,10 +95,10 @@ export const AdminDashboard = {
       this.renderRecentPublications(publications);
     } catch (error) {
       this.setServiceStatus(false);
-      errorBox.textContent = error.message || "No se pudieron cargar los datos del panel.";
+      errorBox.textContent = error.message || "Could not load dashboard data.";
       errorBox.classList.remove("hidden");
       this.elements.recentPublications.innerHTML = `
-        <p class="admin-error">No se pudieron cargar las publicaciones.</p>
+        <p class="admin-error">Could not load publications.</p>
       `;
     }
   },
@@ -111,10 +113,10 @@ export const AdminDashboard = {
     if (!serviceStatus) return;
 
     if (ok) {
-      serviceStatus.innerHTML = '<span class="admin-status-dot admin-status-dot--ok"></span>Operativo';
+      serviceStatus.innerHTML = '<span class="admin-status-dot admin-status-dot--ok"></span>Operational';
       serviceStatus.className = "admin-stat-card__status admin-stat-card__status--ok";
     } else {
-      serviceStatus.innerHTML = '<span class="admin-status-dot admin-status-dot--error"></span>No disponible';
+      serviceStatus.innerHTML = '<span class="admin-status-dot admin-status-dot--error"></span>Unavailable';
       serviceStatus.className = "admin-stat-card__status admin-stat-card__status--error";
     }
   },
@@ -124,7 +126,7 @@ export const AdminDashboard = {
     if (!categoryList) return;
 
     if (categories.length === 0) {
-      categoryList.innerHTML = '<span class="text-muted">No hay categorías registradas.</span>';
+      categoryList.innerHTML = '<span class="text-muted">No categories registered.</span>';
       return;
     }
 
@@ -142,7 +144,7 @@ export const AdminDashboard = {
 
     if (publications.length === 0) {
       recentPublications.innerHTML = `
-        <p class="admin-empty">No hay publicaciones activas todavía.</p>
+        <p class="admin-empty">No active listings yet.</p>
       `;
       return;
     }
@@ -152,10 +154,10 @@ export const AdminDashboard = {
         <table class="admin-table">
           <thead>
             <tr>
-              <th>Publicación</th>
-              <th>Categoría</th>
-              <th>Precio</th>
-              <th>Fecha</th>
+              <th>Listing</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Date</th>
             </tr>
           </thead>
           <tbody>
@@ -163,8 +165,8 @@ export const AdminDashboard = {
               .map(
                 (p) => `
               <tr>
-                <td class="font-semibold">${escapeHtml(p.title || "Sin título")}</td>
-                <td><span class="admin-chip">${escapeHtml(p.category || "Sin categoría")}</span></td>
+                <td class="font-semibold">${escapeHtml(p.title || "No title")}</td>
+                <td><span class="admin-chip">${escapeHtml(p.category || "No category")}</span></td>
                 <td class="font-medium text-primary">$${formatNumber(p.price)}</td>
                 <td class="text-muted">${formatDate(p.created_at)}</td>
               </tr>

@@ -17,14 +17,16 @@ export const logout = () => sessionStore.logout();
 // Rutas que requieren autenticación
 export const protectedRoutes = [
   "/dashboard",
-  "/crear-publicacion",
-  "/editar-publicacion",
-  "/perfil",
+  "/create",
+  "/edit",
+  "/profile",
   "/admin",
+  "/chat",
+  "/verificador-dashboard",
 ];
 
 // Rutas que no deben estar disponibles si ya estás autenticado
-export const guestRoutes = ["/login", "/registro"];
+export const guestRoutes = ["/login", "/register"];
 
 export const isRouteProtected = (path) => {
   return protectedRoutes.some((route) => {

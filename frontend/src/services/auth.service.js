@@ -1,36 +1,41 @@
-// Servicio de autenticación - llamadas a API de auth
-// Separa la lógica de auth del cliente HTTP base (api.js)
+// Auth service - API calls for authentication
+// Separates auth logic from base HTTP client (api.js)
 
 import { api } from "./api.js";
 
-// Login de usuario
+// User login
 export async function login(email, password) {
   return api.login(email, password);
 }
 
-// Registro de usuario
+// User registration
 export async function register(userData) {
   return api.register(userData);
 }
 
-// Obtener perfil del usuario autenticado
+// Get authenticated user profile
 export async function getMe() {
   return api.getMe();
 }
 
-// Actualizar perfil
+// Update profile
 export async function updateProfile(data) {
-  return api.updateProfile(data);
+  // Convert camelCase to snake_case for backend
+  const snakeData = {};
+  Object.entries(data).forEach(([key, value]) => {
+    const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+    snakeData[snakeKey] = value;
+  });
+  return api.updateProfile(snakeData);
 }
 
-// Cambiar contraseña
+// Change password
 export async function changePassword(data) {
   return api.changePassword(data);
 }
 
-// Eliminar cuenta
+// Delete account
 export async function deleteAccount() {
-  // No hay método directo en api.js, así que hacemos la llamada manual
   const token = localStorage.getItem("token");
   const res = await fetch("/api/auth/me", {
     method: "DELETE",
@@ -40,13 +45,13 @@ export async function deleteAccount() {
     },
   });
   if (!res.ok) {
-    const error = await res.json().catch(() => ({ message: "Error al eliminar cuenta" }));
+    const error = await res.json().catch(() => ({ message: "Error deleting account" }));
     throw new Error(error.message);
   }
-  return { message: "Cuenta eliminada correctamente" };
+  return { message: "Account deleted successfully" };
 }
 
-// Logout - limpia storage local
+// Logout - clears local storage
 export function logout() {
   api.logout();
 }

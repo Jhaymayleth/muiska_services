@@ -5,13 +5,13 @@
       <div>
         <h2 class="font-display text-2xl font-bold text-text">{{userName}}</h2>
         <p class="text-sm text-text/60">{{userEmail}}</p>
-        <p class="text-xs text-text/50">Rol: {{userRole}} · Miembro desde {{userSince}}</p>
+        <p class="text-xs text-text/50">Role: {{userRole}} · Member since {{userSince}}</p>
       </div>
     </div>
     <div class="flex flex-wrap gap-3">
-      <a href="/crear-publicacion" id="btn-new-pub" class="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-hover">Nueva publicación</a>
-      <a href="/perfil" id="btn-profile" class="rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium text-text transition hover:bg-background">Ver perfil</a>
-      <a href="/explorar" id="btn-explore" class="rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium text-text transition hover:bg-background">Explorar</a>
+      <a href="/crear-publicacion" id="btn-new-pub" class="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-hover">New listing</a>
+      <a href="/perfil" id="btn-profile" class="rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium text-text transition hover:bg-background">View profile</a>
+      <a href="/explorar" id="btn-explore" class="rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium text-text transition hover:bg-background">Explore</a>
       {{adminButton}}
     </div>
   </div>
@@ -21,16 +21,16 @@
 
 <!-- Tabs -->
 <div class="rounded-2xl border border-border bg-white overflow-hidden">
-  <nav class="flex border-b border-border" aria-label="Secciones del dashboard">
-    <button id="tab-publications" class="tab-btn px-6 py-3 text-sm font-medium rounded-t-lg transition bg-primary text-white" data-tab="publications">Mis publicaciones</button>
-    <button id="tab-favorites" class="tab-btn px-6 py-3 text-sm font-medium rounded-t-lg transition text-text/70 hover:bg-muted" data-tab="favorites">Favoritos</button>
+  <nav class="flex border-b border-border" aria-label="Dashboard sections">
+    <button id="tab-publications" class="tab-btn px-6 py-3 text-sm font-medium rounded-t-lg transition bg-primary text-white" data-tab="publications">My publications</button>
+    <button id="tab-favorites" class="tab-btn px-6 py-3 text-sm font-medium rounded-t-lg transition text-text/70 hover:bg-muted" data-tab="favorites">Favorites</button>
   </nav>
 
   <div id="publications-section" class="p-5">
-    <div id="dashboard-stats" class="rounded-xl border border-border bg-white p-4"></div>
+    <div id="pub-stats" class="rounded-xl border border-border bg-white p-4"></div>
     <section>
       <div class="flex items-center justify-between mb-4">
-        <h2 class="text-xl font-semibold text-text">Mis publicaciones</h2>
+        <h2 class="text-xl font-semibold text-text">My publications</h2>
       </div>
       <div id="dashboard-list" class="space-y-4"></div>
     </section>
@@ -40,7 +40,7 @@
     <div id="favorites-stats"></div>
     <section>
       <div class="flex items-center justify-between mb-4">
-        <h2 class="text-xl font-semibold text-text">Mis favoritos</h2>
+        <h2 class="text-xl font-semibold text-text">My favorites</h2>
       </div>
       <div id="favorites-list" class="space-y-4"></div>
     </section>

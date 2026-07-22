@@ -5,6 +5,8 @@ import { loadTemplate } from "../utils/templateLoader.js";
 
 const ExplorePage = async () => {
   const template = loadTemplate("ExplorePage");
+  const emptyStateHtml = loadTemplate("ExploreStates").match(/id="explore-empty-state">([\s\S]*?)<\/script>/)[1];
+  const errorStateHtml = loadTemplate("ExploreStates").match(/id="explore-error-state">([\s\S]*?)<\/script>/)[1];
   const section = document.createElement("section");
   section.className = "space-y-6";
 
@@ -20,10 +22,6 @@ const ExplorePage = async () => {
   const form = section.querySelector("#filter-form");
   const categorySelect = section.querySelector("#category");
   const clearBtn = section.querySelector("#clear-filters");
-
-  // Load state templates
-  const emptyStateHtml = section.querySelector("#explore-empty-state").textContent;
-  const errorStateHtml = section.querySelector("#explore-error-state").textContent;
 
   const render = async () => {
     grid.innerHTML = '<div class="col-span-full flex justify-center py-8"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>';
@@ -48,7 +46,7 @@ const ExplorePage = async () => {
 
       renderPagination(pagination);
     } catch (err) {
-      grid.innerHTML = errorStateHtml.replace("{{errorMessage}}", err.message || "Error al cargar publicaciones");
+      grid.innerHTML = errorStateHtml.replace("{{errorMessage}}", err.message || "Error loading listings");
     }
   };
 
@@ -56,10 +54,10 @@ const ExplorePage = async () => {
     if (!pagination || pagination.totalPages <= 1) return;
 
     const { page, totalPages } = pagination;
-    let html = '<nav class="flex items-center justify-center gap-2" aria-label="Paginación">';
+    let html = '<nav class="flex items-center justify-center gap-2" aria-label="Pagination">';
 
     if (page > 1) {
-      html += `<button data-page="${page - 1}" class="pagination-btn rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-muted transition">Anterior</button>`;
+      html += `<button data-page="${page - 1}" class="pagination-btn rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-muted transition">Previous</button>`;
     }
 
     const start = Math.max(1, page - 2);
@@ -70,7 +68,7 @@ const ExplorePage = async () => {
     }
 
     if (page < totalPages) {
-      html += `<button data-page="${page + 1}" class="pagination-btn rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-muted transition">Siguiente</button>`;
+      html += `<button data-page="${page + 1}" class="pagination-btn rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-muted transition">Next</button>`;
     }
 
     html += "</nav>";

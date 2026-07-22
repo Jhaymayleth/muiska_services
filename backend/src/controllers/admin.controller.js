@@ -1,8 +1,6 @@
 import { adminService } from "../services/admin.service.js";
 
-// Controlador de administración: solo maneja HTTP, delega a adminService
-
-const allowedRoles = new Set(["user", "admin"]);
+const allowedRoles = new Set(["user", "admin", "verifier"]);
 
 export const getUsers = async (req, res, next) => {
   try {
@@ -20,15 +18,15 @@ export const updateUser = async (req, res, next) => {
     const { role, is_banned, name, email } = req.body;
 
     if (role !== undefined && !allowedRoles.has(role)) {
-      return res.status(400).json({ message: "Rol no válido" });
+      return res.status(400).json({ message: "Invalid role" });
     }
 
     if (is_banned !== undefined && typeof is_banned !== "boolean") {
-      return res.status(400).json({ message: "El estado de suspensión no es válido" });
+      return res.status(400).json({ message: "is_banned must be a boolean" });
     }
 
     if (id === req.user.id) {
-      return res.status(400).json({ message: "No puedes modificar tu propia cuenta desde este panel" });
+      return res.status(400).json({ message: "You cannot modify your own account from this panel" });
     }
 
     const user = await adminService.updateUser(id, { name, email, role, is_banned });
@@ -46,7 +44,7 @@ export const deleteUser = async (req, res, next) => {
     const { id } = req.params;
 
     if (id === req.user.id) {
-      return res.status(400).json({ message: "No puedes eliminar tu propia cuenta desde este panel" });
+      return res.status(400).json({ message: "You cannot delete your own account from this panel" });
     }
 
     const result = await adminService.deleteUser(id);
@@ -59,15 +57,14 @@ export const deleteUser = async (req, res, next) => {
   }
 };
 
-// Verificador management
 export const assignVerifier = async (req, res, next) => {
   try {
     const { id } = req.params;
     if (id === req.user.id) {
-      return res.status(400).json({ message: "No puedes asignarte a ti mismo" });
+      return res.status(400).json({ message: "You cannot assign yourself" });
     }
     const verifier = await adminService.assignVerifier(id);
-    res.json({ message: "Verificador asignado", verifier });
+    res.json({ message: "Verifier assigned", verifier });
   } catch (error) {
     if (error.code === "NOT_FOUND") {
       return res.status(404).json({ message: error.message });
@@ -80,10 +77,10 @@ export const removeVerifier = async (req, res, next) => {
   try {
     const { id } = req.params;
     if (id === req.user.id) {
-      return res.status(400).json({ message: "No puedes quitarte a ti mismo" });
+      return res.status(400).json({ message: "You cannot remove yourself" });
     }
     const user = await adminService.removeVerifier(id);
-    res.json({ message: "Rol de verificador removido", user });
+    res.json({ message: "Verifier role removed", user });
   } catch (error) {
     if (error.code === "NOT_FOUND") {
       return res.status(404).json({ message: error.message });
@@ -101,7 +98,6 @@ export const getVerifiers = async (req, res, next) => {
   }
 };
 
-// Admin - Publications
 export const getPublications = async (req, res, next) => {
   try {
     const { status, search, category, page = 1, limit = 20 } = req.query;
@@ -118,7 +114,7 @@ export const updatePublication = async (req, res, next) => {
     const { status, title, description, price, category, location, contact_method } = req.body;
 
     if (status && !["active", "sold", "inactive"].includes(status)) {
-      return res.status(400).json({ message: "Estado no válido" });
+      return res.status(400).json({ message: "Invalid status" });
     }
 
     const publication = await adminService.updatePublication(id, {

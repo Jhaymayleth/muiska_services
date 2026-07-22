@@ -2,51 +2,59 @@
 <header class="admin-header">
   <div class="admin-header__content">
     <div class="admin-header__info">
-      <p class="admin-header__subtitle">Administración de MUISKA</p>
-      <h1 class="admin-header__title">Panel de control</h1>
-      <p class="admin-header__greeting">Hola, {{adminName}}. Aquí tienes el estado de la comunidad.</p>
+      <p class="admin-header__subtitle">MUISKA Administration</p>
+      <h1 class="admin-header__title">Control Panel</h1>
+      <p class="admin-header__greeting">Hello, {{adminName}}. Here's the community status.</p>
     </div>
-    <button id="refresh-dashboard" class="btn btn--secondary btn--icon" aria-label="Actualizar datos">
-      <span aria-hidden="true">↻</span> Actualizar
+    <button id="refresh-dashboard" class="btn btn--secondary" aria-label="Refresh data">
+      <span aria-hidden="true">↻</span> Refresh
     </button>
   </div>
 </header>
 
 <!-- Tabs Navigation -->
-<nav class="admin-tabs" aria-label="Secciones del panel admin" role="tablist">
+<nav class="admin-tabs" aria-label="Admin panel sections" role="tablist">
   <button role="tab" data-tab="dashboard" class="admin-tabs__btn admin-tabs__btn--active" aria-selected="true" aria-controls="panel-dashboard">
-    Resumen
+    Dashboard
   </button>
   <button role="tab" data-tab="publications" class="admin-tabs__btn" aria-selected="false" aria-controls="panel-publications">
-    Publicaciones
+    Publications
   </button>
   <button role="tab" data-tab="categories" class="admin-tabs__btn" aria-selected="false" aria-controls="panel-categories">
-    Categorías
+    Categories
   </button>
   <button role="tab" data-tab="users" class="admin-tabs__btn" aria-selected="false" aria-controls="panel-users">
-    Usuarios
+    Users
+  </button>
+  <button role="tab" data-tab="verifiers" class="admin-tabs__btn" aria-selected="false" aria-controls="panel-verifiers">
+    Verifiers
   </button>
 </nav>
 
-<!-- Contenedor de paneles -->
+<!-- Panel container -->
 <div id="admin-tab-content">
   <!-- Dashboard -->
   <div id="panel-dashboard" class="admin-panel admin-panel--active" role="tabpanel" aria-labelledby="tab-dashboard">
     <!-- Template inline or load via JS -->
   </div>
 
-  <!-- Publicaciones -->
+  <!-- Publications -->
   <div id="panel-publications" class="admin-panel" role="tabpanel" aria-labelledby="tab-publications" hidden>
     <!-- Template inline or load via JS -->
   </div>
 
-  <!-- Categorías -->
+  <!-- Categories -->
   <div id="panel-categories" class="admin-panel" role="tabpanel" aria-labelledby="tab-categories" hidden>
     <!-- Template inline or load via JS -->
   </div>
 
-  <!-- Usuarios -->
+  <!-- Users -->
   <div id="panel-users" class="admin-panel" role="tabpanel" aria-labelledby="tab-users" hidden>
+    <!-- Template inline or load via JS -->
+  </div>
+
+  <!-- Verifiers -->
+  <div id="panel-verifiers" class="admin-panel" role="tabpanel" aria-labelledby="tab-verifiers" hidden>
     <!-- Template inline or load via JS -->
   </div>
 </div>
