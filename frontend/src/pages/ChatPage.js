@@ -222,6 +222,12 @@ const ChatPage = async () => {
 
   await loadConversations();
 
+  const pathParts = window.location.pathname.split("/");
+  const pathConvId = pathParts[pathParts.length - 1];
+  if (pathConvId && pathConvId !== "chat" && pathConvId.length > 20) {
+    openConversation(pathConvId);
+  }
+
   return section;
 };
 

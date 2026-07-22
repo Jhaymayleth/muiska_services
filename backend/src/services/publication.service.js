@@ -5,7 +5,8 @@ const publicationSelectFields = `
   c.name as category, p.images, p.location, p.contact_method, 
   p.user_id, p.status, p.type, p.moderation_status, p.moderated_by, p.moderated_at,
   p.rejection_reason, p.business_hours, p.coverage_area, p.price_type,
-  p.created_at, p.updated_at
+  p.created_at, p.updated_at,
+  u.name as user_name
 `;
 
 const MAX_PUBLICATION_PRICE = 99_999_999.99;
@@ -14,7 +15,7 @@ const isValidPublicationPrice = (price) =>
   Number.isFinite(price) && price > 0 && price <= MAX_PUBLICATION_PRICE;
 
 export const publicationService = {
-  async getAll({ category, minPrice, maxPrice, location, search, status, page = 1, limit = 12, user_id }) {
+  async getAll({ category, minPrice, maxPrice, location, search, status, page = 1, limit = 12, user_id, lat, lng, radius }) {
     const pageNum = Math.max(1, parseInt(page, 10));
     const limitNum = Math.min(50, Math.max(1, parseInt(limit, 10)));
     const offset = (pageNum - 1) * limitNum;
@@ -22,11 +23,20 @@ export const publicationService = {
     const params = [];
     let whereClause = "WHERE 1=1";
     let paramIndex = 1;
+    const hasGeo = lat && lng && radius;
+    let distanceSelect = "";
 
     const normalizedStatus = status || (user_id ? null : "active");
     if (normalizedStatus) {
       whereClause += ` AND p.status = $${paramIndex}`;
       params.push(normalizedStatus);
+      paramIndex++;
+    }
+
+    // Public queries: only show approved publications
+    if (!user_id) {
+      whereClause += ` AND p.moderation_status = $${paramIndex}`;
+      params.push("approved");
       paramIndex++;
     }
 
@@ -66,19 +76,38 @@ export const publicationService = {
       paramIndex++;
     }
 
+    const joinClause = `FROM publications p
+       LEFT JOIN categories c ON p.category_id = c.id
+       LEFT JOIN users u ON p.user_id = u.id`;
+
+    if (hasGeo) {
+      distanceSelect = `, ROUND(ST_DistanceSphere(
+        ST_SetSRID(ST_MakePoint($${paramIndex}, $${paramIndex + 1}), 4326)::geography,
+        ST_SetSRID(ST_MakePoint(u.lng, u.lat), 4326)::geography
+      )) AS distance_meters`;
+      whereClause += ` AND u.lat IS NOT NULL AND u.lng IS NOT NULL
+        AND ST_DWithin(
+          ST_SetSRID(ST_MakePoint($${paramIndex}, $${paramIndex + 1}), 4326)::geography,
+          ST_SetSRID(ST_MakePoint(u.lng, u.lat), 4326)::geography,
+          $${paramIndex + 2}
+        )`;
+      params.push(parseFloat(lng), parseFloat(lat), parseFloat(radius) * 1000);
+      paramIndex += 3;
+    }
+
     const countResult = await pool.query(
-      `SELECT COUNT(*) FROM publications p LEFT JOIN categories c ON p.category_id = c.id ${whereClause}`,
+      `SELECT COUNT(*) ${joinClause} ${whereClause}`,
       params,
     );
     const total = parseInt(countResult.rows[0].count);
 
     params.push(limitNum, offset);
+    const orderBy = hasGeo ? "distance_meters ASC" : "p.created_at DESC";
     const result = await pool.query(
-      `SELECT ${publicationSelectFields} 
-       FROM publications p 
-       LEFT JOIN categories c ON p.category_id = c.id 
-       ${whereClause} 
-       ORDER BY p.created_at DESC 
+      `SELECT ${publicationSelectFields}${distanceSelect}
+       ${joinClause}
+       ${whereClause}
+       ORDER BY ${orderBy}
        LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
       params,
     );
@@ -99,6 +128,7 @@ export const publicationService = {
       `SELECT ${publicationSelectFields} 
        FROM publications p 
        LEFT JOIN categories c ON p.category_id = c.id 
+       LEFT JOIN users u ON p.user_id = u.id
        WHERE p.id = $1`,
       [id],
     );

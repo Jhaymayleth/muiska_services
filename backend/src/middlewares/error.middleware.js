@@ -19,19 +19,19 @@ export class ValidationError extends AppError {
 }
 
 export class NotFoundError extends AppError {
-  constructor(message = "Recurso no encontrado") {
+  constructor(message = "Resource not found") {
     super(message, 404, "NOT_FOUND");
   }
 }
 
 export class UnauthorizedError extends AppError {
-  constructor(message = "No autorizado") {
+  constructor(message = "Unauthorized") {
     super(message, 401, "UNAUTHORIZED");
   }
 }
 
 export class ForbiddenError extends AppError {
-  constructor(message = "Permisos insuficientes") {
+  constructor(message = "Insufficient permissions") {
     super(message, 403, "FORBIDDEN");
   }
 }
@@ -72,34 +72,34 @@ export const errorMiddleware = (err, req, res, next) => {
     });
   }
 
-  // PostgreSQL errors
-  if (err.code) {
+  // PostgreSQL errors (codes are 5-digit strings)
+  if (err.code && /^[A-Z0-9]{5}$/.test(err.code)) {
     switch (err.code) {
       case "23505": // unique_violation
         return res.status(409).json({
           success: false,
-          message: "El registro ya existe",
+          message: "Record already exists",
           code: "CONFLICT",
           requestId: req.requestId,
         });
       case "23503": // foreign_key_violation
         return res.status(400).json({
           success: false,
-          message: "Referencia inválida",
+          message: "Invalid reference",
           code: "INVALID_REFERENCE",
           requestId: req.requestId,
         });
       case "23502": // not_null_violation
         return res.status(400).json({
           success: false,
-          message: "Campo requerido faltante",
+          message: "Required field missing",
           code: "VALIDATION_ERROR",
           requestId: req.requestId,
         });
       case "22P02": // invalid_text_representation (e.g., UUID format)
         return res.status(400).json({
           success: false,
-          message: "Formato de ID inválido",
+          message: "Invalid ID format",
           code: "INVALID_ID",
           requestId: req.requestId,
         });
@@ -110,7 +110,7 @@ export const errorMiddleware = (err, req, res, next) => {
   if (err.name === "JsonWebTokenError") {
     return res.status(401).json({
       success: false,
-      message: "Token inválido",
+      message: "Invalid token",
       code: "INVALID_TOKEN",
       requestId: req.requestId,
     });
@@ -118,7 +118,7 @@ export const errorMiddleware = (err, req, res, next) => {
   if (err.name === "TokenExpiredError") {
     return res.status(401).json({
       success: false,
-      message: "Token expirado",
+      message: "Token expired",
       code: "TOKEN_EXPIRED",
       requestId: req.requestId,
     });
@@ -128,7 +128,7 @@ export const errorMiddleware = (err, req, res, next) => {
   if (err.code === "LIMIT_FILE_SIZE") {
     return res.status(400).json({
       success: false,
-      message: "Archivo demasiado grande",
+      message: "File too large",
       code: "FILE_TOO_LARGE",
       requestId: req.requestId,
     });
@@ -136,7 +136,7 @@ export const errorMiddleware = (err, req, res, next) => {
   if (err.code === "LIMIT_UNEXPECTED_FILE") {
     return res.status(400).json({
       success: false,
-      message: "Campo de archivo inesperado",
+      message: "Unexpected file field",
       code: "INVALID_FILE_FIELD",
       requestId: req.requestId,
     });
@@ -144,8 +144,8 @@ export const errorMiddleware = (err, req, res, next) => {
 
   // Default 500
   const message = config.isProduction
-    ? "Error interno del servidor"
-    : err.message || "Error interno del servidor";
+    ? "Internal server error"
+    : err.message || "Internal server error";
 
   return res.status(500).json({
     success: false,
@@ -159,7 +159,7 @@ export const errorMiddleware = (err, req, res, next) => {
 export const notFoundMiddleware = (req, res) => {
   res.status(404).json({
     success: false,
-    message: `Ruta no encontrada: ${req.method} ${req.path}`,
+    message: `Route not found: ${req.method} ${req.path}`,
     code: "NOT_FOUND",
     requestId: req.requestId,
   });

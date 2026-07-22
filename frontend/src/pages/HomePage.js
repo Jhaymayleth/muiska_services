@@ -1,5 +1,8 @@
 import { api } from "../services/api.js";
 import { navigateTo } from "../router/router.js";
+import { isAuthenticated } from "../utils/auth.js";
+import { chatService } from "../services/chat.service.js";
+import { sessionStore } from "../state/session.store.js";
 import { loadTemplate, renderTemplate } from "../utils/templateLoader.js";
 import womanImg from "../assets/images/Woman.jpg";
 import vestidorImg from "../assets/images/vestidor.jpg";
@@ -11,7 +14,7 @@ const navigate = (path) => {
 
 const formatDate = (value) =>
   value
-    ? new Intl.DateTimeFormat("es-CO", {
+    ? new Intl.DateTimeFormat("en-US", {
         day: "2-digit",
         month: "short",
         year: "numeric",
@@ -42,14 +45,14 @@ const statusClass = (status) => {
 };
 
 const categoryIcons = {
-  "ropa": "👗", "moda": "👗", "ropa & moda": "👗",
-  "comida": "🍽️", "alimentos": "🍽️",
-  "tecnología": "💻", "tecnologia": "💻",
-  "hogar": "🏠", "casa": "🏠",
-  "arte": "🎨", "artesanía": "🎨",
-  "salud": "🧑‍⚕️", "bienestar": "🧑‍⚕️",
-  "educación": "📚", "educacion": "📚",
-  "servicios": "🔧", "servicio": "🔧",
+  "clothing": "👗", "fashion": "👗",
+  "food": "🍽️", "beverage": "🍽️",
+  "electronics": "💻", "tech": "💻",
+  "home": "🏠", "garden": "🏠",
+  "art": "🎨", "craft": "🎨",
+  "health": "🧑‍⚕️", "beauty": "🧑‍⚕️",
+  "education": "📚",
+  "service": "🔧",
 };
 
 const getCategoryIcon = (name) => {
@@ -85,7 +88,7 @@ const HomePage = async () => {
         .slice(0, 8)
         .map(
           (cat) => `
-            <a href="/explorar?category=${encodeURIComponent(cat.name)}" class="category flex items-center gap-4 bg-background border border-border rounded-2xl px-5 py-6 transition-all duration-200 hover:border-primary hover:bg-primary/5 active:scale-95 cursor-pointer">
+            <a href="/explore?category=${encodeURIComponent(cat.name)}" class="category flex items-center gap-4 bg-background border border-border rounded-2xl px-5 py-6 transition-all duration-200 hover:border-primary hover:bg-primary/5 active:scale-95 cursor-pointer">
               <span class="text-3xl">${getCategoryIcon(cat.name)}</span>
               <h3 class="font-medium text-text">${cat.name}</h3>
             </a>
@@ -102,8 +105,9 @@ const HomePage = async () => {
   };
 
   const createPublicationCard = (pub) => {
-    const initials = getInitials(pub.user?.name || pub.user_name || "User");
-    const userBg = pub.user?.name ? "bg-primary" : "bg-muted";
+    const authorName = pub.user_name || "User";
+    const initials = getInitials(authorName);
+    const userBg = authorName !== "User" ? "bg-primary" : "bg-muted";
     const typeLabel = statusLabel(pub.status || "active");
     const typeClass = statusClass(pub.status || "active");
     const image = pub.images?.[0] || vestidorImg;
@@ -118,8 +122,9 @@ const HomePage = async () => {
       .replace("{{date}}", formatDate(pub.created_at))
       .replace("{{initials}}", initials)
       .replace("{{userBg}}", userBg)
-      .replace("{{author}}", pub.user?.name || pub.user_name || "User")
-      .replace("{{price}}", Number(pub.price || 0).toLocaleString("es-CO", { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
+      .replace("{{author}}", authorName)
+      .replace("{{userId}}", pub.user_id || "")
+      .replace("{{price}}", Number(pub.price || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
       .replace("{{statusLabel}}", typeLabel)
       .replace("{{statusClass}}", typeClass);
   };
@@ -141,9 +146,34 @@ const HomePage = async () => {
 
       featuredContainer.innerHTML = pubs.map(createPublicationCard).join("");
 
-      featuredContainer.querySelectorAll("button[data-pub-id]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          navigateTo(`/publicacion/${btn.dataset.pubId}`);
+      featuredContainer.querySelectorAll(".contact-btn").forEach((btn) => {
+        btn.addEventListener("click", async (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          if (!isAuthenticated()) {
+            navigateTo("/login");
+            return;
+          }
+          const pubId = btn.dataset.pubId;
+          const sellerId = btn.dataset.sellerId;
+          if (!pubId || !sellerId) return;
+          try {
+            const token = sessionStore.getToken();
+            if (token) chatService.connect(token);
+            const result = await chatService.createConversation(pubId, sellerId);
+            const convId = result.conversation?.id || result.id;
+            navigateTo(`/chat/${convId}`);
+          } catch (err) {
+            alert(err.message || "Could not start conversation");
+          }
+        });
+      });
+
+      featuredContainer.querySelectorAll(".publication-card").forEach((card) => {
+        card.addEventListener("click", (e) => {
+          if (e.target.closest(".contact-btn") || e.target.closest(".like-btn")) return;
+          const btn = card.querySelector(".contact-btn");
+          if (btn) navigateTo(`/listing/${btn.dataset.pubId}`);
         });
       });
     } catch (err) {

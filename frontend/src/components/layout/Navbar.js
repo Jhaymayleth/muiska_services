@@ -45,6 +45,7 @@ const Navbar = () => {
         ${authenticated ? `
           <a href="/create" class="rounded px-3 py-2 hover:bg-muted">Create</a>
           <a href="/dashboard" class="rounded px-3 py-2 hover:bg-muted">Dashboard</a>
+          <a href="/chat" class="rounded px-3 py-2 hover:bg-muted">Messages</a>
           ${isAdmin() ? '<a href="/admin" class="rounded px-3 py-2 hover:bg-muted">Admin</a>' : ""}
           
           <!-- Notifications -->

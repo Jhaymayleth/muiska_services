@@ -5,6 +5,7 @@
 -- Extended user fields for verification
 ALTER TABLE users ADD COLUMN IF NOT EXISTS user_type VARCHAR(20) DEFAULT 'client';
 ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_status VARCHAR(20) DEFAULT 'pending';
+CREATE INDEX IF NOT EXISTS idx_users_verified_by ON users(verified_by);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS verified_by UUID REFERENCES users(id);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS verified_at TIMESTAMP;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS rejection_reason TEXT;
@@ -30,6 +31,9 @@ CREATE TABLE neighborhoods (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
+-- Index before FK
+CREATE INDEX IF NOT EXISTS idx_users_neighborhood_id ON users(neighborhood_id);
+
 -- FK users -> neighborhoods
 ALTER TABLE users ADD CONSTRAINT fk_users_neighborhood
     FOREIGN KEY (neighborhood_id) REFERENCES neighborhoods(id);
@@ -49,4 +53,3 @@ CREATE INDEX idx_verifications_verifier_id ON verifications(verifier_id);
 CREATE INDEX idx_verifications_status ON verifications(status);
 CREATE INDEX idx_users_user_type ON users(user_type);
 CREATE INDEX idx_users_verification_status ON users(verification_status);
-CREATE INDEX idx_users_neighborhood_id ON users(neighborhood_id);
