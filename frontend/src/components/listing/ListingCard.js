@@ -6,11 +6,10 @@ import { getIcon } from "../../utils/icons.js";
 const ListingCard = (pub = {}) => {
   const card = document.createElement("article");
   card.className =
-    "rounded-xl border border-border bg-white p-4 shadow-sm transition hover:shadow-md cursor-pointer relative";
-  
-  // Verificar si está en favoritos al cargar
+    "group rounded-xl border border-border bg-white p-4 shadow-card transition-all duration-300 hover:shadow-elevated hover:-translate-y-1 cursor-pointer relative";
+
   let isFavorited = false;
-  
+
   const checkFavStatus = async () => {
     if (isAuthenticated() && pub.id) {
       try {
@@ -22,8 +21,7 @@ const ListingCard = (pub = {}) => {
       }
     }
   };
-  
-  // Renderizar el botón de corazón
+
   const renderHeart = () => {
     const heartBtn = card.querySelector(".favorite-btn");
     if (heartBtn) {
@@ -36,29 +34,29 @@ const ListingCard = (pub = {}) => {
   };
 
   card.innerHTML = `
-    <button class="favorite-btn absolute top-3 right-3 p-1 rounded-full bg-white/90 backdrop-blur-sm shadow-sm transition-all hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary" aria-label="Add to favorites" title="Add to favorites">
+    <button class="favorite-btn absolute top-3 right-3 z-10 p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-sm transition-all duration-200 hover:scale-110 active:scale-90 focus:outline-none focus:ring-2 focus:ring-primary" aria-label="Add to favorites" title="Add to favorites">
       <svg class="w-5 h-5 text-text/40 hover:text-red-500 transition-colors" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
     </button>
     <div class="space-y-3">
       <div class="flex items-start justify-between gap-2">
         <div>
-          <h4 class="font-semibold text-primary">${pub.title || "No title"}</h4>
+          <h4 class="font-display font-semibold text-text text-lg">${pub.title || "No title"}</h4>
           <p class="mt-1 text-xs uppercase tracking-wide text-text/50">${pub.category || "No category"}</p>
         </div>
-        <span class="rounded-full bg-accent/10 px-2 py-1 text-xs font-medium text-accent">$${pub.price ? parseFloat(pub.price).toFixed(2) : "0.00"}</span>
+        <span class="rounded-full bg-accent/10 px-3 py-1 text-sm font-semibold text-accent font-display">$${pub.price ? parseFloat(pub.price).toFixed(2) : "0.00"}</span>
       </div>
-      <p class="line-clamp-3 text-sm text-text/70">${pub.description || "No description"}</p>
+      <p class="line-clamp-3 text-sm text-text/70 leading-relaxed">${pub.description || "No description"}</p>
       <div class="flex flex-wrap gap-2 text-xs text-text/60">
-        ${pub.location ? `<span class="rounded-full bg-muted px-2 py-1"><span class="inline-flex align-middle">${getIcon("location", 14)}</span> ${pub.location}</span>` : ""}
-        ${pub.contact_method ? `<span class="rounded-full bg-muted px-2 py-1"><span class="inline-flex align-middle">${getIcon("phone", 14)}</span> ${pub.contact_method}</span>` : ""}
+        ${pub.location ? `<span class="rounded-full bg-muted px-2.5 py-1 flex items-center gap-1"><span class="inline-flex">${getIcon("location", 14)}</span> ${pub.location}</span>` : ""}
+        ${pub.contact_method ? `<span class="rounded-full bg-muted px-2.5 py-1 flex items-center gap-1"><span class="inline-flex">${getIcon("phone", 14)}</span> ${pub.contact_method}</span>` : ""}
       </div>
       ${
         Array.isArray(pub.images) && pub.images.length > 0
-          ? `<div class="flex gap-2 overflow-x-auto">${pub.images
+          ? `<div class="flex gap-2 overflow-x-auto -mx-1 px-1">${pub.images
               .slice(0, 3)
               .map(
                 (image) =>
-                  `<img src="${image}" alt="${pub.title || "Image"}" class="h-20 w-20 rounded-lg object-cover" />`,
+                  `<img src="${image}" alt="${pub.title || "Image"}" class="h-20 w-20 rounded-lg object-cover shrink-0 transition-transform duration-300 hover:scale-105" />`,
               )
               .join("")}</div>`
           : ""
@@ -66,19 +64,18 @@ const ListingCard = (pub = {}) => {
     </div>
   `;
 
-  // Botón de favorito
   const favoriteBtn = card.querySelector(".favorite-btn");
   favoriteBtn.addEventListener("click", async (e) => {
-    e.stopPropagation(); // Evitar navegación
+    e.stopPropagation();
     e.preventDefault();
-    
+
     if (!isAuthenticated()) {
       navigateTo("/login");
       return;
     }
-    
+
     if (!pub.id) return;
-    
+
     try {
       const result = await toggleFavorite(pub.id);
       isFavorited = result.favorited;
@@ -89,13 +86,11 @@ const ListingCard = (pub = {}) => {
     }
   });
 
-  // Navegar al hacer click en la tarjeta (excepto botón favorito)
   card.addEventListener("click", (e) => {
     if (e.target.closest(".favorite-btn")) return;
     navigateTo(`/listing/${pub.id}`);
   });
 
-  // Verificar estado inicial
   checkFavStatus();
 
   return card;

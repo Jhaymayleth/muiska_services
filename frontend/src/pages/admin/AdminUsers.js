@@ -31,7 +31,7 @@ export const AdminUsers = {
   },
 
   loadTableTemplate() {
-    const tableTemplate = loadTemplate("AdminUsersTable");
+    const tableTemplate = loadTemplate("AdminUsersTable").replace("{{rows}}", '<tr><td colspan="6" class="admin-loading">Loading users…</td></tr>');
     this.rowTemplate = this.extractRowTemplate(tableTemplate);
 
     // Inject table template into container

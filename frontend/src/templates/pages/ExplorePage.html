@@ -1,8 +1,8 @@
-<div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-  <h1 class="text-3xl font-semibold text-primary">Explore</h1>
+<div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 animate-fade-in">
+  <h1 class="text-3xl font-display font-bold text-primary">Explore</h1>
 </div>
 
-<div class="rounded-2xl border border-border bg-white p-4 shadow-sm">
+<div class="rounded-2xl border border-border bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-elevated">
   <form id="filter-form" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
     <div class="sm:col-span-2">
       <label for="search" class="block text-sm font-medium text-text mb-1">Search</label>
@@ -11,7 +11,7 @@
         id="search"
         name="search"
         placeholder="Title, description..."
-        class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary"
+        class="w-full rounded-lg border border-border bg-muted/30 px-3 py-2 outline-none transition-all duration-200 focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/10"
       />
     </div>
     <div>
@@ -19,7 +19,7 @@
       <select
         id="category"
         name="category"
-        class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary"
+        class="w-full rounded-lg border border-border bg-muted/30 px-3 py-2 outline-none transition-all duration-200 focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/10"
       >
         <option value="">All</option>
       </select>
@@ -33,7 +33,7 @@
         step="0.01"
         min="0"
         placeholder="0"
-        class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary"
+        class="w-full rounded-lg border border-border bg-muted/30 px-3 py-2 outline-none transition-all duration-200 focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/10"
       />
     </div>
     <div>
@@ -45,7 +45,7 @@
         step="0.01"
         min="0"
         placeholder="∞"
-        class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary"
+        class="w-full rounded-lg border border-border bg-muted/30 px-3 py-2 outline-none transition-all duration-200 focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/10"
       />
     </div>
     <div class="sm:col-span-2 lg:col-span-1">
@@ -56,7 +56,7 @@
     <div class="sm:col-span-2 lg:col-span-1 flex items-end">
       <button
         type="submit"
-        class="w-full rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-hover"
+        class="w-full rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-primary-hover active:scale-[0.97] shadow-sm"
       >
         Filter
       </button>
@@ -65,7 +65,7 @@
       <button
         type="button"
         id="clear-filters"
-        class="w-full rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium text-text hover:bg-muted transition"
+        class="w-full rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium text-text transition-all duration-200 hover:bg-muted hover:-translate-y-0.5 active:scale-[0.97]"
       >
         Clear
       </button>
@@ -73,6 +73,6 @@
   </form>
 </div>
 
-<div id="listings-grid" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
+<div id="listings-grid" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 animate-fade-in" style="animation-delay: 100ms"></div>
 
-<div id="pagination" class="flex justify-center"></div>
+<div id="pagination" class="flex justify-center mt-8 animate-fade-in" style="animation-delay: 200ms"></div>

@@ -63,9 +63,9 @@ const PublicationDetailPage = () => {
     if (pub.location) metaHtml += `<span class="flex items-center gap-1"><span class="inline-flex">${getIcon("location", 16)}</span> ${escapeHtml(pub.location)}</span>`;
     if (pub.contact_method) metaHtml += `<span class="flex items-center gap-1"><span class="inline-flex">${getIcon("phone", 16)}</span> ${escapeHtml(pub.contact_method)}</span>`;
     const statusConfig = {
-      active: { label: "Active", classes: "bg-green-100 text-green-700" },
-      sold: { label: "Sold", classes: "bg-blue-100 text-blue-700" },
-      inactive: { label: "Inactive", classes: "bg-gray-100 text-gray-700" },
+      active: { label: "Active", classes: "bg-accent/10 text-accent" },
+      sold: { label: "Sold", classes: "bg-primary/10 text-primary" },
+      inactive: { label: "Inactive", classes: "bg-muted text-text/60" },
     };
     const sc = statusConfig[pub.status] || statusConfig.inactive;
     metaHtml += `<span class="flex items-center gap-1 rounded-full ${sc.classes} px-2 py-1 capitalize">${sc.label}</span>`;
@@ -114,7 +114,7 @@ const PublicationDetailPage = () => {
     // Owner actions
     if (isOwner) {
       ownerActions.classList.remove("hidden");
-      ownerActions.innerHTML = `<div class="rounded-2xl border border-border bg-white p-6 shadow-sm space-y-3"><h3 class="text-lg font-semibold">Your options</h3><div class="flex flex-wrap gap-3"><button id="edit-btn" class="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-hover">Edit listing</button><button id="status-btn" class="rounded-lg bg-accent/10 px-4 py-2 text-sm font-medium text-accent transition hover:bg-accent/20">${pub.status === "active" ? "Mark as sold" : pub.status === "sold" ? "Reactivate" : "Activate"}</button><button id="delete-btn" class="rounded-lg bg-red-50 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-100">Delete</button></div></div>`;
+      ownerActions.innerHTML = `<div class="rounded-2xl border border-border bg-white p-6 shadow-elevated space-y-4"><h3 class="text-lg font-display font-bold text-text">Your options</h3><div class="flex flex-wrap gap-3"><button id="edit-btn" class="rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-primary-hover hover:shadow-md active:scale-[0.97]">Edit listing</button><button id="status-btn" class="rounded-xl bg-accent/10 px-5 py-2.5 text-sm font-semibold text-accent transition-all duration-200 hover:bg-accent/20 active:scale-[0.97]">${pub.status === "active" ? "Mark as sold" : pub.status === "sold" ? "Reactivate" : "Activate"}</button><button id="delete-btn" class="rounded-xl bg-red-50 px-5 py-2.5 text-sm font-semibold text-red-600 transition-all duration-200 hover:bg-red-100 active:scale-[0.97]">Delete</button></div></div>`;
 
       ownerActions.querySelector("#edit-btn").addEventListener("click", () => {
         navigateTo(`/edit/${pub.id}`);
@@ -192,7 +192,7 @@ const PublicationDetailPage = () => {
       });
     }
   }).catch((err) => {
-    container.innerHTML = `<div class="rounded-xl border border-dashed border-border bg-muted/40 p-8 text-center"><svg class="mx-auto h-12 w-12 text-text/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg><h3 class="mt-4 text-lg font-semibold">Listing not found</h3><p class="mt-2 text-sm text-text/70">${escapeHtml(err.message || "It doesn't exist or has been deleted")}</p><a href="/explore" class="mt-4 inline-block rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-hover">Back to explore</a></div>`;
+    container.innerHTML = `<div class="rounded-2xl border border-dashed border-border bg-muted/40 p-8 text-center"><svg class="mx-auto h-12 w-12 text-text/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg><h3 class="mt-4 text-lg font-display font-bold text-text">Listing not found</h3><p class="mt-2 text-sm text-text/60">${escapeHtml(err.message || "It doesn't exist or has been deleted")}</p><a href="/explore" class="mt-6 inline-block rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-primary-hover hover:shadow-md active:scale-[0.97]">Back to explore</a></div>`;
   });
 
   return section;

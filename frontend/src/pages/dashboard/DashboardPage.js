@@ -36,7 +36,7 @@ const DashboardPage = async () => {
   const userRole = user.role || "user";
   const userSince = formatDate(user.created_at);
   const adminButton = user.role === "admin" 
-    ? '<a href="/admin" id="btn-admin" class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent-hover">Admin panel</a>' 
+    ? '<a href="/admin" id="btn-admin" class="rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-accent-hover hover:shadow-md active:scale-[0.97]">Admin panel</a>' 
     : "";
 
   section.innerHTML = template
@@ -76,6 +76,11 @@ const DashboardPage = async () => {
       .replace("{{total}}", total)
       .replace("{{active}}", active)
       .replace("{{sold}}", sold);
+
+    stats.querySelectorAll("article").forEach((el, i) => {
+      el.classList.add("animate-slide-up");
+      el.style.animationDelay = `${i * 80}ms`;
+    });
   };
 
   const renderPubList = async () => {
@@ -90,7 +95,7 @@ const DashboardPage = async () => {
         return;
       }
 
-      list.innerHTML = pubs.map((pub) => {
+      const pubCards = pubs.map((pub) => {
         const statusBadge = pub.status === "active"
           ? '<span class="inline-flex rounded-full bg-accent/10 px-2.5 py-1 text-xs font-medium text-accent">Active</span>'
           : '<span class="inline-flex rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-text/70">Inactive</span>';
@@ -103,6 +108,12 @@ const DashboardPage = async () => {
           id: pub.id,
         });
       }).join("");
+
+      list.innerHTML = pubCards;
+      Array.from(list.children).forEach((card, i) => {
+        card.classList.add("animate-slide-up");
+        card.style.animationDelay = `${i * 60}ms`;
+      });
 
       // Add event listeners
       list.querySelectorAll(".edit-btn").forEach(btn => {
@@ -144,7 +155,7 @@ const DashboardPage = async () => {
         .replace("{{active}}", favs.filter(p => p.status === "active").length)
         .replace("{{inactive}}", favs.filter(p => p.status === "sold" || p.status === "inactive").length);
 
-      favList.innerHTML = favs.map((pub) => {
+      const favCards = favs.map((pub) => {
         const statusBadge = pub.status === "active"
           ? '<span class="inline-flex rounded-full bg-accent/10 px-2.5 py-1 text-xs font-medium text-accent">Active</span>'
           : '<span class="inline-flex rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-text/70">Inactive</span>';
@@ -160,6 +171,12 @@ const DashboardPage = async () => {
           image: pub.images?.[0] || "",
         });
       }).join("");
+
+      favList.innerHTML = favCards;
+      Array.from(favList.children).forEach((card, i) => {
+        card.classList.add("animate-slide-up");
+        card.style.animationDelay = `${i * 60}ms`;
+      });
 
       // Add unfavorite listeners
       favList.querySelectorAll(".unfav-btn").forEach(btn => {
@@ -181,19 +198,17 @@ const DashboardPage = async () => {
 
   const switchTab = (tab) => {
     activeTab = tab;
+    const activeClasses = "bg-primary text-white shadow-sm";
+    const inactiveClasses = "text-text/60 hover:text-text hover:bg-muted/40";
     if (tab === "publications") {
-      tabPublications.classList.add("bg-primary", "text-white");
-      tabPublications.classList.remove("text-text/70", "hover:bg-muted");
-      tabFavorites.classList.remove("bg-primary", "text-white");
-      tabFavorites.classList.add("text-text/70", "hover:bg-muted");
+      tabPublications.className = `tab-btn px-6 py-3.5 text-sm font-medium transition-all duration-200 ${activeClasses}`;
+      tabFavorites.className = `tab-btn px-6 py-3.5 text-sm font-medium transition-all duration-200 ${inactiveClasses}`;
       publicationsSection.classList.remove("hidden");
       favoritesSection.classList.add("hidden");
       renderPubList();
     } else {
-      tabFavorites.classList.add("bg-primary", "text-white");
-      tabFavorites.classList.remove("text-text/70", "hover:bg-muted");
-      tabPublications.classList.remove("bg-primary", "text-white");
-      tabPublications.classList.add("text-text/70", "hover:bg-muted");
+      tabFavorites.className = `tab-btn px-6 py-3.5 text-sm font-medium transition-all duration-200 ${activeClasses}`;
+      tabPublications.className = `tab-btn px-6 py-3.5 text-sm font-medium transition-all duration-200 ${inactiveClasses}`;
       favoritesSection.classList.remove("hidden");
       publicationsSection.classList.add("hidden");
       renderFavList();

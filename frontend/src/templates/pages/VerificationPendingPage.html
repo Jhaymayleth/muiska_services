@@ -1,16 +1,16 @@
-<div class="w-full max-w-md text-center">
-  <div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-    <svg class="h-8 w-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+<div class="w-full max-w-md text-center animate-fade-in">
+  <div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 animate-scale-in">
+    <svg class="h-8 w-8 text-primary animate-spin-slow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
     </svg>
   </div>
-  <h1 class="mb-2 text-2xl font-bold text-gray-900">Profile under verification</h1>
-  <p class="mb-6 text-gray-600">
+  <h1 class="mb-2 text-2xl font-display font-bold text-text">Profile under verification</h1>
+  <p class="mb-6 text-text-secondary">
     We've received your request. A verifier will review your profile and notify you
     when it's approved.
   </p>
 
-  <div id="rejection-message" class="mb-6 hidden p-4 rounded-lg bg-red-50 border border-red-200 text-red-800">
+  <div id="rejection-message" class="mb-6 hidden p-4 rounded-lg bg-red-50 border border-red-200 text-red-800 animate-fade-in">
     <p class="font-medium">Your profile was rejected:</p>
     <p id="rejection-reason" class="mt-1"></p>
     <p class="mt-2 text-sm">You can correct the information and try again.</p>
@@ -19,19 +19,19 @@
   <div class="space-y-3">
     <button
       id="retry-btn"
-      class="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white hover:bg-primary/90 transition-colors"
+      class="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white transition-all duration-200 hover:bg-primary/90 active:scale-[0.97] shadow-sm"
     >
       Check status
     </button>
     <button
       id="home-btn"
-      class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+      class="w-full rounded-lg border border-border bg-white px-4 py-2.5 text-sm font-medium text-text transition-all duration-200 hover:bg-muted hover:-translate-y-0.5 active:scale-[0.97]"
     >
       Back to home
     </button>
   </div>
 
-  <p class="mt-6 text-sm text-gray-500">
-    Questions? <a href="#" class="text-primary hover:underline">Contact support</a>
+  <p class="mt-6 text-sm text-text-tertiary">
+    Questions? <a href="#" class="text-primary transition-all duration-200 hover:text-primary-hover hover:underline">Contact support</a>
   </p>
 </div>

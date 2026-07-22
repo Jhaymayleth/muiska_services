@@ -6,16 +6,23 @@ const RegisterPage = () => {
   const template = loadTemplate("RegisterPage");
   const section = document.createElement("section");
   section.className =
-    "mx-auto max-w-md space-y-6 rounded-2xl border border-border bg-white p-8 shadow-sm";
+    "mx-auto max-w-md space-y-6 rounded-2xl border border-border bg-white p-8 shadow-elevated animate-scale-in";
 
   section.innerHTML = template;
 
   const form = section.querySelector("#register-form");
   const errorEl = section.querySelector("#register-error");
+  const errorText = section.querySelector("#register-error-text");
+  const submitBtn = section.querySelector("#register-submit");
+  const btnText = section.querySelector("#register-btn-text");
+  const spinner = section.querySelector("#register-spinner");
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     errorEl.classList.add("hidden");
+    submitBtn.disabled = true;
+    btnText.textContent = "Loading...";
+    spinner.classList.remove("hidden");
 
     const name = form.name.value.trim();
     const email = form.email.value.trim();
@@ -25,51 +32,75 @@ const RegisterPage = () => {
 
     // Validaciones
     if (!name || !email || !password || !passwordConfirm) {
-      errorEl.textContent = "All fields are required.";
+      errorText.textContent = "All fields are required.";
       errorEl.classList.remove("hidden");
+      submitBtn.disabled = false;
+      btnText.textContent = "Register";
+      spinner.classList.add("hidden");
       return;
     }
 
     if (name.length < 3) {
-      errorEl.textContent = "Name must be at least 3 characters.";
+      errorText.textContent = "Name must be at least 3 characters.";
       errorEl.classList.remove("hidden");
+      submitBtn.disabled = false;
+      btnText.textContent = "Register";
+      spinner.classList.add("hidden");
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      errorEl.textContent = "Please enter a valid email.";
+      errorText.textContent = "Please enter a valid email.";
       errorEl.classList.remove("hidden");
+      submitBtn.disabled = false;
+      btnText.textContent = "Register";
+      spinner.classList.add("hidden");
       return;
     }
 
     if (password.length < 8) {
-      errorEl.textContent = "Password must be at least 8 characters.";
+      errorText.textContent = "Password must be at least 8 characters.";
       errorEl.classList.remove("hidden");
+      submitBtn.disabled = false;
+      btnText.textContent = "Register";
+      spinner.classList.add("hidden");
       return;
     }
 
     if (!/[A-Z]/.test(password)) {
-      errorEl.textContent = "Password must contain at least one uppercase letter.";
+      errorText.textContent = "Password must contain at least one uppercase letter.";
       errorEl.classList.remove("hidden");
+      submitBtn.disabled = false;
+      btnText.textContent = "Register";
+      spinner.classList.add("hidden");
       return;
     }
 
     if (!/[a-z]/.test(password)) {
-      errorEl.textContent = "Password must contain at least one lowercase letter.";
+      errorText.textContent = "Password must contain at least one lowercase letter.";
       errorEl.classList.remove("hidden");
+      submitBtn.disabled = false;
+      btnText.textContent = "Register";
+      spinner.classList.add("hidden");
       return;
     }
 
     if (!/[0-9]/.test(password)) {
-      errorEl.textContent = "Password must contain at least one number.";
+      errorText.textContent = "Password must contain at least one number.";
       errorEl.classList.remove("hidden");
+      submitBtn.disabled = false;
+      btnText.textContent = "Register";
+      spinner.classList.add("hidden");
       return;
     }
 
     if (password !== passwordConfirm) {
-      errorEl.textContent = "Passwords do not match.";
+      errorText.textContent = "Passwords do not match.";
       errorEl.classList.remove("hidden");
+      submitBtn.disabled = false;
+      btnText.textContent = "Register";
+      spinner.classList.add("hidden");
       return;
     }
 
@@ -90,8 +121,11 @@ const RegisterPage = () => {
       const msg = err.details
         ? Object.values(err.details).flat().join("; ")
         : err.message;
-      errorEl.textContent = msg || "Error registering.";
+      errorText.textContent = msg || "Error registering.";
       errorEl.classList.remove("hidden");
+      submitBtn.disabled = false;
+      btnText.textContent = "Register";
+      spinner.classList.add("hidden");
     }
   });
 

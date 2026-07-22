@@ -12,11 +12,38 @@
   --color-border: #e3d8cd;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   font-family: "Plus Jakarta Sans", sans-serif;
   background-color: var(--color-background);
   color: var(--color-text);
+}
+
+a,
+button,
+input,
+select,
+textarea {
+  transition: all 200ms ease;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted);
 }
 
 h1,

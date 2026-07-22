@@ -69,8 +69,8 @@ const HomePage = async () => {
       categoriesContainer.innerHTML = categories
         .slice(0, 8)
         .map(
-          (cat) => `
-            <a href="/explore?category=${encodeURIComponent(cat.name)}" class="category flex items-center gap-4 bg-background border border-border rounded-2xl px-5 py-6 transition-all duration-200 hover:border-primary hover:bg-primary/5 active:scale-95 cursor-pointer">
+          (cat, i) => `
+            <a href="/explore?category=${encodeURIComponent(cat.name)}" class="category flex items-center gap-4 bg-background border border-border rounded-2xl px-5 py-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-elevated hover:border-primary hover:bg-primary/5 active:scale-95 cursor-pointer animate-slide-up" style="animation-delay: ${i * 80}ms">
               <span class="text-3xl">${getCategoryIcon(cat.name)}</span>
               <h3 class="font-medium text-text">${cat.name}</h3>
             </a>
@@ -127,6 +127,11 @@ const HomePage = async () => {
       }
 
       featuredContainer.innerHTML = pubs.map(createPublicationCard).join("");
+
+      featuredContainer.querySelectorAll(".publication-card").forEach((card, i) => {
+        card.classList.add("animate-fade-in");
+        card.style.animationDelay = `${i * 100}ms`;
+      });
 
       featuredContainer.querySelectorAll(".contact-btn").forEach((btn) => {
         btn.addEventListener("click", async (e) => {

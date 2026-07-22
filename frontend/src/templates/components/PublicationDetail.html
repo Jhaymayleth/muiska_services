@@ -1,16 +1,16 @@
 <!-- Template principal de detalle de publicación -->
-<div class="space-y-6">
+<div class="space-y-6 animate-fade-in">
   {{imagesHtml}}
 
   <div class="space-y-3">
     <div class="flex items-start justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-semibold text-primary">{{title}}</h1>
+        <h1 class="text-2xl font-display font-bold text-text">{{title}}</h1>
         <p class="mt-1 text-sm uppercase tracking-wide text-text/50">{{category}}</p>
       </div>
       <div class="flex items-center gap-3 flex-shrink-0">
         <!-- FAV_BTN_PLACEHOLDER -->
-        <div class="flex-shrink-0 rounded-full bg-accent/10 px-4 py-2 text-lg font-semibold text-accent">${{price}}</div>
+        <div class="flex-shrink-0 rounded-full bg-accent/10 px-4 py-2 text-xl font-bold font-display text-accent">${{price}}</div>
       </div>
     </div>
 
@@ -18,13 +18,13 @@
   </div>
 
   <div class="border-t pt-6">
-    <h2 class="text-lg font-semibold text-text mb-3">Description</h2>
-    <p class="text-text/70 whitespace-pre-wrap">{{description}}</p>
+    <h2 class="text-lg font-display font-bold text-text mb-3">Description</h2>
+    <p class="text-text/70 leading-relaxed whitespace-pre-wrap">{{description}}</p>
   </div>
 
   <div id="contact-section" class="border-t pt-6 {{contactHidden}}">
     <button id="contact-btn" data-pub-id="{{pubId}}" data-seller-id="{{sellerId}}"
-      class="w-full rounded-xl bg-primary px-6 py-3 text-base font-semibold text-white transition hover:bg-primary-hover flex items-center justify-center gap-2">
+      class="w-full rounded-xl bg-primary px-6 py-3.5 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:bg-primary-hover hover:shadow-md active:scale-[0.98] flex items-center justify-center gap-2">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
       Contact Seller
     </button>

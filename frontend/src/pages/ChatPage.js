@@ -144,7 +144,7 @@ const ChatPage = async () => {
         const isOwn = m.sender_id === user.id;
         return `
           <div class="mb-3 flex ${isOwn ? "justify-end" : "justify-start"}">
-            <div class="max-w-[70%] rounded-lg px-4 py-2 ${isOwn ? "bg-primary text-white" : "bg-gray-100 text-gray-900"}">
+            <div class="max-w-[70%] rounded-lg px-4 py-2 ${isOwn ? "bg-primary text-white" : "bg-muted text-text"}">
               <p class="text-sm">${escapeHtml(m.content)}</p>
               <p class="text-xs opacity-70 mt-1">${formatTime(m.created_at)}</p>
             </div>
@@ -160,7 +160,7 @@ const ChatPage = async () => {
     const msgEl = document.createElement("div");
     msgEl.className = "mb-3 flex " + (isOwn ? "justify-end" : "justify-start");
     msgEl.innerHTML = `
-      <div class="max-w-[70%] rounded-lg px-4 py-2 ${isOwn ? "bg-primary text-white" : "bg-gray-100 text-gray-900"}">
+      <div class="max-w-[70%] rounded-lg px-4 py-2 ${isOwn ? "bg-primary text-white" : "bg-muted text-text"}">
         <p class="text-sm">${escapeHtml(msg.content)}</p>
         <p class="text-xs opacity-70 mt-1">${formatTime(msg.created_at)}</p>
       </div>

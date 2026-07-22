@@ -1,38 +1,38 @@
 <!-- AdminPage Template Base -->
-<header class="admin-header">
+<header class="admin-header animate-fade-in">
   <div class="admin-header__content">
     <div class="admin-header__info">
       <p class="admin-header__subtitle">MUISKA Administration</p>
       <h1 class="admin-header__title">Control Panel</h1>
       <p class="admin-header__greeting">Hello, {{adminName}}. Here's the community status.</p>
     </div>
-    <button id="refresh-dashboard" class="btn btn--secondary" aria-label="Refresh data">
+    <button id="refresh-dashboard" class="btn btn--secondary transition-all duration-200 active:scale-[0.97]" aria-label="Refresh data">
       <span aria-hidden="true">↻</span> Refresh
     </button>
   </div>
 </header>
 
 <!-- Tabs Navigation -->
-<nav class="admin-tabs" aria-label="Admin panel sections" role="tablist">
+<nav class="admin-tabs animate-fade-in" style="animation-delay: 50ms" aria-label="Admin panel sections" role="tablist">
   <button role="tab" data-tab="dashboard" class="admin-tabs__btn admin-tabs__btn--active" aria-selected="true" aria-controls="panel-dashboard">
     Dashboard
   </button>
-  <button role="tab" data-tab="publications" class="admin-tabs__btn" aria-selected="false" aria-controls="panel-publications">
+  <button role="tab" data-tab="publications" class="admin-tabs__btn transition-all duration-200" aria-selected="false" aria-controls="panel-publications">
     Publications
   </button>
-  <button role="tab" data-tab="categories" class="admin-tabs__btn" aria-selected="false" aria-controls="panel-categories">
+  <button role="tab" data-tab="categories" class="admin-tabs__btn transition-all duration-200" aria-selected="false" aria-controls="panel-categories">
     Categories
   </button>
-  <button role="tab" data-tab="users" class="admin-tabs__btn" aria-selected="false" aria-controls="panel-users">
+  <button role="tab" data-tab="users" class="admin-tabs__btn transition-all duration-200" aria-selected="false" aria-controls="panel-users">
     Users
   </button>
-  <button role="tab" data-tab="verifiers" class="admin-tabs__btn" aria-selected="false" aria-controls="panel-verifiers">
+  <button role="tab" data-tab="verifiers" class="admin-tabs__btn transition-all duration-200" aria-selected="false" aria-controls="panel-verifiers">
     Verifiers
   </button>
 </nav>
 
 <!-- Panel container -->
-<div id="admin-tab-content">
+<div id="admin-tab-content" class="animate-fade-in" style="animation-delay: 100ms">
   <!-- Dashboard -->
   <div id="panel-dashboard" class="admin-panel admin-panel--active" role="tabpanel" aria-labelledby="tab-dashboard">
     <!-- Template inline or load via JS -->
@@ -56,5 +56,44 @@
   <!-- Verifiers -->
   <div id="panel-verifiers" class="admin-panel" role="tabpanel" aria-labelledby="tab-verifiers" hidden>
     <!-- Template inline or load via JS -->
+  </div>
+</div>
+
+<!-- Stats Row (populated by JS) -->
+<div id="dashboard-stats" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+
+<!-- Tables Card (populated by JS) -->
+<div class="admin-card transition-all duration-200 hover:shadow-elevated mt-6">
+  <div class="admin-card__header">
+    <div>
+      <h3 class="admin-card__title">Recent Activity</h3>
+      <p class="admin-card__subtitle">Latest platform activity</p>
+    </div>
+  </div>
+  <div class="admin-table-wrapper">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>User</th>
+          <th>Status</th>
+          <th class="text-right">Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="transition-all duration-150 hover:bg-muted/50 cursor-pointer">
+          <td class="font-medium">Listing</td>
+          <td>Example User</td>
+          <td><span class="status-badge status-badge--active">Active</span></td>
+          <td class="text-right text-muted">Today</td>
+        </tr>
+        <tr class="transition-all duration-150 hover:bg-muted/50 cursor-pointer">
+          <td class="font-medium">Registration</td>
+          <td>New User</td>
+          <td><span class="status-badge status-badge--pending">Pending</span></td>
+          <td class="text-right text-muted">Yesterday</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>
