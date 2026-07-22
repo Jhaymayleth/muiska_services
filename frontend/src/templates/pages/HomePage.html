@@ -1,39 +1,3 @@
-<!-- Header -->
-<header class="sticky top-0 z-50 w-full bg-background border-b border-border text-sm">
-  <div class="max-w-7xl mx-auto flex items-center justify-between gap-4 px-6 py-3">
-    <a href="/" class="flex items-center gap-2 shrink-0" id="logo-link">
-      <span class="w-9 h-9 flex items-center justify-center rounded-full bg-primary text-background font-display font-bold">M</span>
-      <span class="font-display text-xl font-bold text-text">Muiska</span>
-    </a>
-
-    <input type="checkbox" id="menu-toggle" class="peer hidden" />
-    <label for="menu-toggle" class="lg:hidden text-text text-2xl cursor-pointer">&#9776;</label>
-
-    <nav class="hidden peer-checked:flex lg:flex flex-col lg:flex-row absolute lg:static top-full left-0 w-full lg:w-auto bg-background lg:bg-transparent border-b lg:border-0 border-border px-6 lg:px-0 py-4 lg:py-0 gap-4 lg:gap-6 items-center lg:flex-1 lg:justify-center">
-      <ul class="flex flex-col lg:flex-row items-center gap-1 w-full lg:w-auto">
-        <li class="w-full lg:w-auto"><a href="#Home" class="block text-center lg:inline px-4 py-2 rounded-full bg-muted text-primary font-medium">Home</a></li>
-        <li class="w-full lg:w-auto"><a href="#Categories" class="block text-center lg:inline px-4 py-2 text-text/70 hover:text-text font-medium">Categories</a></li>
-        <li class="w-full lg:w-auto"><a href="#Listings" class="block text-center lg:inline px-4 py-2 text-text/70 hover:text-text font-medium">Listings</a></li>
-        <li class="w-full lg:w-auto"><a href="#HowItWorks" class="block text-center lg:inline px-4 py-2 text-text/70 hover:text-text font-medium">How it works</a></li>
-        <li class="w-full lg:w-auto"><a href="#About" class="block text-center lg:inline px-4 py-2 text-text/70 hover:text-text font-medium">About</a></li>
-      </ul>
-      <div class="flex items-center gap-2 w-full lg:w-auto">
-        <input type="text" placeholder="Search..." class="bg-muted text-text placeholder-text/50 rounded-full px-4 py-2 border border-border flex-1 lg:flex-none" />
-        <button class="Search bg-accent hover:opacity-90 text-background font-medium px-4 py-2 rounded-full shrink-0">Search</button>
-      </div>
-      <div class="flex items-center gap-4 lg:hidden w-full justify-center pt-2">
-        <button class="Login text-text/70 hover:text-text font-medium" data-path="/login">Login</button>
-        <button class="Register bg-primary hover:bg-primary-hover text-background font-medium px-5 py-2.5 rounded-full" data-path="/register">Register</button>
-      </div>
-    </nav>
-
-    <div class="hidden lg:flex items-center gap-4 shrink-0">
-      <button class="Login text-text/70 hover:text-text font-medium" data-path="/login">Login</button>
-      <button class="Register bg-primary hover:bg-primary-hover text-background font-medium px-5 py-2.5 rounded-full" data-path="/register">Register</button>
-    </div>
-  </div>
-</header>
-
 <!-- Hero -->
 <section id="Home" class="relative px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32 xl:py-40 overflow-hidden">
   <img src="{{womanImg}}" alt="Colombian entrepreneur working in her workshop" class="absolute inset-0 w-full h-full object-cover" />
@@ -125,19 +89,3 @@
     <a href="/register" class="inline-block bg-background hover:bg-muted text-primary font-bold px-8 py-4 rounded-full transition" id="cta-register">Create free account →</a>
   </div>
 </section>
-
-<!-- Footer -->
-<footer class="bg-text px-6 py-8">
-  <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-    <a href="/" class="flex items-center gap-3 shrink-0">
-      <span class="w-9 h-9 flex items-center justify-center rounded-full bg-primary text-background font-display font-bold">M</span>
-      <span class="font-display text-xl font-bold text-background">MUISKA</span>
-    </a>
-    <p class="text-background/60 text-sm text-center">&copy; 2024 MUISKA Community Commerce. All rights reserved.</p>
-    <nav class="flex items-center gap-6">
-      <a href="#" class="text-background/70 hover:text-background text-sm transition">Terms</a>
-      <a href="#" class="text-background/70 hover:text-background text-sm transition">Privacy</a>
-      <a href="#" class="text-background/70 hover:text-background text-sm transition">Help</a>
-    </nav>
-  </div>
-</footer>
