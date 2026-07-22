@@ -76,6 +76,7 @@ const PublicationDetailPage = () => {
       .replace("{{category}}", escapeHtml(pub.category || "No category"))
       .replace("{{price}}", pub.price ? parseFloat(pub.price).toFixed(2) : "0.00")
       .replace("{{metaHtml}}", metaHtml)
+      .replace("{{description}}", escapeHtml(pub.description || ""))
       .replace("{{contactHidden}}", isOwner || !currentUser ? "hidden" : "")
       .replace("{{pubId}}", pub.id)
       .replace("{{sellerId}}", pub.user_id)

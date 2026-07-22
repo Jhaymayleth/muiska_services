@@ -1,10 +1,13 @@
 // Notification store
 import { api } from "../services/api.js";
 
+const FETCH_COOLDOWN_MS = 30000;
+
 export const notificationStore = {
   notifications: [],
   unreadCount: 0,
   listeners: [],
+  lastFetched: 0,
 
   subscribe(listener) {
     this.listeners.push(listener);
@@ -21,6 +24,9 @@ export const notificationStore = {
   },
 
   async fetchFromServer() {
+    const now = Date.now();
+    if (now - this.lastFetched < FETCH_COOLDOWN_MS) return;
+    this.lastFetched = now;
     try {
       const res = await api.request("/notifications?limit=20&unreadOnly=true");
       this.notifications = res.notifications || [];

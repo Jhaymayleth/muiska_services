@@ -3,10 +3,12 @@ import { verifyToken } from "../middlewares/auth.middleware.js";
 import { validateParams } from "../middlewares/validate.middleware.js";
 import { z } from "zod";
 import { notificationController } from "../controllers/notification.controller.js";
+import { notificationLimiter } from "../middlewares/rateLimit.middleware.js";
 
 const router = Router();
 
 router.use(verifyToken);
+router.use(notificationLimiter);
 
 const idParamSchema = z.object({
   id: z.string().uuid("Invalid notification ID"),

@@ -32,3 +32,9 @@ export const apiLimiter = createRateLimiter(
     config.rateLimit.maxRequests,
     'Too many requests. Try again later.'
 );
+
+export const notificationLimiter = createRateLimiter(
+    60 * 1000,
+    30,
+    'Too many notification requests. Try again later.'
+);
