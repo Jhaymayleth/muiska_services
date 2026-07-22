@@ -12,7 +12,7 @@ export const moderationController = {
 
   async getPublicationById(req, res, next) {
     try {
-      const publication = await moderationService.getPublicationById(req.params.id);
+      const publication = await moderationService.getById(req.params.id);
       res.json(publication);
     } catch (error) {
       if (error.code === "NOT_FOUND") {

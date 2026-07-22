@@ -1,11 +1,12 @@
 import jwt from "jsonwebtoken";
 import { pool } from "../config/database.js";
 import { config } from "../config/index.js";
+import { UnauthorizedError, ForbiddenError } from "../middlewares/error.middleware.js";
 
 export const verifyToken = async (req, res, next) => {
   const header = req.headers.authorization;
   if (!header || !header.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "Token required" });
+    return next(new UnauthorizedError("Token required"));
   }
 
   const token = header.split(" ")[1];
@@ -20,14 +21,14 @@ export const verifyToken = async (req, res, next) => {
 
     const user = result.rows[0];
     if (!user || user.is_banned) {
-      return res.status(403).json({ message: "Account does not have access" });
+      return next(new ForbiddenError("Account does not have access"));
     }
 
     req.user = user;
     next();
   } catch (error) {
     if (error.name === "JsonWebTokenError" || error.name === "TokenExpiredError") {
-      return res.status(401).json({ message: "Invalid or expired token" });
+      return next(new UnauthorizedError("Invalid or expired token"));
     }
     next(error);
   }
@@ -37,7 +38,7 @@ export const requireRole = (roles) => {
   const allowedRoles = Array.isArray(roles) ? roles : [roles];
   return (req, res, next) => {
     if (!req.user || !allowedRoles.includes(req.user.role)) {
-      return res.status(403).json({ message: "Insufficient permissions" });
+      return next(new ForbiddenError("Insufficient permissions"));
     }
     next();
   };

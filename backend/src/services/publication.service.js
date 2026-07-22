@@ -122,7 +122,7 @@ export const publicationService = {
     return result.rows;
   },
 
-  async create(userId, { title, description, price, category, images, location, contact_method }) {
+  async create(userId, { title, description, price, category, images, location, contact_method, type, business_hours, coverage_area, price_type }) {
     if (!isValidPublicationPrice(price)) {
       const error = new Error("Price must be greater than 0 and not exceed 99,999,999.99");
       error.code = "INVALID_PRICE";
@@ -138,16 +138,16 @@ export const publicationService = {
     }
 
     const result = await pool.query(
-      `INSERT INTO publications (title, description, price, category_id, images, location, contact_method, user_id)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      `INSERT INTO publications (title, description, price, category_id, images, location, contact_method, user_id, type, business_hours, coverage_area, price_type)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
        RETURNING *`,
-      [title, description, price, categoryId, images, location, contact_method, userId],
+      [title, description, price, categoryId, images, location, contact_method, userId, type, business_hours, coverage_area, price_type],
     );
 
     return this.getById(result.rows[0].id);
   },
 
-  async update(id, userId, { title, description, price, category, images, location, contact_method, status }) {
+  async update(id, userId, { title, description, price, category, images, location, contact_method, status, type, business_hours, coverage_area, price_type }) {
     if (price !== undefined && !isValidPublicationPrice(price)) {
       const error = new Error("Price must be greater than 0 and not exceed 99,999,999.99");
       error.code = "INVALID_PRICE";
@@ -172,10 +172,14 @@ export const publicationService = {
            location = COALESCE($6, location),
            contact_method = COALESCE($7, contact_method),
            status = COALESCE($8, status),
+           type = COALESCE($9, type),
+           business_hours = COALESCE($10, business_hours),
+           coverage_area = COALESCE($11, coverage_area),
+           price_type = COALESCE($12, price_type),
            updated_at = NOW()
-       WHERE id = $9 AND user_id = $10
+       WHERE id = $13 AND user_id = $14
        RETURNING *`,
-      [title || null, description || null, price || null, categoryId, images, location, contact_method, status || null, id, userId],
+      [title || null, description || null, price || null, categoryId, images, location, contact_method, status || null, type || null, business_hours || null, coverage_area || null, price_type || null, id, userId],
     );
 
     if (result.rows.length === 0) {

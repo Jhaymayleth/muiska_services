@@ -1,5 +1,6 @@
 import pino from 'pino';
 import { config } from './index.js';
+import crypto from 'crypto';
 
 const isProduction = config.isProduction;
 

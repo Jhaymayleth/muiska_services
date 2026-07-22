@@ -15,9 +15,11 @@ import moderationRouter from "./routes/moderation.routes.js";
 import healthRouter from "./routes/health.routes.js";
 import chatRouter from "./routes/chat.routes.js";
 import barrioRouter from "./routes/barrio.routes.js";
-import { errorMiddleware } from "./middlewares/error.middleware.js";
-import { notFoundMiddleware } from "./middlewares/notFound.middleware.js";
+import { errorMiddleware, notFoundMiddleware } from "./middlewares/error.middleware.js";
 import { createRequestLogger } from "./config/logger.js";
+import { apiLimiter } from "./middlewares/rateLimit.middleware.js";
+
+import { config } from "./config/index.js";
 
 dotenv.config();
 
@@ -25,10 +27,11 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
-app.use(cors());
+app.use(cors({ origin: config.cors.origin }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(createRequestLogger);
+app.use(apiLimiter);
 
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 

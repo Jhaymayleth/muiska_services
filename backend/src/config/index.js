@@ -19,13 +19,13 @@ function getEnvBoolean(key, defaultValue = false) {
 
 export const config = {
   env: getEnv("NODE_ENV", "development"),
-  isProduction: getEnv("NODE_ENV") === "production",
+  isProduction: getEnv("NODE_ENV", "development") === "production",
 
   port: Number(getEnv("PORT", 3000)),
 
   db: {
     host: getEnv("DB_HOST", "localhost"),
-    port: Number(getEnv("DB_PORT", 5433)),
+    port: Number(getEnv("DB_PORT", 5432)),
     name: getEnv("DB_NAME", "muiska"),
     user: getEnv("DB_USER", "postgres"),
     password: getEnv("DB_PASSWORD", "postgres"),
