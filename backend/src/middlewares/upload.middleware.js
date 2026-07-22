@@ -35,11 +35,11 @@ const fileFilter = (_req, file, cb) => {
     const mime = file.mimetype;
 
     if (!ALLOWED_EXTENSIONS.includes(ext)) {
-        return cb(new Error(`Extensión no permitida: ${ext}. Use jpg, jpeg, png, gif o webp.`), false);
+        return cb(new Error(`Extension not allowed: ${ext}. Use jpg, jpeg, png or webp.`), false);
     }
 
     if (!ALLOWED_MIME_TYPES.includes(mime)) {
-        return cb(new Error(`Tipo MIME no permitido: ${mime}`), false);
+        return cb(new Error(`MIME type not allowed: ${mime}`), false);
     }
 
     cb(null, true);
@@ -57,13 +57,13 @@ export const upload = multer({
 export const handleUploadError = (err, _req, res, next) => {
     if (err instanceof multer.MulterError) {
         if (err.code === "LIMIT_FILE_SIZE") {
-            return res.status(400).json({ success: false, code: "FILE_TOO_LARGE", message: "La imagen no puede superar los 5MB" });
+            return res.status(400).json({ success: false, code: "FILE_TOO_LARGE", message: "Image cannot exceed 5MB" });
         }
         if (err.code === "LIMIT_FILE_COUNT") {
-            return res.status(400).json({ success: false, code: "TOO_MANY_FILES", message: "Máximo 5 imágenes por publicación" });
+            return res.status(400).json({ success: false, code: "TOO_MANY_FILES", message: "Maximum 5 images per publication" });
         }
         if (err.code === "LIMIT_UNEXPECTED_FILE") {
-            return res.status(400).json({ success: false, code: "UNEXPECTED_FIELD", message: "Campo de archivo inesperado" });
+            return res.status(400).json({ success: false, code: "UNEXPECTED_FIELD", message: "Unexpected file field" });
         }
         return res.status(400).json({ success: false, code: err.code, message: err.message });
     }

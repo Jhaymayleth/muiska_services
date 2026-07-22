@@ -65,7 +65,7 @@ export const update = async (req, res, next) => {
       images = req.files.map((f) => `/uploads/${f.filename}`);
     }
 
-    const publication = await publicationService.update(req.user.id, id, {
+    const publication = await publicationService.update(id, req.user.id, {
       ...normalized,
       images,
       status: req.body.status,

@@ -31,10 +31,10 @@ export const moderationController = {
     }
   },
 
-  async rejectPublication(req, res, next) {
+   async rejectPublication(req, res, next) {
     try {
-      const { motivo } = req.body;
-      const result = await moderationService.rejectPublication(req.params.id, req.user.id, motivo);
+      const { reason } = req.body;
+      const result = await moderationService.rejectPublication(req.params.id, req.user.id, reason);
       res.json(result);
     } catch (error) {
       if (error.code === "MISSING_REASON") {

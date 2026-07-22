@@ -18,10 +18,14 @@ export const normalizePublicationPayload = (payload = {}) => {
   return {
     title,
     description,
-    price: Number.isFinite(price) ? price : 0,
+    price: Number.isFinite(price) && price > 0 ? price : undefined,
     category: category || null,
     location: location || null,
     contact_method: contactMethod || null,
     images,
+    type: payload.type || "product",
+    business_hours: payload.businessHours || null,
+    coverage_area: payload.coverageArea || null,
+    price_type: payload.priceType || "fixed",
   };
 };

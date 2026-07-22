@@ -35,7 +35,7 @@ const CreateListingPage = () => {
     };
     try {
       await createPublication(data, images);
-      navigateTo("/explorar");
+      navigateTo("/explore");
     } catch (err) {
       alert(err.message);
     }

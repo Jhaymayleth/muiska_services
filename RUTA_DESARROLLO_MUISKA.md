@@ -11,6 +11,42 @@
 
 ---
 
+## 📊 RESUMEN DEL PROYECTO
+
+### Volumen de archivos
+- **Total archivos versionados (git ls-files):** 207
+- **Archivos de código fuente (js/jsx/ts/css/html/json/md/sql/yml):** 163
+- **Archivos estáticos (imágenes, fuentes):** 24
+- **node_modules/.git:** 0 (no están versionados)
+
+### Desglose por área
+- **Frontend (`frontend/src/`):** 112 archivos
+  - Componentes reutilizables (`components/`)
+  - Páginas (`pages/`)
+  - Servicios API (`services/`)
+  - Estado (`state/`)
+  - Estilos SCSS (`styles/scss/`)
+  - Plantillas HTML (`templates/`)
+  - Utilidades (`utils/`)
+  - Hooks (`hooks/`)
+
+- **Backend (`backend/src/`):** 60 archivos
+  - Arquitectura por capas: controllers, services, routes, middlewares, db (migrations/seeds), utils, validators
+  - 9 migraciones SQL + seeds
+
+- **Tests (`backend/tests/`):** 1 archivo (solo `publication.utils.test.js`)
+
+### Tecnologías
+| Layer             | Technologies                                                    |
+| ----------------- | --------------------------------------------------------------- |
+| **Frontend**      | HTML5, JavaScript ES6 Modules, Tailwind CSS, Vite, SCSS         |
+| **Backend**       | Node.js, Express.js, JWT, Zod, Multer, Pino, Swagger            |
+| **Database**      | PostgreSQL 16, `pgcrypto` extension (UUID)                      |
+| **Infrastructure**| Docker / Docker Compose                                         |
+| **Testing**       | Node.js Test Runner (`node --test`)                             |
+
+---
+
 ## 👥 ROLES Y FLUJOS DE AUTENTICACIÓN
 
 ### Roles Disponibles
@@ -28,50 +64,50 @@
 │                        NUEVO USUARIO                            │
 └──────────────────────────┬──────────────────────────────────────┘
                            │
-              ┌────────────┴────────────┐
-              ▼                         ▼
-        ┌─────────────┐           ┌─────────────┐
-        │   CLIENTE   │           │ VENDEDOR/   │
-        │             │           │ EMPRENDEDOR │
-        └──────┬──────┘           └──────┬──────┘
-               │                         │
+               ┌────────────┴────────────┐
                ▼                         ▼
-        Acceso inmediato          Registro completado
-        (buscar, contactar)       │
-                                  ▼
-                         ┌─────────────────────┐
-                         │  ESTADO: PENDIENTE  │
-                         │  VERIFICACIÓN       │
-                         │                     │
-                         │  Pantalla: "Tu      │
-                         │   perfil está en    │
-                         │   verificación.     │
-                         │   Te notificaremos  │
-                         │   cuando esté listo.│
-                         └──────────┬──────────┘
-                                    │
-                    ┌───────────────┴───────────────┐
-                    ▼                               ▼
-            ┌───────────────┐               ┌───────────────┐
-            │   APROBADO    │               │   RECHAZADO   │
-            │               │               │               │
-            │ • Notificación│               │ • Notificación│
-            │   "Perfil      │               │   "Perfil     │
-            │   verificado" │               │   rechazado:  │
-            │ • Badge ✅    │               │   [motivo]    │
-            │ • Acceso a    │               │ • Puede       │
-            │   crear pubs  │               │   corregir y  │
-            │ • Panel       │               │   reintentar  │
-            │   vendedor    │               │               │
-            └───────────────┘               └───────────────┘
+         ┌─────────────┐           ┌─────────────┐
+         │   CLIENTE   │           │ VENDEDOR/   │
+         │             │           │ EMPRENDEDOR │
+         └──────┬──────┘           └──────┬──────┘
+                │                         │
+                ▼                         ▼
+         Acceso inmediato          Registro completado
+         (buscar, contactar)       │
+                                   ▼
+                          ┌─────────────────────┐
+                          │  ESTADO: PENDIENTE  │
+                          │  VERIFICACIÓN       │
+                          │                     │
+                          │  Pantalla: "Tu      │
+                          │   perfil está en    │
+                          │   verificación.     │
+                          │   Te notificaremos  │
+                          │   cuando esté listo.│
+                          └──────────┬──────────┘
+                                     │
+                     ┌───────────────┴───────────────┐
+                     ▼                               ▼
+             ┌───────────────┐               ┌───────────────┐
+             │   APROBADO    │               │   RECHAZADO   │
+             │               │               │               │
+             │ • Notificación│               │ • Notificación│
+             │   "Perfil      │               │   "Perfil     │
+             │   verificado" │               │   rechazado:  │
+             │ • Badge ✅    │               │   [motivo]    │
+             │ • Acceso a    │               │ • Puede       │
+             │   crear pubs  │               │   corregir y  │
+             │ • Panel       │               │   reintentar  │
+             │   vendedor    │               │               │
+             └───────────────┘               └───────────────┘
 ```
 
 ### Flujo de Publicaciones (Moderación Obligatoria)
 
 ```
 VENDEDOR VERIFICADO
-       │
-       ▼
+        │
+        ▼
 ┌──────────────────┐
 │ Crear publicación │
 │ (producto/servicio)│
@@ -119,378 +155,273 @@ plataforma  puede corregir
 
 ---
 
-## 🏗️ ARQUITECTURA TÉCNICA REQUERIDA
+## 🏗️ ARQUITECTURA TÉCNICA
 
-### Base de Datos - Nuevas Tablas/Campos
-
-```sql
--- 1. USUARIOS - Nuevos campos
-ALTER TABLE users ADD COLUMN IF NOT EXISTS 
-  tipo_usuario VARCHAR(20) DEFAULT 'cliente', -- 'cliente', 'vendedor', 'verificador', 'admin'
-  estado_verificacion VARCHAR(20) DEFAULT 'pendiente', -- 'pendiente', 'aprobado', 'rechazado'
-  verificado_por UUID REFERENCES users(id),
-  verificado_en TIMESTAMP,
-  motivo_rechazo_verificacion TEXT,
-  barrio_id UUID REFERENCES barrios(id),
-  lat DECIMAL(10,8),
-  lng DECIMAL(11,8),
-  telefono VARCHAR(20),
-  whatsapp VARCHAR(20),
-  bio TEXT,
-  foto_perfil_url TEXT,
-  rating_promedio DECIMAL(3,2) DEFAULT 0,
-  total_reviews INT DEFAULT 0,
-  tiempo_respuesta_promedio INTERVAL,
-  badge_verificado BOOLEAN DEFAULT FALSE;
-
--- 2. BARRIOS OFICIALES BARRANQUILLA
-CREATE TABLE barrios (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  nombre VARCHAR(100) NOT NULL,
-  localidad VARCHAR(50) NOT NULL, -- 'Norte', 'Sur', 'Centro', 'Occidente', 'Metropolitana'
-  lat DECIMAL(10,8) NOT NULL,
-  lng DECIMAL(11,8) NOT NULL,
-  created_at TIMESTAMP DEFAULT NOW()
-);
-
--- 3. PUBLICACIONES - Campos moderación
-ALTER TABLE publications ADD COLUMN IF NOT EXISTS
-  tipo VARCHAR(20) DEFAULT 'producto', -- 'producto', 'servicio'
-  estado_moderacion VARCHAR(20) DEFAULT 'pendiente', -- 'pendiente', 'aprobada', 'rechazada'
-  moderado_por UUID REFERENCES users(id),
-  moderado_en TIMESTAMP,
-  motivo_rechazo_moderacion TEXT,
-  horario_atencion JSONB, -- { "lunes": "8:00-18:00", ... }
-  area_cobertura JSONB, -- barrios/radios donde presta servicio
-  precio_tipo VARCHAR(20) DEFAULT 'fijo', -- 'fijo', 'por_hora', 'cotizar'
-
--- 3. VERIFICACIONES (Auditoría)
-CREATE TABLE verificaciones (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  usuario_id UUID REFERENCES users(id) ON DELETE CASCADE,
-  verificador_id UUID REFERENCES users(id),
-  estado VARCHAR(20) NOT NULL, -- 'aprobado', 'rechazado'
-  motivo TEXT,
-  creado_en TIMESTAMP DEFAULT NOW()
-);
-
--- 4. MODERACIONES (Auditoría)
-CREATE TABLE moderaciones (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  publicacion_id UUID REFERENCES publications(id) ON DELETE CASCADE,
-  verificador_id UUID REFERENCES users(id),
-  accion VARCHAR(20) NOT NULL, -- 'aprobada', 'rechazada'
-  motivo TEXT,
-  creado_en TIMESTAMP DEFAULT NOW()
-);
-
--- 5. NOTIFICACIONES
-CREATE TABLE notificaciones (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  usuario_id UUID REFERENCES users(id) ON DELETE CASCADE,
-  tipo VARCHAR(50) NOT NULL, -- 'verificacion_aprobada', 'verificacion_rechazada', 'publicacion_aprobada', 'publicacion_rechazada', 'nuevo_mensaje', 'nueva_review'
-  titulo VARCHAR(255) NOT NULL,
-  mensaje TEXT NOT NULL,
-  datos JSONB, -- datos extra (publicacion_id, etc.)
-  leida BOOLEAN DEFAULT FALSE,
-  creado_en TIMESTAMP DEFAULT NOW()
-);
-
--- 6. CHAT/MENSAJERÍA
-CREATE TABLE conversaciones (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  publicacion_id UUID REFERENCES publications(id) ON DELETE SET NULL,
-  comprador_id UUID REFERENCES users(id) ON DELETE CASCADE,
-  vendedor_id UUID REFERENCES users(id) ON DELETE CASCADE,
-  creado_en TIMESTAMP DEFAULT NOW(),
-  actualizado_en TIMESTAMP DEFAULT NOW(),
-  UNIQUE(publicacion_id, comprador_id, vendedor_id)
-);
-
-CREATE TABLE mensajes (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  conversacion_id UUID REFERENCES conversaciones(id) ON DELETE CASCADE,
-  remitente_id UUID REFERENCES users(id) ON DELETE CASCADE,
-  contenido TEXT NOT NULL,
-  leido BOOLEAN DEFAULT FALSE,
-  creado_en TIMESTAMP DEFAULT NOW()
-);
-
--- 7. RESEÑAS/REVIEWS
-CREATE TABLE reviews (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  publicacion_id UUID REFERENCES publications(id) ON DELETE CASCADE,
-  comprador_id UUID REFERENCES users(id) ON DELETE CASCADE,
-  vendedor_id UUID REFERENCES users(id) ON DELETE CASCADE,
-  rating INT CHECK (rating >= 1 AND rating <= 5),
-  comentario TEXT,
-  creado_en TIMESTAMP DEFAULT NOW(),
-  UNIQUE(publicacion_id, comprador_id)
-);
-
--- 8. BARRIOS SEED (70+ barrios Barranquilla con lat/lng/localidad)
-```
-
----
-
-## 🛣️ ROADMAP POR FASES
-
-### FASE 0: BASELINE ✅ (Completado)
-- [x] Docker compose (PostgreSQL, Backend, Frontend, Nginx)
-- [x] Auth JWT (register, login, JWT, middleware)
-- [x] CRUD Publicaciones básico
-- [x] CRUD Categorías
-- [x] Admin panel básico (users, publications)
-- [x] Tests backend pasando
-
----
-
-### FASE 1: SISTEMA DE ROLES Y VERIFICACIÓN (Semana 1-2)
-
-#### Backend ✅ (Completado)
-- [x] Migración BD: nuevos campos users, tabla verificaciones, notificaciones (`006_users_verificacion.sql`)
-- [x] Auth Service: registro con `tipo_usuario` (cliente/vendedor) - `auth.service.js`
-- [x] Verification Service: CRUD verificaciones, notificaciones - `verification.service.js`
-- [x] Notification Service: CRUD notificaciones - `notification.service.js`
-- [x] Middleware: `requireVerifiedSeller` para crear publicaciones - `verification.middleware.js`
-- [x] Admin Controller: asignar/quitar verificadores - `admin.service.js` + `admin.controller.js`
-- [x] Rutas: `/api/verificaciones`, `/api/notificaciones`, `/api/admin/verificadores`
-- [x] Controllers: `verification.controller.js`, `notification.controller.js`
-
-#### Frontend ✅ (Completado)
-- [x] RegisterPage: selector "Cliente" / "Vendedor/Emprendedor" (NO verificador/admin)
-- [x] VerificacionPendientePage: pantalla loading "Tu perfil en verificación..."
-- [x] NotificationStore + toast notifications + badge en header
-- [x] Auth guard: redirigir vendedor no verificado a /verificacion-pendiente
-- [x] Header: badge notificaciones + dropdown
-
----
-
-### FASE 2: PANEL VERIFICADOR + MODERACIÓN (Semana 2-3)
-
-#### Backend
-- [ ] Verification Service: listar pendientes, aprobar/rechazar con motivo
-- [ ] Moderation Service: listar publicaciones pendientes, aprobar/rechazar
-- [ ] Endpoints: `/api/admin/verificaciones`, `/api/admin/moderacion`
-- [ ] Auditoría completa en tablas `verificaciones` y `moderaciones`
-
-#### Frontend
-- [ ] **VerificadorDashboardPage** (solo rol=verificador):
-  - Tab "Perfiles por verificar": lista, ver detalles, aprobar/rechazar con modal motivo
-  - Tab "Publicaciones pendientes": lista, ver detalles, aprobar/rechazar con modal motivo
-- [ ] **AdminPanel** nueva sección "Gestión Verificadores": buscar usuario, botón "Hacer verificador"
-- [ ] Notificaciones push a vendedor: verificación aprobada/rechazada + publicación aprobada/rechazada
-
----
-
-### FASE 3: GEOLOCALIZACIÓN HYPERLOCAL BARRANQUILLA (Semana 3-4)
-
-#### Backend
-- [ ] Tabla `barrios` + seed 70+ barrios oficiales con lat/lng/localidad
-- [ ] Migración users: `barrio_id`, `lat`, `lng`
-- [ ] API barrios: `GET /api/barrios?q=`, `GET /api/barrios/:id`
-- [ ] API publicaciones: `GET /api/publications?lat=x&lng=y&radius_km=3`
-- [ ] Índices geoespaciales (PostGIS si disponible, sino bounding box)
-
-#### Frontend
-- [ ] **BarrioAutocomplete** component (registro, crear publicación, explorar)
-- [ ] **RadioSelector**: 1km, 3km, 5km, 10km + "Usar mi ubicación" (Geolocation API)
-- [ ] ExplorarPage: filtros barrio + radio km + mapa resultados (Leaflet opcional)
-- [ ] PublicationCard: muestra barrio + "A X km de ti"
-- [ ] Perfil público: muestra barrio + "A X km de ti"
-
----
-
-### FASE 4: PERFIL PÚBLICO VENDEDOR + CONTACTO (Semana 4-5)
-
-#### Backend
-- [ ] `GET /api/users/:id/public` - perfil público vendedor
-- [ ] Rating/Reviews system
-- [ ] WhatsApp click-to-chat: `wa.me/{numero}?text=Hola%20vi%20tu%20publicación...`
-
-#### Frontend
-- [ ] **PerfilPublicoVendedorPage**: foto, bio, badge ✅, rating, servicios/productos, barrio, "A X km"
-- [ ] Botones: "Contactar por WhatsApp" + "Chat en app"
-- [ ] Badges visuales: "✅ Verificado", "⚡ Responde rápido", "⭐ 4.8 (50 reviews)"
-- [ ] Mapa mini en perfil (Leaflet)
-
----
-
-### FASE 5: CHAT Y NOTIFICACIONES REAL-TIME (Semana 6)
-
-- [ ] WebSocket/Socket.io server
-- [ ] Chat in-app entre comprador-vendedor
-- [ ] Notificaciones push (Service Worker + Web Push API)
-- [ ] Estados: "En línea", "Visto", "Escribiendo..."
-
----
-
-### FASE 6: ESTADÍSTICAS ADMIN + REPORTES (Semana 7)
-
-- [ ] Admin Dashboard con Chart.js:
-  - Usuarios/semana, publicaciones/estado, top categorías
-  - Usuarios por barrio/localidad
-  - Tiempo promedio verificación/moderación
-- [ ] Exportar CSV/PDF
-- [ ] Auditoría completa: logs de verificación/moderación/acciones admin
-
----
-
-### FASE 7: PWA + OPTIMIZACIONES (Semana 8)
-
-- [ ] Service Worker + offline-first
-- [ ] Push notifications
-- [ ] Add to Home Screen
-- [ ] Performance: lazy loading, code splitting, image optimization (WebP)
-- [ ] SEO: meta tags, sitemap, structured data (LocalBusiness, Product, Service)
-
----
-
-### FASE 7: TESTING Y DOCUMENTACIÓN (Semana 9-10)
-
-- [ ] E2E Playwright: registro→verificación→publicar→contactar→review
-- [ ] Unit tests coverage > 70%
-- [ ] Swagger/OpenAPI docs
-- [ ] Guías: Vendedor, Comprador, Verificador, Admin
-- [ ] Load testing básico
-
----
-
-## 📋 CHECKLIST MVP ENTREGABLE
-
-- [ ] Registro Cliente / Vendedor (NO verificador/admin)
-- [ ] Verificación perfil por Verificador (flujo completo)
-- [ ] Moderación publicaciones por Verificador (flujo completo)
-- [ ] Admin asigna Verificadores
-- [ ] Barrios Barranquilla + búsqueda por radio/barrio
-- [ ] Perfil público vendedor con contacto WhatsApp
-- [ ] Notificaciones en tiempo real
-- [ ] Build limpio + Tests pasando
-- [ ] Documentación API + Usuario
-
----
-
-## 🔒 SEGURIDAD Y CONFIANZA
-
-- [ ] Rate limiting en auth y APIs sensibles
-- [ ] Validación estricta de archivos subidos (tipo, tamaño, malware scan básico)
-- [ ] Sanitización XSS en todos los inputs
-- [ ] CORS configurado correctamente
-- [ ] Headers de seguridad (Helmet)
-- [ ] Logs de auditoría inmutables para verificación/moderación
-- [ ] 2FA opcional para vendedores/verificadores
-- [ ] Políticas de privacidad y términos de uso claros
-
----
-
-## 📊 KPIs OBJETIVO
-
-| Métrica | MVP (3 meses) | 6 Meses |
-|---------|---------------|---------|
-| Usuarios registrados | 500 | 5,000 |
-| Vendedores verificados | 100 | 1,000 |
-| Publicaciones activas | 1,000 | 10,000 |
-| Transacciones/mes | 100 | 5,000 |
-| Tiempo verificación perfil | < 24h | < 12h |
-| Tiempo moderación pub | < 6h | < 2h |
-| Retención 30 días | 20% | 35% |
-
----
-
-## 📝 NOTAS CLAVE DE IMPLEMENTACIÓN
-
-1. **Verificador NO se registra** → Solo Admin lo asigna
-2. **Cliente NO se verifica** → Acceso inmediato
-3. **Publicación SIN moderación NO sale** → Seguridad total
-4. **Verificador ve TODO** → Perfiles + Publicaciones en un panel
-5. **Admin todopoderoso** → Asigna verificadores, ve métricas, gestiona todo
-6. **Barranquilla first** → Datos reales de barrios, no genéricos
-7. **Verificador ve motivos** → Transparencia total en rechazos
-
----
-
-## 📁 ESTRUCTURA DE ARCHIVOS NUEVOS PROPUESTA
-
+### Backend - Estructura de archivos
 ```
 backend/
 ├── src/
-│   ├── services/
-│   │   ├── barrio.service.js
-│   │   ├── verification.service.js
-│   │   ├── moderation.service.js
-│   │   ├── notification.service.js
-│   │   └── chat.service.js
-│   ├── controllers/
-│   │   ├── verification.controller.js
-│   │   ├── moderation.controller.js
-│   │   ├── barrio.controller.js
-│   │   └── notification.controller.js
-│   ├── routes/
-│   │   ├── verification.routes.js
-│   │   ├── moderation.routes.js
-│   │   ├── barrio.routes.js
-│   │   └── notification.routes.js
-│   ├── middlewares/
-│   │   ├── verification.middleware.js
-│   │   └── moderation.middleware.js
-│   └── db/
-│       ├── migrations/
-│       │   ├── 006_barrios.sql
-│       │   ├── 007_users_verificacion.sql
-│       │   ├── 008_publications_moderacion.sql
-│       │   ├── 009_notificaciones.sql
-│       │   └── 010_verificaciones_auditoria.sql
-│       └── seeds/
-│           └── barrios_barranquilla.sql
+│   ├── config/               # PostgreSQL connection, logger, env vars
+│   ├── controllers/          # Business logic per module (thin, delegates to services)
+│   ├── middlewares/          # JWT auth, validation, file upload, rate-limit, error handling
+│   ├── routes/               # REST endpoint definitions
+│   ├── services/             # Service layer (business logic + DB queries)
+│   ├── utils/                # Utilities (publication formatting)
+│   ├── validators/           # Validation schemas (Zod)
+│   ├── db/
+│   │   ├── migrations/       # SQL migrations (001_users.sql ... 009_messages.sql)
+│   │   └── seeds/            # Seed data
+│   ├── app.js                # Express app setup, routes, middlewares
+│   └── server.js             # Server bootstrap, runs migrate + seed
+├── tests/                    # Unit tests (publication.utils.test.js)
+└── uploads/                  # Uploaded files
+```
 
+### Frontend - Estructura de archivos
+```
 frontend/
 ├── src/
-│   ├── pages/
-│   │   ├── admin/
-│   │   │   └── AdminVerificadoresPage.js
-│   │   ├── verificador/
-│   │   │   ├── VerificadorDashboardPage.js
-│   │   │   ├── VerificarPerfilesPage.js
-│   │   │   └── ModerarPublicacionesPage.js
-│   │   ├── VerificacionPendientePage.js
-│   │   ├── PerfilPublicoVendedorPage.js
-│   │   └── ChatPage.js
-│   ├── components/
-│   │   ├── BarrioAutocomplete.js
-│   │   ├── RadioSelector.js
-│   │   ├── VerificacionBadge.js
-│   │   ├── PublicacionEstadoBadge.js
-│   │   └── ChatWidget.js
-│   ├── services/
-│   │   ├── barrio.service.js
-│   │   ├── verification.service.js
-│   │   ├── moderation.service.js
-│   │   ├── notification.service.js
-│   │   └── chat.service.js
-│   ├── state/
-│   │   └── notification.store.js
-│   └── hooks/
-│       └── useGeolocation.js
+│   ├── components/           # common, layout, listing, ui
+│   ├── pages/                # Application views (HomePage, ExplorePage, etc.)
+│   │   └── admin/            # Admin panel
+│   │   └── dashboard/        # User dashboard
+│   ├── router/               # History pushState-based router
+│   ├── services/             # HTTP client for the backend (api.js)
+│   ├── state/                # Reactive stores (session, notifications)
+│   ├── styles/               # Global SCSS styles
+│   ├── templates/            # Reusable HTML fragments (loaded via templateLoader.js)
+│   ├── utils/                # Auth, helpers, template loader
+│   ├── hooks/                # Custom hooks (useGeolocation.js)
+│   ├── App.js                # Root component
+│   └── main.js               # Entry point
+├── public/                   # Static assets
+└── Dockerfile
+```
+
+### Patrones de código clave
+
+#### Backend
+- **Arquitectura por capas:** Controllers (HTTP) → Services (lógica de negocio + DB) → DB
+- **Manejo de errores:** Los services lanzan errores con `error.code` (ej: `NOT_FOUND`, `INVALID_PRICE`), los controllers los capturan y envían el status HTTP apropiado
+- **Validación:** Zod schemas en `validators/schemas.js`, aplicados vía middleware `validateBody`, `validateQuery`, `validateParams`
+- **Autenticación:** JWT con `verifyToken` middleware, `requireRole` para roles específicos, `requireAdmin` para admin
+- **Verificación de vendedores:** `requireVerifiedSeller` middleware verifica que el usuario sea vendedor verificado antes de crear publicaciones
+- **Convenciones:** ES modules (`import/export`), camelCase para JS, snake_case para DB columns
+
+#### Frontend
+- **SPA con routing manual:** `router.js` usa History API (`pushState`), con guards de autenticación
+- **Templates HTML:** Archivos `.html` en `templates/` cargados via `templateLoader.js`, con soporte para `{{#if}}`, `{{#repeat}}`, `{{variable}}`
+- **Componentes:** Funciones que retornan `HTMLElement`, usan `loadTemplate` para HTML y manipulan el DOM directamente
+- **Estado:** `sessionStore` (localStorage) y `notificationStore` (con subscribe pattern + toast notifications)
+- **API client:** `api.js` centraliza todas las llamadas HTTP, maneja tokens, FormData, snake_case conversion
+- **Estilos:** Tailwind CSS + SCSS, variables en `_variables.scss`, componentes en `_components/`
+
+### Base de Datos - Esquema actual
+
+#### Tabla `users` (001_users.sql)
+```sql
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL DEFAULT 'user',
+    is_banned BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+#### Tabla `publications` (003_publications.sql)
+```sql
+CREATE TABLE publications (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    price DECIMAL(10,2) NOT NULL,
+    category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
+    images TEXT[] DEFAULT ARRAY[]::TEXT[],
+    location VARCHAR(255),
+    contact_method VARCHAR(50),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    status VARCHAR(20) NOT NULL DEFAULT 'active',
+    type VARCHAR(20) NOT NULL DEFAULT 'product',
+    moderation_status VARCHAR(20) NOT NULL DEFAULT 'pending',
+    moderated_by UUID REFERENCES users(id),
+    moderated_at TIMESTAMP,
+    rejection_reason TEXT,
+    business_hours JSONB,
+    coverage_area JSONB,
+    price_type VARCHAR(20) NOT NULL DEFAULT 'fixed',
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+### API Endpoints (base: `/api`)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/status` | Backend status |
+| `GET` | `/api/health` | Health check with database |
+| `POST` | `/api/auth/register` | User registration (con `userType`: client/seller) |
+| `POST` | `/api/auth/login` | User login |
+| `GET` | `/api/auth/me` | Authenticated user profile |
+| `PUT` | `/api/auth/profile` | Update user profile |
+| `GET` | `/api/publications` | List publications |
+| `GET` | `/api/publications/:id` | Publication details |
+| `POST` | `/api/publications` | Create publication (verified seller) |
+| `PUT` | `/api/publications/:id` | Update publication |
+| `DELETE` | `/api/publications/:id` | Delete publication |
+| `GET` | `/api/categories` | List categories |
+| `GET` | `/api/favorites` | List user favorites |
+| `POST` | `/api/favorites/:pubId` | Add to favorites |
+| `DELETE` | `/api/favorites/:pubId` | Remove from favorites |
+| `GET` | `/api/verifications/my-status` | User verification status |
+| `GET` | `/api/verifications/pending` | List pending verifications |
+| `GET` | `/api/verifications/:id` | Verification details |
+| `POST` | `/api/verifications/:id/approve` | Approve verification |
+| `POST` | `/api/verifications/:id/reject` | Reject verification |
+| `GET` | `/api/notifications` | List user notifications |
+| `PATCH` | `/api/notifications/:id/read` | Mark as read |
+| `POST` | `/api/notifications/read-all` | Mark all as read |
+| `DELETE` | `/api/notifications/:id` | Delete notification |
+| `GET` | `/api/admin/users` | List users |
+| `PATCH` | `/api/admin/users/:id` | Update user |
+| `DELETE` | `/api/admin/users/:id` | Delete user |
+| `GET` | `/api/admin/verifiers` | List verifiers |
+| `POST` | `/api/admin/verifiers/:id` | Assign verifier role |
+| `DELETE` | `/api/admin/verifiers/:id` | Remove verifier role |
+| `GET` | `/api/admin/publications` | List publications |
+| `PATCH` | `/api/admin/publications/:id` | Update publication |
+| `DELETE` | `/api/admin/publications/:id` | Delete publication |
+| `PATCH` | `/api/publications/:id/moderation` | Moderate publication |
+| `GET` | `/api/barrios` | List barrios |
+| `GET` | `/api/barrios/:id` | Barrio details |
+
+### Frontend Routes
+```
+/                          → Home / Landing
+/explore                   → Browse publications
+/login                     → Login
+/register                  → User registration
+/verification-pending      → Verification pending screen (sellers)
+/dashboard                 → User dashboard
+/dashboard/favorites       → User favorites
+/admin                     → Admin panel
+/create                    → Create new publication
+/edit/:id                  → Edit existing publication
+/listing/:id               → Publication details
+/profile                   → User profile
+/chat                      → Chat page
+/chat/:id                  → Chat conversation
+/perfil-publico            → Public seller profile
+/perfil-publico/:id        → Public seller profile by ID
+/verificador-dashboard     → Verifier dashboard
+*                          → Not found page
 ```
 
 ---
 
-## ✅ CHECKLIST DE ENTREGA MVP
+## 🛠️ INSTRUCCIONES DE DESARROLLO
 
-- [x] Migración BD: roles, verificación, notificaciones
-- [x] Auth Service: registro cliente/vendedor con tipo_usuario
-- [x] Verification Service: CRUD + notificaciones
-- [x] Notification Service: CRUD
-- [x] Admin: asignar/quitar verificadores
-- [ ] Registro Cliente / Vendedor (NO verificador/admin) - Frontend
-- [ ] Verificación perfil por Verificador (flujo completo) - Frontend
-- [ ] Moderación publicaciones por Verificador (flujo completo)
-- [ ] Admin asigna Verificadores - Frontend
-- [ ] Barrios Barranquilla + búsqueda por radio/barrio
+### Cómo correr el proyecto
+
+#### Con Docker (recomendado)
+```bash
+docker compose up -d
+```
+- **Frontend:** http://localhost:8080
+- **Backend API:** http://localhost:3001/api/status
+- **Swagger docs:** http://localhost:3001/api/docs
+- **PostgreSQL:** puerto 5433
+
+#### Sin Docker (desarrollo manual)
+
+##### Backend
+```bash
+cd backend
+npm install
+cp .env.example .env
+npm run dev
+```
+
+##### Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
+- Frontend en dev mode: http://localhost:5173
+
+### Cómo correr tests
+```bash
+cd backend
+npm test
+```
+El backend usa Node.js native test runner (`node --test`).
+
+### Credenciales de prueba
+| Role    | Email              | Password    |
+| ------- | ------------------ | ----------- |
+| Admin   | admin@admin.com    | Admin123!   |
+| User    | user@user.com      | User123!    |
+
+---
+
+## 📋 ESTADO ACTUAL DEL PROYECTO
+
+### Backend ✅ (Completado)
+- [x] Migración BD: nuevos campos users, tabla verificaciones, notificaciones
+- [x] Auth Service: registro con `userType` (client/seller)
+- [x] Verification Service: CRUD verificaciones, notificaciones
+- [x] Notification Service: CRUD notificaciones
+- [x] Middleware: `requireVerifiedSeller` para crear publicaciones
+- [x] Admin Controller: asignar/quitar verificadores
+- [x] Rutas: `/api/verifications`, `/api/notifications`, `/api/admin/verifiers`
+- [x] Controllers: `verification.controller.js`, `notification.controller.js`
+
+### Frontend ✅ (Completado)
+- [x] RegisterPage: selector "Cliente" / "Vendedor/Emprendedor"
+- [x] VerificacionPendientePage: pantalla loading "Tu perfil en verificación..."
+- [x] NotificationStore + toast notifications + badge en header
+- [x] Auth guard: redirigir vendedor no verificado a /verification-pending
+- [x] Header: badge notificaciones + dropdown
+- [x] VerificadorDashboardPage: panel con tabs para verificaciones y moderación
+
+### Pendiente (Faltante)
+- [ ] Tabla `barrios` + seed 70+ barrios oficiales con lat/lng/localidad
+- [ ] Migración users: `barrio_id`, `lat`, `lng`, `phone`, `whatsapp`, `bio`, `profile_image_url`, `avg_rating`, `total_reviews`
+- [ ] API barrios: `GET /api/barrios?q=`, `GET /api/barrios/:id`
+- [ ] API publicaciones: `GET /api/publications?lat=x&lng=y&radius_km=3`
+- [ ] Índices geoespaciales
+- [ ] BarrioAutocomplete component
+- [ ] RadioSelector: 1km, 3km, 5km, 10km + "Usar mi ubicación"
+- [ ] ExplorarPage: filtros barrio + radio km + mapa resultados
 - [ ] Perfil público vendedor con contacto WhatsApp
-- [ ] Notificaciones en tiempo real
-- [ ] Build limpio + Tests pasando
-- [ ] Documentación API + Usuario
+- [ ] Chat in-app entre comprador-vendedor
+- [ ] Notificaciones push (Service Worker + Web Push API)
+- [ ] Admin Dashboard con Chart.js
+- [ ] PWA (Service Worker, offline-first, push notifications)
+- [ ] Tests E2E (Playwright)
+- [ ] Documentación API (Swagger/OpenAPI)
+
+---
+
+## ⚠️ NOTAS CLAVE PARA TRABAJAR EN EL PROYECTO
+
+1. **Verificador NO se registra** → Solo Admin lo asigna vía `/api/admin/verifiers/:id`
+2. **Cliente NO se verifica** → Acceso inmediato, `verification_status = 'approved'` al registrarse como cliente
+3. **Publicación SIN moderación NO sale** → `moderation_status = 'pending'` por defecto, requiere aprobación de verificador
+4. **Verificador ve TODO** → Perfiles + Publicaciones en un panel (`/verificador-dashboard`)
+5. **Admin todopoderoso** → Asigna verificadores, ve métricas, gestiona todo
+6. **Barranquilla first** → Datos reales de barrios, no genéricos
+7. **Verificador ve motivos** → Transparencia total en rechazos (campo `reason` obligatorio al rechazar)
+8. **Frontend es SPA con routing manual** → No usa React/Vue, usa History API + templates HTML
+9. **API client convierte camelCase a snake_case** → El frontend envía `businessHours` y el backend recibe `business_hours`
+10. **Error handling con códigos** → Los services lanzan errores con `error.code`, los controllers los mapean a HTTP status
+11. **Migraciones corren automáticamente** → `server.js` ejecuta `migrate()` y `seed()` al iniciar
+12. **Rate limiting activo** → `apiLimiter` en todas las rutas, `registerLimiter` y `authLimiter` en auth
 
 ---
 
@@ -507,4 +438,4 @@ frontend/
 ---
 
 *Documento vivo - Actualizar conforme avanza el desarrollo*
-*Última actualización: 2026-07-18*
+*Última actualización: 2026-07-21*

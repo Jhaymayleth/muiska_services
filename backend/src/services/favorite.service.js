@@ -10,7 +10,7 @@ export const favoriteService = {
       [publicationId]
     );
     if (pubCheck.rows.length === 0) {
-      const error = new Error("Publicación no encontrada");
+      const error = new Error("Publication not found");
       error.code = "NOT_FOUND";
       throw error;
     }

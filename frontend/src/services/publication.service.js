@@ -20,23 +20,12 @@ export async function getMyPublications() {
 
 // Create new publication
 export async function createPublication(data, images = []) {
-  // Convert camelCase to snake_case for backend
-  const snakeData = {};
-  Object.entries(data).forEach(([key, value]) => {
-    const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
-    snakeData[snakeKey] = value;
-  });
-  return api.createPublication(snakeData, images);
+  return api.createPublication(data, images);
 }
 
 // Update publication
 export async function updatePublication(id, data, images = []) {
-  const snakeData = {};
-  Object.entries(data).forEach(([key, value]) => {
-    const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
-    snakeData[snakeKey] = value;
-  });
-  return api.updatePublication(id, snakeData, images);
+  return api.updatePublication(id, data, images);
 }
 
 // Delete publication

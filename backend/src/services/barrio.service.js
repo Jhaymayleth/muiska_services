@@ -44,22 +44,14 @@ export const barrioService = {
   },
 
   async getNearby(lat, lng, radiusKm = 5) {
-    const latDelta = radiusKm / 111.0;
-    const lngDelta = radiusKm / (111.0 * Math.cos((lat * Math.PI) / 180));
-
     const result = await pool.query(
       `SELECT id, name, locality, lat, lng,
-              ROUND(
-                SQRT(POW(6371 * (lat - $1) * PI() / 180, 2) +
-                     POW(6371 * ($2 - lng) * PI() / 180 * COS($1 * PI() / 180), 2)
-                ) * 1000
-              ) AS distance_meters
+              ROUND(ST_DistanceSphere(location, ST_MakePoint($2, $1))) AS distance_meters
        FROM neighborhoods
-       WHERE lat BETWEEN ($1 - $3) AND ($1 + $3)
-         AND lng BETWEEN ($2 - $4) AND ($2 + $4)
+       WHERE ST_DWithin(location, ST_MakePoint($2, $1)::geography, $3 * 1000)
        ORDER BY distance_meters ASC
        LIMIT 50`,
-      [lat, lng, latDelta, lngDelta]
+      [lat, lng, radiusKm]
     );
     return result.rows;
   },

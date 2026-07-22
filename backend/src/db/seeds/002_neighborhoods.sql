@@ -164,4 +164,9 @@ INSERT INTO neighborhoods (name, locality, lat, lng) VALUES
 ('Villa Blanca', 'Sur', 10.850, -74.830),
 ('Villa del Carmén', 'Sur', 10.848, -74.832);
 
+-- Populate geography column from lat/lng for any rows missing it
+UPDATE neighborhoods
+SET location = ST_SetSRID(ST_MakePoint(lng, lat), 4326)::geography
+WHERE location IS NULL AND lat IS NOT NULL AND lng IS NOT NULL;
+
 -- Total: 100+ barrios de Barranquilla

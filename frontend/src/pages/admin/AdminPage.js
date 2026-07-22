@@ -75,10 +75,11 @@ export default function AdminPage() {
       else panel.classList.remove("admin-panel--active");
     });
 
-    // Inicializar módulo del tab si es primera vez
     if (!initializedTabs[tabName]) {
       initializeTab(tabName);
       initializedTabs[tabName] = true;
+    } else if (tabName === "publications") {
+      AdminPublications.loadPublications(1);
     }
 
     currentTab = tabName;
@@ -93,7 +94,7 @@ export default function AdminPage() {
 
     switch (tabName) {
       case "dashboard":
-        AdminDashboard.init(panel);
+        AdminDashboard.init(panel, switchTab);
         break;
       case "publications":
         AdminPublications.init(panel);

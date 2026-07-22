@@ -1,4 +1,5 @@
 import { pool } from "../config/database.js";
+import { pushService } from "./push.service.js";
 
 export const notificationService = {
   async createNotification({ userId, type, title, message, data = {} }) {
@@ -8,6 +9,9 @@ export const notificationService = {
        RETURNING *`,
       [userId, type, title, message, JSON.stringify(data)]
     );
+
+    pushService.sendToUser(userId, { title, message, url: data?.url || "/" }).catch(() => {});
+
     return result.rows[0];
   },
 

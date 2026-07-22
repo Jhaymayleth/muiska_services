@@ -20,14 +20,14 @@ export const getIcon = (name) => icons[name] || "";
 
 export const getCategoryIcon = (name) => {
   const lower = name.toLowerCase();
-  if (lower.includes("ropa") || lower.includes("moda")) return icons.dress;
-  if (lower.includes("comida") || lower.includes("alimentos")) return icons.food;
-  if (lower.includes("tecnología") || lower.includes("tecnologia")) return icons.tech;
-  if (lower.includes("hogar") || lower.includes("casa")) return icons.home;
-  if (lower.includes("arte") || lower.includes("artesanía")) return icons.art;
-  if (lower.includes("salud") || lower.includes("bienestar")) return icons.health;
-  if (lower.includes("educación") || lower.includes("educacion")) return icons.education;
-  if (lower.includes("servicios") || lower.includes("servicio")) return icons.services;
+  if (lower.includes("clothing") || lower.includes("fashion")) return icons.dress;
+  if (lower.includes("food") || lower.includes("beverage")) return icons.food;
+  if (lower.includes("electronics") || lower.includes("tech")) return icons.tech;
+  if (lower.includes("home") || lower.includes("garden") || lower.includes("real estate")) return icons.home;
+  if (lower.includes("art") || lower.includes("craft")) return icons.art;
+  if (lower.includes("health") || lower.includes("beauty")) return icons.health;
+  if (lower.includes("education")) return icons.education;
+  if (lower.includes("service")) return icons.services;
   return icons.package;
 };
 

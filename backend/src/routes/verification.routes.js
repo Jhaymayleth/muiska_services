@@ -29,6 +29,12 @@ router.get(
 );
 
 router.get(
+  "/my-history",
+  requireRole("verifier", "admin"),
+  verificationController.getMyVerifications
+);
+
+router.get(
   "/:id",
   requireRole("verifier", "admin"),
   validateParams(idParamSchema),
@@ -49,12 +55,6 @@ router.post(
   validateParams(idParamSchema),
   validateBody(rejectVerificationSchema),
   verificationController.rejectVerification
-);
-
-router.get(
-  "/my-history",
-  requireRole("verifier", "admin"),
-  verificationController.getMyVerifications
 );
 
 export default router;

@@ -1,33 +1,22 @@
-/**
- * Módulo: AdminDashboard
- * Panel de resumen - stats, publicaciones recientes, acciones rápidas, categorías
- */
-
 import { api } from "../../services/api.js";
 import { navigateTo } from "../../router/router.js";
 import { loadTemplate } from "../../utils/templateLoader.js";
 import { formatDate, escapeHtml, formatNumber } from "../../utils/helpers.js";
+import { AdminPublications } from "./AdminPublications.js";
 
 export const AdminDashboard = {
-  // Elementos del DOM
   elements: {},
+  switchTab: null,
 
-  /**
-   * Inicializa el dashboard y carga datos
-   * @param {HTMLElement} panel - Elemento contenedor del panel
-   */
-  init(panel) {
+  init(panel, switchTabCb) {
+    this.switchTab = switchTabCb;
     panel.innerHTML = loadTemplate("AdminDashboard");
     this.cacheElements(panel);
-    // El botón "Actualizar" está en el header (fuera del AdminPage.html), lo buscamos globalmente
     this.elements.refreshBtn = document.querySelector("#refresh-dashboard");
     this.attachListeners();
     this.loadDashboard();
   },
 
-  /**
-   * Guarda referencias a elementos del DOM
-   */
   cacheElements(panel) {
     this.elements = {
       activeCount: panel.querySelector("#active-count"),
@@ -44,16 +33,26 @@ export const AdminDashboard = {
     };
   },
 
-  /**
-   * Adjunta event listeners
-   */
   attachListeners() {
-    const { refreshBtn, viewListingsBtn, createListingBtn, browseListingsBtn } = this.elements;
+    const { refreshBtn, viewListingsBtn, createListingBtn, browseListingsBtn, activeCount, categoryCount, totalCount } = this.elements;
 
     refreshBtn?.addEventListener("click", () => this.loadDashboard());
-    viewListingsBtn?.addEventListener("click", () => navigateTo("/explorar"));
-    createListingBtn?.addEventListener("click", () => navigateTo("/crear-publicacion"));
-    browseListingsBtn?.addEventListener("click", () => navigateTo("/explorar"));
+    viewListingsBtn?.addEventListener("click", () => this.goToPublications());
+    createListingBtn?.addEventListener("click", () => navigateTo("/create"));
+    browseListingsBtn?.addEventListener("click", () => this.goToCategories());
+
+    activeCount?.closest(".admin-stat-card")?.addEventListener("click", () => this.goToPublications());
+    categoryCount?.closest(".admin-stat-card")?.addEventListener("click", () => this.goToCategories());
+    totalCount?.closest(".admin-stat-card")?.addEventListener("click", () => this.goToPublications());
+  },
+
+  goToPublications() {
+    AdminPublications.currentCategory = "";
+    this.switchTab("publications");
+  },
+
+  goToCategories() {
+    this.switchTab("categories");
   },
 
   /**
@@ -70,19 +69,19 @@ export const AdminDashboard = {
     }
 
     try {
-      // Paralelizar llamadas
-      const [pubResponse, categories] = await Promise.all([
+      const [stats, pubResponse, categories] = await Promise.all([
+        api.request("/admin/dashboard"),
         api.getPublications({ status: "active", page: 1, limit: 5 }),
         api.getCategories(),
       ]);
 
-      const publications = pubResponse.data || [];
-      const total = pubResponse.pagination?.total || publications.length;
+      if (stats?.totals) {
+        this.updateCounter("activeCount", stats.totals.activePublications);
+        this.updateCounter("categoryCount", stats.totals.categories);
+        this.updateCounter("totalCount", stats.totals.publications);
+      }
 
-      // Actualizar contadores
-      this.updateCounter("activeCount", total);
-      this.updateCounter("categoryCount", categories.length);
-      this.updateCounter("totalCount", total);
+      const publications = pubResponse.data || [];
       if (this.elements.categoryBadge) this.elements.categoryBadge.textContent = categories.length;
 
       // Estado servicio
@@ -105,7 +104,7 @@ export const AdminDashboard = {
 
   updateCounter(elementId, value) {
     const el = this.elements[elementId];
-    if (el) el.textContent = Number(value).toLocaleString("es-CO");
+    if (el) el.textContent = Number(value).toLocaleString("en-US");
   },
 
   setServiceStatus(ok) {
@@ -133,9 +132,18 @@ export const AdminDashboard = {
     categoryList.innerHTML = categories
       .map(
         (c) =>
-          `<span class="admin-chip">${escapeHtml(c.name)}</span>`
+          `<span class="admin-chip admin-chip--clickable" data-category="${escapeHtml(c.slug || c.name)}">${escapeHtml(c.name)}</span>`
       )
       .join("");
+
+    categoryList.querySelectorAll(".admin-chip--clickable").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        AdminPublications.currentCategory = chip.dataset.category;
+        AdminPublications.currentStatus = "";
+        AdminPublications.currentSearch = "";
+        this.switchTab("publications");
+      });
+    });
   },
 
   renderRecentPublications(publications) {
@@ -164,7 +172,7 @@ export const AdminDashboard = {
             ${publications
               .map(
                 (p) => `
-              <tr>
+              <tr class="admin-table__row--clickable" data-id="${escapeHtml(p.id)}" data-title="${escapeHtml(p.title || "")}">
                 <td class="font-semibold">${escapeHtml(p.title || "No title")}</td>
                 <td><span class="admin-chip">${escapeHtml(p.category || "No category")}</span></td>
                 <td class="font-medium text-primary">$${formatNumber(p.price)}</td>
@@ -177,5 +185,14 @@ export const AdminDashboard = {
         </table>
       </div>
     `;
+
+    recentPublications.querySelectorAll(".admin-table__row--clickable").forEach((row) => {
+      row.addEventListener("click", () => {
+        const title = row.dataset.title;
+        AdminPublications.currentCategory = "";
+        AdminPublications.currentSearch = title;
+        this.switchTab("publications");
+      });
+    });
   },
 };

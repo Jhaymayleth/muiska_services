@@ -113,16 +113,32 @@ export const AdminUsers = {
 
   async loadUsers() {
     const { container, searchInput } = this.elements;
-    if (!container) return;
+    if (!container) {
+      console.error("AdminUsers: container not found");
+      return;
+    }
 
-    container.innerHTML = '<p class="admin-loading">Loading users…</p>';
+    let tbody = container.querySelector("#admin-users-tbody");
+    if (!tbody) {
+      this.loadTableTemplate();
+      tbody = container.querySelector("#admin-users-tbody");
+    }
+    if (!tbody) {
+      container.innerHTML = '<p class="admin-error">Failed to load table template</p>';
+      return;
+    }
+
+    tbody.innerHTML = '<tr><td colspan="6" class="admin-loading">Loading users…</td></tr>';
 
     try {
       const search = searchInput?.value.trim() || "";
       const users = await api.getAdminUsers(search);
       this.renderTable(users);
     } catch (err) {
-      container.innerHTML = '<p class="admin-error">Could not load users.</p>';
+      const tbody2 = container.querySelector("#admin-users-tbody");
+      if (tbody2) {
+        tbody2.innerHTML = `<tr><td colspan="6" class="admin-error">${escapeHtml(err.message)}</td></tr>`;
+      }
       this.showMessage(err.message || "Could not load users.", "error");
     }
   },

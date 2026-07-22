@@ -91,7 +91,7 @@ const ListingCard = (pub = {}) => {
   // Navegar al hacer click en la tarjeta (excepto botón favorito)
   card.addEventListener("click", (e) => {
     if (e.target.closest(".favorite-btn")) return;
-    navigateTo(`/publicacion/${pub.id}`);
+    navigateTo(`/listing/${pub.id}`);
   });
 
   // Verificar estado inicial

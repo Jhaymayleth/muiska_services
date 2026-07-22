@@ -10,11 +10,23 @@ const DashboardPage = async () => {
   const section = document.createElement("section");
   section.className = "space-y-6";
 
-  const user = getUser() || {};
+  let user = getUser() || {};
+
+  if (!user.created_at) {
+    try {
+      const fresh = await api.getMe();
+      if (fresh) {
+        sessionStore.setUser(fresh);
+        user = fresh;
+      }
+    } catch {
+      // Use cached user data
+    }
+  }
 
   // Read URL to determine which tab to show
   const path = window.location.pathname;
-  let activeTab = path === "/dashboard/favoritos" ? "favorites" : "publications";
+  let activeTab = path === "/dashboard/favorites" ? "favorites" : "publications";
 
   const userInitials = user.name
     ? user.name.trim().split(/\s+/).map(n => n[0]).slice(0,2).join("").toUpperCase()
@@ -94,7 +106,7 @@ const DashboardPage = async () => {
 
       // Add event listeners
       list.querySelectorAll(".edit-btn").forEach(btn => {
-        btn.addEventListener("click", () => navigateTo(`/editar-publicacion/${btn.dataset.id}`));
+        btn.addEventListener("click", () => navigateTo(`/edit/${btn.dataset.id}`));
       });
       list.querySelectorAll(".delete-btn").forEach(btn => {
         btn.addEventListener("click", async () => {

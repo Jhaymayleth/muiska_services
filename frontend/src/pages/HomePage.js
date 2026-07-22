@@ -113,20 +113,20 @@ const HomePage = async () => {
     const image = pub.images?.[0] || vestidorImg;
 
     return publicationCardTemplate
-      .replace("{{id}}", pub.id)
-      .replace("{{image}}", image)
-      .replace("{{title}}", pub.title)
-      .replace("{{description}}", pub.description?.slice(0, 100) || "")
-      .replace("{{descriptionMore}}", pub.description?.length > 100 ? "..." : "")
-      .replace("{{location}}", pub.location || "No location")
-      .replace("{{date}}", formatDate(pub.created_at))
-      .replace("{{initials}}", initials)
-      .replace("{{userBg}}", userBg)
-      .replace("{{author}}", authorName)
-      .replace("{{userId}}", pub.user_id || "")
-      .replace("{{price}}", Number(pub.price || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
-      .replace("{{statusLabel}}", typeLabel)
-      .replace("{{statusClass}}", typeClass);
+      .replaceAll("{{id}}", pub.id)
+      .replaceAll("{{image}}", image)
+      .replaceAll("{{title}}", pub.title)
+      .replaceAll("{{description}}", pub.description?.slice(0, 100) || "")
+      .replaceAll("{{descriptionMore}}", pub.description?.length > 100 ? "..." : "")
+      .replaceAll("{{location}}", pub.location || "No location")
+      .replaceAll("{{date}}", formatDate(pub.created_at))
+      .replaceAll("{{initials}}", initials)
+      .replaceAll("{{userBg}}", userBg)
+      .replaceAll("{{author}}", authorName)
+      .replaceAll("{{userId}}", pub.user_id || "")
+      .replaceAll("{{price}}", Number(pub.price || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
+      .replaceAll("{{statusLabel}}", typeLabel)
+      .replaceAll("{{statusClass}}", typeClass);
   };
 
   const loadFeatured = async () => {

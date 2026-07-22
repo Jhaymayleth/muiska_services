@@ -89,7 +89,7 @@ const PerfilPublicoVendedorPage = async () => {
       const pos = await geo.getCurrentPosition();
       if (profile.lat && profile.lng) {
         const dist = calculateDistance(pos.lat, pos.lng, parseFloat(profile.lat), parseFloat(profile.lng));
-        distanceEl.textContent = `A ${dist.toFixed(1)} km de ti`;
+        distanceEl.textContent = `${dist.toFixed(1)} km away`;
       }
     } catch {
       // User didn't share location - skip distance

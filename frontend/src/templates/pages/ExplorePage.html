@@ -49,14 +49,9 @@
       />
     </div>
     <div class="sm:col-span-2 lg:col-span-1">
-      <label for="location" class="block text-sm font-medium text-text mb-1">Location</label>
-      <input
-        type="text"
-        id="location"
-        name="location"
-        placeholder="City, neighborhood..."
-        class="w-full rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-primary"
-      />
+      <label class="block text-sm font-medium text-text mb-1">Neighborhood</label>
+      <div id="neighborhood-autocomplete"></div>
+      <input type="hidden" id="location" name="location" />
     </div>
     <div class="sm:col-span-2 lg:col-span-1 flex items-end">
       <button

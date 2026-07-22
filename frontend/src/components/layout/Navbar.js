@@ -1,4 +1,4 @@
-import { isAdmin, isAuthenticated, getUser, logout } from "../../utils/auth.js";
+import { isAdmin, isVerifier, isAuthenticated, getUser, logout } from "../../utils/auth.js";
 import { notificationStore } from "../../state/notification.store.js";
 import { api } from "../../services/api.js";
 
@@ -47,6 +47,7 @@ const Navbar = () => {
           <a href="/dashboard" class="rounded px-3 py-2 hover:bg-muted">Dashboard</a>
           <a href="/chat" class="rounded px-3 py-2 hover:bg-muted">Messages</a>
           ${isAdmin() ? '<a href="/admin" class="rounded px-3 py-2 hover:bg-muted">Admin</a>' : ""}
+          ${isVerifier() ? '<a href="/verifier-dashboard" class="rounded px-3 py-2 hover:bg-muted">Verifier</a>' : ""}
           
           <!-- Notifications -->
           <div class="relative" id="notif-container">

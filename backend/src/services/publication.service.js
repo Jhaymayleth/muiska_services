@@ -47,7 +47,7 @@ export const publicationService = {
     }
 
     if (category) {
-      whereClause += ` AND c.name = $${paramIndex}`;
+      whereClause += ` AND c.slug = $${paramIndex}`;
       params.push(category);
       paramIndex++;
     }
@@ -65,7 +65,7 @@ export const publicationService = {
     }
 
     if (location) {
-      whereClause += ` AND p.location ILIKE $${paramIndex}`;
+      whereClause += ` AND unaccent(p.location) ILIKE unaccent($${paramIndex})`;
       params.push(`%${location}%`);
       paramIndex++;
     }
@@ -145,6 +145,7 @@ export const publicationService = {
       `SELECT ${publicationSelectFields}
        FROM publications p
        LEFT JOIN categories c ON p.category_id = c.id
+       LEFT JOIN users u ON p.user_id = u.id
        WHERE p.user_id = $1
        ORDER BY p.created_at DESC`,
       [userId],

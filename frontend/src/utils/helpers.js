@@ -2,19 +2,19 @@
  * Utilidades compartidas - Helpers para formateo, sanitización, etc.
  */
 
-// Formatear número con separadores de miles y decimales (COP)
+// Formatear número con separadores de miles y decimales
 export function formatNumber(value, decimals = 2) {
   const num = Number(value) || 0;
-  return num.toLocaleString("es-CO", {
+  return num.toLocaleString("en-US", {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   });
 }
 
-// Formatear fecha para locale es-CO
+// Formatear fecha
 export function formatDate(value) {
   if (!value) return "No date";
-  return new Intl.DateTimeFormat("es-CO", {
+  return new Intl.DateTimeFormat("en-US", {
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -24,9 +24,9 @@ export function formatDate(value) {
 // Escapar HTML para prevenir XSS
 export function escapeHtml(value = "") {
   return String(value)
-    .replaceAll("&", "&")
-    .replaceAll("<", "<")
-    .replaceAll(">", ">")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
     .replaceAll('"', "&#34;")
     .replaceAll("'", "&#039;");
 }

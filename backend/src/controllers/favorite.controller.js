@@ -10,8 +10,8 @@ export const toggleFavorite = async (req, res, next) => {
     const result = await favoriteService.toggleFavorite(userId, publicationId);
     res.json({
       message: result.favorited
-        ? "Agregado a favoritos"
-        : "Eliminado de favoritos",
+        ? "Added to favorites"
+        : "Removed from favorites",
       favorited: result.favorited,
     });
   } catch (error) {

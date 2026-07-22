@@ -77,7 +77,7 @@ export const adminService = {
     }
 
     if (category) {
-      whereClause += ` AND c.name = $${paramIndex}`;
+      whereClause += ` AND c.slug = $${paramIndex}`;
       params.push(category);
       paramIndex++;
     }

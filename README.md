@@ -2,9 +2,9 @@
 
 # 🏺 MUISKA
 
-### Plataforma de comercio comunitario
+### Community Commerce Platform
 
-![Status](https://img.shields.io/badge/status-en%20desarrollo-yellow?style=for-the-badge)
+![Status](https://img.shields.io/badge/status-completed-success?style=for-the-badge)
 ![Node](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
 ![Express](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
@@ -16,173 +16,220 @@
 
 ---
 
-## 📖 Descripción
+## 📖 Description
 
-**MUISKA** es una plataforma de comercio comunitario que conecta personas para publicar, explorar y gestionar artículos en venta dentro de un entorno colaborativo. El proyecto está estructurado como un monorepo con un **frontend SPA** en JavaScript vanilla, un **backend REST** en Express y una **base de datos** PostgreSQL, todo orquestable localmente con Docker.
+**MUISKA** is a community commerce platform that connects people to publish, explore, and manage items for sale within a collaborative environment. The project is structured as a monorepo with a **vanilla JavaScript SPA frontend** built with Vite, a **REST backend** in Express, and a **PostgreSQL** database — all fully orchestrated with Docker.
 
 ---
 
-## 🗂️ Estructura del proyecto
+## 🗂️ Project Structure
 
 ```
 muiska/
-├── backend/                   # API REST con Express
-│   ├── Dockerfile
-│   ├── package.json
-│   └── src/
-│       ├── config/            # conexión a PostgreSQL (pg Pool)
-│       ├── controllers/       # lógica de negocio
-│       ├── middlewares/       # auth, upload, error handling
-│       ├── routes/            # definición de endpoints
-│       ├── db/                # SQL de inicialización
-│       ├── app.js
-│       └── server.js
-│
-├── frontend/                  # SPA con Vite + Tailwind + JS vanilla
+├── backend/                      # Express REST API
 │   ├── Dockerfile
 │   ├── package.json
 │   ├── src/
-│   │   ├── components/        # common, layout, listing, ui
-│   │   ├── pages/             # vistas de la aplicación
-│   │   ├── router/            # enrutador basado en history.pushState
-│   │   ├── services/          # cliente HTTP hacia el backend
-│   │   ├── styles/            # estilos globales
-│   │   └── utils/             # auth, helpers
+│   │   ├── config/               # PostgreSQL connection, logger, env vars
+│   │   ├── controllers/          # Business logic per module
+│   │   ├── middlewares/          # JWT auth, validation, file upload, rate-limit, error handling
+│   │   ├── routes/               # REST endpoint definitions
+│   │   ├── services/             # Service layer (business logic)
+│   │   ├── utils/                # Utilities (publication formatting)
+│   │   ├── validators/           # Validation schemas (Zod)
+│   │   ├── db/                   # Migrations & seeds
+│   │   ├── app.js
+│   │   └── server.js
+│   ├── tests/                    # Unit tests
+│   └── uploads/                  # Uploaded files
+│
+├── frontend/                     # SPA with Vite + Tailwind + vanilla JS
+│   ├── Dockerfile
+│   ├── package.json
+│   ├── src/
+│   │   ├── components/           # common, layout, listing, ui
+│   │   ├── pages/                # Application views
+│   │   │   └── admin/            # Admin panel
+│   │   │   └── dashboard/        # User dashboard
+│   │   ├── router/               # History pushState-based router
+│   │   ├── services/             # HTTP client for the backend
+│   │   ├── state/                # Reactive stores (session, notifications)
+│   │   ├── styles/               # Global SCSS styles
+│   │   ├── templates/            # Reusable HTML fragments
+│   │   ├── utils/                # Auth, helpers, template loader
+│   │   ├── App.js
+│   │   └── main.js
 │   └── public/
 │
-├── docker-compose.yml         # orquesta backend, frontend y PostgreSQL
-├── ruta-desarrollo.txt        # backlog y tareas identificadas
+├── docker-compose.yml            # Orchestrates backend, frontend & PostgreSQL
 └── README.md
 ```
 
 ---
 
-## ⚙️ Tecnologías
+## ⚙️ Technologies
 
-| Capa                | Tecnologías                                       |
-| ------------------- | ------------------------------------------------- |
-| **Frontend**        | HTML5, JavaScript ES6 Modules, Tailwind CSS, Vite |
-| **Backend**         | Node.js, Express.js, `pg` (driver de PostgreSQL)  |
-| **Base de datos**   | PostgreSQL 16, extensión `pgcrypto` (UUID)        |
-| **Infraestructura** | Docker / Docker Compose                           |
-
----
-
-## 🧩 Modelo de datos
-
-La tabla principal `publications` representa los artículos publicados en la plataforma:
-
-| Campo                       | Tipo          | Detalle                                        |
-| --------------------------- | ------------- | ---------------------------------------------- |
-| `id`                        | UUID          | Generado automáticamente (`gen_random_uuid()`) |
-| `title`                     | VARCHAR(255)  | Obligatorio                                    |
-| `description`               | TEXT          | Opcional                                       |
-| `price`                     | DECIMAL(10,2) | Por defecto `0`                                |
-| `category`                  | VARCHAR(100)  | Opcional                                       |
-| `images`                    | TEXT[]        | Arreglo de URLs, por defecto vacío             |
-| `status`                    | VARCHAR(20)   | `active` \| `sold` \| `inactive`               |
-| `created_at` / `updated_at` | TIMESTAMP     | Auto-gestionados                               |
-
-Incluye índices sobre `status` y `created_at` para optimizar listados y filtros.
+| Layer             | Technologies                                                    |
+| ----------------- | --------------------------------------------------------------- |
+| **Frontend**      | HTML5, JavaScript ES6 Modules, Tailwind CSS, Vite, SCSS         |
+| **Backend**       | Node.js, Express.js, JWT, Zod, Multer, Pino, Swagger            |
+| **Database**      | PostgreSQL 16, `pgcrypto` extension (UUID)                      |
+| **Infrastructure**| Docker / Docker Compose                                         |
+| **Testing**       | Node.js Test Runner                                             |
 
 ---
 
-## 🔌 API REST
+## 🧩 Data Model
 
-Prefijo base: `/api`
+The system includes the following main tables:
 
-| Método   | Endpoint                      | Descripción                                         |
-| -------- | ----------------------------- | --------------------------------------------------- |
-| `GET`    | `/status`                     | Verifica que el backend esté activo                 |
-| `GET`    | `/publications`               | Lista todas las publicaciones (ordenadas por fecha) |
-| `GET`    | `/publications/:id`           | Obtiene una publicación por ID                      |
-| `POST`   | `/publications`               | Crea una nueva publicación (requiere vendedor verificado) |
-| `PUT`    | `/publications/:id`           | Actualiza una publicación existente                 |
-| `DELETE` | `/publications/:id`           | Elimina una publicación                             |
-
-### Nuevos endpoints FASE 1
-
-| Método   | Endpoint                              | Descripción                                         |
-| -------- | ------------------------------------- | --------------------------------------------------- |
-| `GET`    | `/verificaciones/mi-estado`           | Usuario: su estado de verificación                  |
-| `GET`    | `/verificaciones/pendientes`          | Verificador: lista perfiles pendientes              |
-| `GET`    | `/verificaciones/:id`                 | Verificador: detalle de verificación                |
-| `POST`   | `/verificaciones/:id/aprobar`         | Verificador: aprobar perfil                         |
-| `POST`   | `/verificaciones/:id/rechazar`        | Verificador: rechazar perfil (requiere motivo)      |
-| `GET`    | `/verificaciones/historial/mio`       | Verificador: su historial                           |
-| `GET`    | `/notificaciones`                     | Usuario: listar sus notificaciones                  |
-| `PATCH`  | `/notificaciones/:id/leer`            | Marcar notificación como leída                      |
-| `POST`   | `/notificaciones/leer-todas`          | Marcar todas como leídas                            |
-| `DELETE` | `/notificaciones/:id`                 | Eliminar notificación                               |
-| `GET`    | `/admin/verificadores`                | Admin: listar verificadores                         |
-| `POST`   | `/admin/verificadores/:id`            | Admin: asignar rol verificador                      |
-| `DELETE` | `/admin/verificadores/:id`            | Admin: quitar rol verificador                       |
-
-Todas las rutas cuentan con middleware de manejo de errores (`error.middleware.js`) y de rutas no encontradas (`notFound.middleware.js`).
+- **users** — User registry with roles (admin, verifier, customer, seller), verification status, badge, location, rating
+- **publications** — Listed items with title, description, price, category, images, and status (active/sold/inactive)
+- **categories** — Hierarchical categories for classifying publications
+- **favorites** — User favorites
+- **verifications** — Seller verification process
+- **notifications** — System auto-notifications
+- **neighborhoods** — Neighborhoods for geolocation
 
 ---
 
-## 🧭 Rutas del frontend
+## 🔌 REST API
 
-El enrutador (`router/router.js`) resuelve las siguientes vistas mediante `history.pushState`:
+Base prefix: `/api`
+
+### Status & Health
+
+| Method | Endpoint        | Description                   |
+| ------ | --------------- | ----------------------------- |
+| `GET`  | `/api/status`   | Backend status                |
+| `GET`  | `/api/health`   | Health check with database    |
+
+### Authentication
+
+| Method | Endpoint                   | Description                        |
+| ------ | -------------------------- | ---------------------------------- |
+| `POST` | `/api/auth/register`       | User registration                  |
+| `POST` | `/api/auth/login`          | User login                         |
+| `GET`  | `/api/auth/me`             | Authenticated user profile         |
+| `PUT`  | `/api/auth/profile`        | Update user profile                |
+
+### Publications
+
+| Method | Endpoint                         | Description                              |
+| ------ | -------------------------------- | ---------------------------------------- |
+| `GET`  | `/api/publications`              | List publications                        |
+| `GET`  | `/api/publications/:id`          | Publication details                      |
+| `POST` | `/api/publications`              | Create publication (verified seller)     |
+| `PUT`  | `/api/publications/:id`          | Update publication                       |
+| `DELETE`| `/api/publications/:id`         | Delete publication                       |
+
+### Categories
+
+| Method | Endpoint                 | Description               |
+| ------ | ------------------------ | ------------------------- |
+| `GET`  | `/api/categories`        | List categories           |
+
+### Favorites
+
+| Method | Endpoint                    | Description                       |
+| ------ | --------------------------- | --------------------------------- |
+| `GET`  | `/api/favorites`            | List user favorites               |
+| `POST` | `/api/favorites/:pubId`     | Add to favorites                  |
+| `DELETE`| `/api/favorites/:pubId`    | Remove from favorites             |
+
+### Verifications
+
+| Method | Endpoint                                | Description                             |
+| ------ | --------------------------------------- | --------------------------------------- |
+| `GET`  | `/api/verifications/mi-estado`          | User verification status                |
+| `GET`  | `/api/verifications/pending`            | List pending verifications              |
+| `GET`  | `/api/verifications/:id`                | Verification details                    |
+| `POST` | `/api/verifications/:id/approve`        | Approve verification                    |
+| `POST` | `/api/verifications/:id/reject`         | Reject verification                     |
+| `GET`  | `/api/verifications/history/mine`       | Verifier history                        |
+
+### Notifications
+
+| Method | Endpoint                            | Description                            |
+| ------ | ----------------------------------- | -------------------------------------- |
+| `GET`  | `/api/notifications`                | List user notifications                |
+| `PATCH`| `/api/notifications/:id/read`       | Mark as read                           |
+| `POST` | `/api/notifications/read-all`       | Mark all as read                       |
+| `DELETE`| `/api/notifications/:id`           | Delete notification                    |
+
+### Administration
+
+| Method | Endpoint                            | Description                            |
+| ------ | ----------------------------------- | -------------------------------------- |
+| `GET`  | `/api/admin/verifiers`              | List verifiers                         |
+| `POST` | `/api/admin/verifiers/:id`          | Assign verifier role                   |
+| `DELETE`| `/api/admin/verifiers/:id`         | Remove verifier role                   |
+| `GET`  | `/api/admin/users`                  | List users                             |
+| `GET`  | `/api/admin/publications`           | List publications                      |
+| `GET`  | `/api/admin/dashboard`              | Dashboard statistics                   |
+| `POST` | `/api/admin/categories`             | Create category                        |
+| `PUT`  | `/api/admin/categories/:id`         | Update category                        |
+| `DELETE`| `/api/admin/categories/:id`        | Delete category                        |
+
+### Moderation
+
+| Method | Endpoint                          | Description                 |
+| ------ | --------------------------------- | --------------------------- |
+| `PATCH`| `/api/publications/:id/moderation`| Moderate publication       |
+
+---
+
+## 🧭 Frontend Routes
 
 ```
-/                          → Home
-/explorar                  → Explorar publicaciones
-/login                     → Inicio de sesión
-/registro                  → Registro de usuario (selector Cliente / Vendedor)
-/verificacion-pendiente    → Pantalla espera verificación vendedor
-/dashboard                 → Panel del usuario
-/admin                     → Panel administrativo
-/crear-publicacion         → Crear nueva publicación
-/editar-publicacion/:id    → Editar publicación existente
-/perfil                    → Perfil del usuario
-*                          → Página no encontrada
+/                          → Home / Landing
+/explore                   → Browse publications
+/login                     → Login
+/register                  → User registration
+/verification-pending      → Verification pending screen (sellers)
+/dashboard                 → User dashboard
+/dashboard/favorites       → User favorites
+/admin                     → Admin panel
+/create                    → Create new publication
+/edit/:id                  → Edit existing publication
+/listing/:id               → Publication details
+/profile                   → User profile
+*                          → Not found page
 ```
+
+The router implements authentication guards: redirects to `/login` for protected routes, to `/dashboard` if already authenticated on login/register pages, and to `/verification-pending` if the seller is not yet verified.
 
 ---
 
-## 🚀 Instalación y ejecución
+## 🚀 Installation & Setup
 
-### 1. Clonar el repositorio
+### Prerequisites
+
+- Docker & Docker Compose (recommended)
+- Node.js 20+ (for manual development)
+
+### 1. Clone and start
 
 ```bash
-git clone https://github.com/Jhaymayleth/muiska.git
-cd muiska
-```
-
-### 2. Levantar todo con un solo comando
-
-```bash
+git clone https://github.com/Riwi-io-Medellin/245-bugai.git
+cd 245-bugai
 docker compose up -d
 ```
 
-Esto construye y levanta los servicios de `postgres`, `backend` y `frontend`.
+### 2. Access the application
 
-- Backend: http://localhost:3001/api/status
-- Frontend: http://localhost:8080
-- PostgreSQL: localhost:5433
+- **Frontend:** http://localhost:8080
+- **Backend API:** http://localhost:3001/api/status
+- **Swagger docs:** http://localhost:3001/api/docs
 
-### 3. Credenciales de prueba
+### 3. Test credentials
 
-La base de datos se inicializa con usuarios de prueba para acceso directo al panel:
+| Role    | Email              | Password    |
+| ------- | ------------------ | ----------- |
+| Admin   | admin@admin.com    | Admin123!   |
+| User    | user@user.com      | User123!    |
 
-- **Admin**
-  - Email: `admin@admin.com`
-  - Contraseña: `Admin123!`
-- **Usuario normal (cliente)**
-  - Email: `user@user.com`
-  - Contraseña: `User123!`
-
-Si usas el modo manual con `backend/src/db/init.sql`, esta semilla también aplica.
-
-### 4. Ver el estado de los servicios
-
-```bash
-docker compose down
-```
-
-### 5. Iniciar desarrollo local de forma manual (opcional)
+### Manual development (without Docker)
 
 #### Backend
 
@@ -193,18 +240,6 @@ cp .env.example .env
 npm run dev
 ```
 
-Variables de entorno esperadas (`.env`):
-
-```
-PORT=3000
-DB_HOST=localhost
-DB_PORT=5433
-DB_NAME=muiska
-DB_USER=postgres
-DB_PASSWORD=postgres
-JWT_SECRET=muiska_jwt_secret_dev_2024
-```
-
 #### Frontend
 
 ```bash
@@ -213,43 +248,69 @@ npm install
 npm run dev
 ```
 
-El frontend en modo desarrollo se sirve en **http://localhost:5173** y usa proxy hacia el backend.
+The frontend in dev mode runs at **http://localhost:5173**.
 
 ---
 
-## 🗺️ Flujo general
+## 🧪 Tests
 
+```bash
+cd backend
+npm test
 ```
-┌────────────┐        fetch()        ┌────────────┐        pg.Pool        ┌────────────┐
-│  Frontend  │ ────────────────────▶ │  Backend   │ ────────────────────▶ │ PostgreSQL │
-│  (Vite)    │ ◀──────────────────── │ (Express)  │ ◀──────────────────── │  (Docker)  │
-└────────────┘        JSON           └────────────┘        rows           └────────────┘
-   :5173                                :3000/api                            :5432
-```
+
+The backend uses Node.js native test runner (`node --test`).
 
 ---
 
-## 📌 Estado actual
+## 🐳 Docker Services
 
-El proyecto se encuentra en **FASE 1 (Backend completado)**:
+| Service    | Port | Container           |
+| ---------- | ---- | ------------------- |
+| Frontend   | 8080 | muiska-frontend     |
+| Backend    | 3001 | muiska-backend      |
+| PostgreSQL | 5433 | muiska-postgres     |
 
-**✅ FASE 0 - BASELINE**: Docker compose, Auth JWT, CRUD Publicaciones, Categorías, Admin panel básico, Tests
+---
 
-**✅ FASE 1 - Backend**: 
-- Migración BD: nuevos campos `users` (`tipo_usuario`, `estado_verificacion`, `badge_verificado`, `barrio_id`, `lat`, `lng`, `telefono`, `whatsapp`, `bio`, `foto_perfil_url`, `rating_promedio`, `total_reviews`), tabla `verificaciones`, tabla `notificaciones`, tabla `barrios`
-- Auth Service: registro con `tipo_usuario` (cliente/vendedor), estado verificación inicial según rol
-- Verification Service: CRUD verificaciones + notificaciones automáticas
-- Notification Service: gestión completa notificaciones
-- Middleware `requireVerifiedSeller`: protege creación de publicaciones
-- Admin: asignar/quitar verificadores
-- Rutas registradas: `/api/verificaciones`, `/api/notificaciones`, `/admin/verificadores`
+## 📋 Implemented Features
 
-**🔄 FASE 1 - Frontend (En curso)**: RegisterPage selector, VerificationPendingPage, NotificationStore, Auth guards, Header con notificaciones
+### Backend
+- [x] JWT authentication (register, login, profile)
+- [x] Publications CRUD with images
+- [x] Product categories
+- [x] User favorites
+- [x] Seller verification system
+- [x] Auto-notifications
+- [x] Admin panel (users, publications, categories, verifiers)
+- [x] Publication moderation
+- [x] File upload with Multer
+- [x] Rate limiting
+- [x] Zod validation
+- [x] Structured logging with Pino
+- [x] Swagger documentation
+- [x] Automatic migrations & seeds
+
+### Frontend
+- [x] Client-side routing SPA
+- [x] Authentication & role guards
+- [x] Landing page with featured publications
+- [x] Publication browsing with search and filters
+- [x] Registration with role selection (customer/seller)
+- [x] Publication creation and editing
+- [x] Publication detail view
+- [x] User profile
+- [x] User dashboard with statistics
+- [x] Full admin panel
+- [x] Favorites system
+- [x] Real-time notifications
+- [x] Responsive design with Tailwind CSS
+- [x] Reusable UI components
 
 ---
 
 <div align="center">
 
-Desarrollado como parte del proceso formativo en **Riwi**
+Built as part of the training program at **Riwi** — Cohort 2026
 
 </div>

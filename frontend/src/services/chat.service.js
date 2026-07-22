@@ -8,6 +8,7 @@ let typingCallbacks = [];
 let readCallbacks = [];
 
 export const chatService = {
+  get isConnected() { return isConnected; },
   connect(token) {
     if (socket) {
       socket.disconnect();
@@ -26,6 +27,10 @@ export const chatService = {
     socket.on("disconnect", () => {
       isConnected = false;
       console.log("Chat disconnected");
+    });
+
+    socket.on("connect_error", (err) => {
+      isConnected = false;
     });
 
     socket.on("new_message", (data) => {
@@ -61,10 +66,12 @@ export const chatService = {
     }
   },
 
-  sendMessage(conversationId, content) {
+  async sendMessage(conversationId, content) {
     if (socket && isConnected) {
       socket.emit("send_message", { conversationId, content });
+      return;
     }
+    await api.sendMessage(conversationId, content);
   },
 
   sendTyping(conversationId) {

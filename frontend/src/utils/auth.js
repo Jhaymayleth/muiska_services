@@ -9,6 +9,8 @@ export const getUser = () => sessionStore.getUser();
 
 export const isAdmin = () => sessionStore.isAdmin();
 
+export const isVerifier = () => sessionStore.getRole() === "verifier";
+
 // Logout usando sessionStore + redirección
 export const logout = () => sessionStore.logout();
 
@@ -22,6 +24,7 @@ export const protectedRoutes = [
   "/profile",
   "/admin",
   "/chat",
+  "/verifier-dashboard",
   "/verificador-dashboard",
 ];
 

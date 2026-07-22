@@ -17,7 +17,7 @@ export const categoryService = {
       [id]
     );
     if (result.rows.length === 0) {
-      const error = new Error("Categoría no encontrada");
+      const error = new Error("Category not found");
       error.code = "NOT_FOUND";
       throw error;
     }
@@ -73,7 +73,7 @@ export const categoryService = {
     );
 
     if (result.rows.length === 0) {
-      const error = new Error("Categoría no encontrada");
+      const error = new Error("Category not found");
       error.code = "NOT_FOUND";
       throw error;
     }
@@ -87,10 +87,10 @@ export const categoryService = {
       [id]
     );
     if (result.rows.length === 0) {
-      const error = new Error("Categoría no encontrada");
+      const error = new Error("Category not found");
       error.code = "NOT_FOUND";
       throw error;
     }
-    return { message: "Categoría eliminada" };
+    return { message: "Category deleted" };
   },
 };

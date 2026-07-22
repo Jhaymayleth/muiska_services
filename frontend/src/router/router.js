@@ -26,6 +26,9 @@ const routes = {
   "/profile": ProfilePage,
   "/verification-pending": VerificationPendingPage,
   "/chat": ChatPage,
+  "/public-profile": PerfilPublicoVendedorPage,
+  "/verifier-dashboard": VerificadorDashboardPage,
+  // Legacy aliases — keep for backward compatibility
   "/perfil-publico": PerfilPublicoVendedorPage,
   "/verificador-dashboard": VerificadorDashboardPage,
 };
@@ -34,8 +37,9 @@ const dynamicRoutes = [
   { pattern: /^\/edit\/(.+)$/, component: EditListingPage },
   { pattern: /^\/listing\/(.+)$/, component: PublicationDetailPage },
   { pattern: /^\/dashboard\/favorites$/, component: DashboardPage },
-  { pattern: /^\/dashboard\/favoritos$/, component: DashboardPage },
   { pattern: /^\/chat\/(.+)$/, component: ChatPage },
+  { pattern: /^\/public-profile\/(.+)$/, component: PerfilPublicoVendedorPage },
+  // Legacy aliases — keep for backward compatibility
   { pattern: /^\/perfil-publico\/(.+)$/, component: PerfilPublicoVendedorPage },
   { pattern: /^\/admin(?:\/.*)?$/, component: AdminPage },
 ];

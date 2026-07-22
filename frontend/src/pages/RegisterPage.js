@@ -43,8 +43,26 @@ const RegisterPage = () => {
       return;
     }
 
-    if (password.length < 6) {
-      errorEl.textContent = "Password must be at least 6 characters.";
+    if (password.length < 8) {
+      errorEl.textContent = "Password must be at least 8 characters.";
+      errorEl.classList.remove("hidden");
+      return;
+    }
+
+    if (!/[A-Z]/.test(password)) {
+      errorEl.textContent = "Password must contain at least one uppercase letter.";
+      errorEl.classList.remove("hidden");
+      return;
+    }
+
+    if (!/[a-z]/.test(password)) {
+      errorEl.textContent = "Password must contain at least one lowercase letter.";
+      errorEl.classList.remove("hidden");
+      return;
+    }
+
+    if (!/[0-9]/.test(password)) {
+      errorEl.textContent = "Password must contain at least one number.";
       errorEl.classList.remove("hidden");
       return;
     }
@@ -63,13 +81,16 @@ const RegisterPage = () => {
       // Redirigir según tipo de usuario y estado de verificación
       let redirectPath = "/dashboard";
       if (result.user.user_type === "seller" && result.user.verification_status !== "approved") {
-        redirectPath = "/verificacion-pendiente";
+        redirectPath = "/verification-pending";
       } else if (result.user.role === "admin") {
         redirectPath = "/admin";
       }
       navigateTo(redirectPath);
     } catch (err) {
-      errorEl.textContent = err.message || "Error registering.";
+      const msg = err.details
+        ? Object.values(err.details).flat().join("; ")
+        : err.message;
+      errorEl.textContent = msg || "Error registering.";
       errorEl.classList.remove("hidden");
     }
   });

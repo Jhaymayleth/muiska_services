@@ -155,12 +155,28 @@ const ChatPage = async () => {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   };
 
+  const appendMessage = (msg) => {
+    const isOwn = msg.sender_id === user.id;
+    const msgEl = document.createElement("div");
+    msgEl.className = "mb-3 flex " + (isOwn ? "justify-end" : "justify-start");
+    msgEl.innerHTML = `
+      <div class="max-w-[70%] rounded-lg px-4 py-2 ${isOwn ? "bg-primary text-white" : "bg-gray-100 text-gray-900"}">
+        <p class="text-sm">${escapeHtml(msg.content)}</p>
+        <p class="text-xs opacity-70 mt-1">${formatTime(msg.created_at)}</p>
+      </div>
+    `;
+    messagesContainer.appendChild(msgEl);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  };
+
   sendBtn.addEventListener("click", async () => {
     const content = messageInput.value.trim();
     if (!content || !currentConversationId) return;
 
-    chatService.sendMessage(currentConversationId, content);
     messageInput.value = "";
+    appendMessage({ sender_id: user.id, content, created_at: new Date().toISOString() });
+
+    await chatService.sendMessage(currentConversationId, content);
   });
 
   messageInput.addEventListener("keypress", (e) => {
@@ -177,18 +193,7 @@ const ChatPage = async () => {
 
   chatService.onMessage((data) => {
     if (data.conversationId === currentConversationId) {
-      const msg = data.message;
-      const isOwn = msg.sender_id === user.id;
-      const msgEl = document.createElement("div");
-      msgEl.className = "mb-3 flex " + (isOwn ? "justify-end" : "justify-start");
-      msgEl.innerHTML = `
-        <div class="max-w-[70%] rounded-lg px-4 py-2 ${isOwn ? "bg-primary text-white" : "bg-gray-100 text-gray-900"}">
-          <p class="text-sm">${escapeHtml(msg.content)}</p>
-          <p class="text-xs opacity-70 mt-1">${formatTime(msg.created_at)}</p>
-        </div>
-      `;
-      messagesContainer.appendChild(msgEl);
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      appendMessage(data.message);
     }
     loadConversations();
   });
@@ -215,9 +220,19 @@ const ChatPage = async () => {
     }
   });
 
+  const connectionStatus = section.querySelector("#connection-status");
+
   const token = sessionStore.getToken();
   if (token) {
     chatService.connect(token);
+    setTimeout(() => {
+      const connected = chatService.isConnected;
+      if (connected) {
+        connectionStatus.classList.add("hidden");
+      } else {
+        connectionStatus.classList.remove("hidden");
+      }
+    }, 2000);
   }
 
   await loadConversations();

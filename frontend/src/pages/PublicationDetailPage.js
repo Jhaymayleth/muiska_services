@@ -4,6 +4,7 @@ import { isAuthenticated, sessionStore } from "../utils/auth.js";
 import { toggleFavorite, checkFavorite } from "../services/publication.service.js";
 import { loadTemplate } from "../utils/templateLoader.js";
 import { formatDate, escapeHtml } from "../utils/helpers.js";
+import { chatService } from "../services/chat.service.js";
 
 const PublicationDetailPage = () => {
   const section = document.createElement("section");
@@ -57,7 +58,7 @@ const PublicationDetailPage = () => {
     }
 
     // Meta info
-    let metaHtml = `<span class="flex items-center gap-1">📅 ${new Date(pub.created_at).toLocaleDateString("es-ES")}</span>`;
+    let metaHtml = `<span class="flex items-center gap-1">📅 ${new Date(pub.created_at).toLocaleDateString("en-US")}</span>`;
     if (pub.location) metaHtml += `<span class="flex items-center gap-1">📍 ${escapeHtml(pub.location)}</span>`;
     if (pub.contact_method) metaHtml += `<span class="flex items-center gap-1">📞 ${escapeHtml(pub.contact_method)}</span>`;
     const statusConfig = {
@@ -75,7 +76,9 @@ const PublicationDetailPage = () => {
       .replace("{{category}}", escapeHtml(pub.category || "No category"))
       .replace("{{price}}", pub.price ? parseFloat(pub.price).toFixed(2) : "0.00")
       .replace("{{metaHtml}}", metaHtml)
-      .replace("{{description}}", escapeHtml(pub.description || "No description"))
+      .replace("{{contactHidden}}", isOwner || !currentUser ? "hidden" : "")
+      .replace("{{pubId}}", pub.id)
+      .replace("{{sellerId}}", pub.user_id)
       .replace("<!-- FAV_BTN_PLACEHOLDER -->", renderFavButton(false));
 
     container.innerHTML = html;
@@ -112,7 +115,7 @@ const PublicationDetailPage = () => {
       ownerActions.innerHTML = `<div class="rounded-2xl border border-border bg-white p-6 shadow-sm space-y-3"><h3 class="text-lg font-semibold">Your options</h3><div class="flex flex-wrap gap-3"><button id="edit-btn" class="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-hover">Edit listing</button><button id="status-btn" class="rounded-lg bg-accent/10 px-4 py-2 text-sm font-medium text-accent transition hover:bg-accent/20">${pub.status === "active" ? "Mark as sold" : pub.status === "sold" ? "Reactivate" : "Activate"}</button><button id="delete-btn" class="rounded-lg bg-red-50 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-100">Delete</button></div></div>`;
 
       ownerActions.querySelector("#edit-btn").addEventListener("click", () => {
-        navigateTo(`/editar-publicacion/${pub.id}`);
+        navigateTo(`/edit/${pub.id}`);
       });
 
       ownerActions.querySelector("#status-btn").addEventListener("click", async () => {
@@ -163,8 +166,31 @@ const PublicationDetailPage = () => {
         }
       });
     }
+    // Contact button handler
+    const contactBtn = container.querySelector("#contact-btn");
+    if (contactBtn) {
+      contactBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        if (!isAuthenticated()) {
+          navigateTo("/login");
+          return;
+        }
+        const pubId = contactBtn.dataset.pubId;
+        const sellerId = contactBtn.dataset.sellerId;
+        if (!pubId || !sellerId) return;
+        try {
+          const token = sessionStore.getToken();
+          if (token) chatService.connect(token);
+          const result = await chatService.createConversation(pubId, sellerId);
+          const convId = result.conversation?.id || result.id;
+          navigateTo(`/chat/${convId}`);
+        } catch (err) {
+          alert(err.message || "Could not start conversation");
+        }
+      });
+    }
   }).catch((err) => {
-    container.innerHTML = `<div class="rounded-xl border border-dashed border-border bg-muted/40 p-8 text-center"><svg class="mx-auto h-12 w-12 text-text/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg><h3 class="mt-4 text-lg font-semibold">Listing not found</h3><p class="mt-2 text-sm text-text/70">${escapeHtml(err.message || "It doesn't exist or has been deleted")}</p><a href="/explorar" class="mt-4 inline-block rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-hover">Back to explore</a></div>`;
+    container.innerHTML = `<div class="rounded-xl border border-dashed border-border bg-muted/40 p-8 text-center"><svg class="mx-auto h-12 w-12 text-text/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg><h3 class="mt-4 text-lg font-semibold">Listing not found</h3><p class="mt-2 text-sm text-text/70">${escapeHtml(err.message || "It doesn't exist or has been deleted")}</p><a href="/explore" class="mt-4 inline-block rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-hover">Back to explore</a></div>`;
   });
 
   return section;

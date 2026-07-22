@@ -6,8 +6,6 @@ import { moderationController } from "../controllers/moderation.controller.js";
 
 const router = Router();
 
-router.use(verifyToken);
-
 const idParamSchema = z.object({
   id: z.string().uuid("Invalid publication ID"),
 });
@@ -22,10 +20,10 @@ const querySchema = z.object({
   status: z.enum(["pending", "approved", "rejected"]).optional(),
 });
 
-router.get("/moderation/pending", requireRole("verifier", "admin"), validateQuery(querySchema), moderationController.getPendingPublications);
-router.get("/moderation/:id", requireRole("verifier", "admin"), validateParams(idParamSchema), moderationController.getPublicationById);
-router.post("/moderation/:id/approve", requireRole("verifier", "admin"), validateParams(idParamSchema), moderationController.approvePublication);
-router.post("/moderation/:id/reject", requireRole("verifier", "admin"), validateParams(idParamSchema), validateBody(rejectBodySchema), moderationController.rejectPublication);
-router.get("/moderation/history/me", requireRole("verifier", "admin"), moderationController.getMyModerations);
+router.get("/moderation/pending", verifyToken, requireRole("verifier", "admin"), validateQuery(querySchema), moderationController.getPendingPublications);
+router.get("/moderation/:id", verifyToken, requireRole("verifier", "admin"), validateParams(idParamSchema), moderationController.getPublicationById);
+router.post("/moderation/:id/approve", verifyToken, requireRole("verifier", "admin"), validateParams(idParamSchema), moderationController.approvePublication);
+router.post("/moderation/:id/reject", verifyToken, requireRole("verifier", "admin"), validateParams(idParamSchema), validateBody(rejectBodySchema), moderationController.rejectPublication);
+router.get("/moderation/history/me", verifyToken, requireRole("verifier", "admin"), moderationController.getMyModerations);
 
 export default router;

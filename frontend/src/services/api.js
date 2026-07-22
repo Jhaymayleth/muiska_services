@@ -29,7 +29,9 @@ export const api = {
 
     if (!res.ok) {
       const error = await res.json().catch(() => ({ message: res.statusText }));
-      throw new Error(error.message || "Request failed");
+      const e = new Error(error.message || "Request failed");
+      if (error.details) e.details = error.details;
+      throw e;
     }
     return res.json();
   },
@@ -56,9 +58,7 @@ export const api = {
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
       if (value !== null && value !== undefined) {
-        // Convert camelCase to snake_case for backend
-        const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
-        formData.append(snakeKey, value);
+        formData.append(key, value);
       }
     });
     images.forEach((image) => formData.append("images", image));
@@ -73,8 +73,7 @@ export const api = {
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
       if (value !== null && value !== undefined) {
-        const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
-        formData.append(snakeKey, value);
+        formData.append(key, value);
       }
     });
     images.forEach((image) => formData.append("images", image));
@@ -267,11 +266,11 @@ export const api = {
   },
 
   approvePublication(id) {
-    return this.request(`/moderation/publications/${id}/approve`, { method: "POST" });
+    return this.request(`/moderation/${id}/approve`, { method: "POST" });
   },
 
   rejectPublication(id, reason) {
-    return this.request(`/moderation/publications/${id}/reject`, {
+    return this.request(`/moderation/${id}/reject`, {
       method: "POST",
       body: JSON.stringify({ reason }),
     });
@@ -327,6 +326,13 @@ export const api = {
 
   markMessagesRead(conversationId) {
     return this.request(`/conversations/${conversationId}/read`, { method: "POST" });
+  },
+
+  sendMessage(conversationId, content) {
+    return this.request(`/conversations/${conversationId}/messages`, {
+      method: "POST",
+      body: JSON.stringify({ content }),
+    });
   },
 
   // Reviews

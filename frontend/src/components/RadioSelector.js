@@ -34,7 +34,7 @@ export function createRadioSelector({ defaultRadius = 3, onRadiusChange = () => 
         value="my-location"
         class="h-4 w-4 text-primary focus:ring-primary"
       />
-      <span class="text-sm text-gray-700">Usar mi ubicación</span>
+      <span class="text-sm text-gray-700">Use my location</span>
     </label>
   `;
 

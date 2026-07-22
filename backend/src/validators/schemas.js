@@ -3,7 +3,7 @@ import { z } from "zod";
 export const createPublicationSchema = z.object({
     title: z.string().min(1, "Title is required").max(255, "Title cannot exceed 255 characters"),
     description: z.string().max(5000, "Description cannot exceed 5000 characters").optional().nullable(),
-    price: z.number().positive("Price must be greater than 0").max(99999999.99, "Price cannot exceed 99,999,999.99"),
+    price: z.coerce.number().positive("Price must be greater than 0").max(99999999.99, "Price cannot exceed 99,999,999.99"),
     category: z.string().max(100).optional().nullable(),
     location: z.string().max(255).optional().nullable(),
     contactMethod: z.string().max(50).optional().nullable(),
@@ -18,7 +18,7 @@ export const createPublicationSchema = z.object({
 export const updatePublicationSchema = z.object({
     title: z.string().min(1).max(255).optional(),
     description: z.string().max(5000).optional().nullable(),
-    price: z.number().positive().max(99999999.99).optional(),
+    price: z.coerce.number().positive().max(99999999.99).optional(),
     category: z.string().max(100).optional().nullable(),
     location: z.string().max(255).optional().nullable(),
     contactMethod: z.string().max(50).optional().nullable(),

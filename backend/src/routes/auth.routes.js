@@ -7,7 +7,7 @@ import { registerSchema, loginSchema, updateProfileSchema, changePasswordSchema 
 
 const router = Router();
 
-router.post("/auth/register", registerLimiter, validateBody(registerSchema), register);
+router.post("/auth/register", validateBody(registerSchema), register);
 router.post("/auth/login", authLimiter, validateBody(loginSchema), login);
 router.get("/auth/me", verifyToken, getMe);
 router.put("/auth/me", verifyToken, validateBody(updateProfileSchema), updateProfile);

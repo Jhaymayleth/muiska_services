@@ -25,7 +25,7 @@ export const authService = {
     }
 
     const verificationStatus = userType === "seller" ? "pending" : "approved";
-    const isVerifiedBadge = userType === "client";
+    const isVerifiedBadge = false;
 
     const passwordHash = await bcrypt.hash(password, 10);
     const result = await pool.query(
@@ -36,6 +36,16 @@ export const authService = {
     );
 
     const user = result.rows[0];
+
+    if (userType === "seller") {
+      await pool.query(
+        `INSERT INTO verifications (user_id, status)
+         VALUES ($1, 'pending')
+         ON CONFLICT DO NOTHING`,
+        [user.id]
+      );
+    }
+
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role, userType: user.user_type },
       JWT_SECRET,
@@ -75,7 +85,7 @@ export const authService = {
     );
 
     return {
-      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+      user: { id: user.id, name: user.name, email: user.email, role: user.role, created_at: user.created_at },
       token,
     };
   },

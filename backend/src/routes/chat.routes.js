@@ -6,8 +6,6 @@ import { chatController } from "../controllers/chat.controller.js";
 
 const router = Router();
 
-router.use(verifyToken);
-
 const idParamSchema = z.object({
   id: z.string().uuid(),
 });
@@ -26,11 +24,11 @@ const querySchema = z.object({
   offset: z.coerce.number().int().min(0).default(0),
 });
 
-router.get("/conversations", chatController.getConversations);
-router.post("/conversations", validateBody(createConversationSchema), chatController.createConversation);
-router.get("/conversations/:id", validateParams(idParamSchema), chatController.getConversation);
-router.get("/conversations/:id/messages", validateParams(idParamSchema), validateQuery(querySchema), chatController.getMessages);
-router.post("/conversations/:id/messages", validateParams(idParamSchema), validateBody(sendMessageSchema), chatController.sendMessage);
-router.post("/conversations/:id/read", validateParams(idParamSchema), chatController.markRead);
+router.get("/conversations", verifyToken, chatController.getConversations);
+router.post("/conversations", verifyToken, validateBody(createConversationSchema), chatController.createConversation);
+router.get("/conversations/:id", verifyToken, validateParams(idParamSchema), chatController.getConversation);
+router.get("/conversations/:id/messages", verifyToken, validateParams(idParamSchema), validateQuery(querySchema), chatController.getMessages);
+router.post("/conversations/:id/messages", verifyToken, validateParams(idParamSchema), validateBody(sendMessageSchema), chatController.sendMessage);
+router.post("/conversations/:id/read", verifyToken, validateParams(idParamSchema), chatController.markRead);
 
 export default router;

@@ -2,6 +2,7 @@ import { api } from "../services/api.js";
 import ListingCard from "../components/listing/ListingCard.js";
 import { navigateTo } from "../router/router.js";
 import { loadTemplate } from "../utils/templateLoader.js";
+import { createBarrioAutocomplete } from "../components/BarrioAutocomplete.js";
 
 const ExplorePage = async () => {
   const template = loadTemplate("ExplorePage");
@@ -15,6 +16,12 @@ const ExplorePage = async () => {
   let totalPages = 1;
   let currentFilters = { status: "active" };
 
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlCategory = urlParams.get("category");
+  if (urlCategory) {
+    currentFilters.category = urlCategory;
+  }
+
   section.innerHTML = template;
 
   const grid = section.querySelector("#listings-grid");
@@ -22,6 +29,16 @@ const ExplorePage = async () => {
   const form = section.querySelector("#filter-form");
   const categorySelect = section.querySelector("#category");
   const clearBtn = section.querySelector("#clear-filters");
+
+  const locationInput = section.querySelector("#location");
+  const autocompleteContainer = section.querySelector("#neighborhood-autocomplete");
+  const barrioAutocomplete = createBarrioAutocomplete({
+    placeholder: "Search neighborhood in Barranquilla...",
+    onSelect: ({ name }) => {
+      locationInput.value = name || "";
+    },
+  });
+  autocompleteContainer.appendChild(barrioAutocomplete.element);
 
   const render = async () => {
     grid.innerHTML = '<div class="col-span-full flex justify-center py-8"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>';
@@ -89,6 +106,10 @@ const ExplorePage = async () => {
       option.textContent = cat.name;
       categorySelect.appendChild(option);
     });
+
+    if (urlCategory) {
+      categorySelect.value = urlCategory;
+    }
   });
 
   form.addEventListener("submit", (e) => {
@@ -100,7 +121,7 @@ const ExplorePage = async () => {
       category: formData.get("category") || undefined,
       minPrice: formData.get("minPrice") ? parseFloat(formData.get("minPrice")) : undefined,
       maxPrice: formData.get("maxPrice") ? parseFloat(formData.get("maxPrice")) : undefined,
-      location: formData.get("location") || undefined,
+      location: locationInput.value || undefined,
     };
     currentPage = 1;
     render();
@@ -108,6 +129,8 @@ const ExplorePage = async () => {
 
   clearBtn.addEventListener("click", () => {
     form.reset();
+    barrioAutocomplete.clear();
+    locationInput.value = "";
     currentFilters = { status: "active" };
     currentPage = 1;
     render();

@@ -32,7 +32,7 @@ export const config = {
   },
 
   jwt: {
-    secret: getEnv("JWT_SECRET"),
+    secret: getEnv("JWT_SECRET", "dev-secret-key-change-in-production"),
     expiresIn: getEnv("JWT_EXPIRES_IN", "7d"),
   },
 
