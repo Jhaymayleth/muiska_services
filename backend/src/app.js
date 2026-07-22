@@ -13,6 +13,8 @@ import verificationRouter from "./routes/verification.routes.js";
 import notificationRouter from "./routes/notification.routes.js";
 import moderationRouter from "./routes/moderation.routes.js";
 import healthRouter from "./routes/health.routes.js";
+import chatRouter from "./routes/chat.routes.js";
+import barrioRouter from "./routes/barrio.routes.js";
 import { errorMiddleware } from "./middlewares/error.middleware.js";
 import { notFoundMiddleware } from "./middlewares/notFound.middleware.js";
 import { createRequestLogger } from "./config/logger.js";
@@ -39,6 +41,8 @@ app.use("/api/favorites", favoriteRouter);
 app.use("/api/verifications", verificationRouter);
 app.use("/api/notifications", notificationRouter);
 app.use("/api", moderationRouter);
+app.use("/api", chatRouter);
+app.use("/api", barrioRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);

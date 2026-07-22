@@ -12,29 +12,18 @@ const App = () => {
   const layout = document.createElement("div");
   layout.className = "mx-auto flex min-h-screen w-full max-w-7xl flex-col";
 
-  const isHome = () => window.location.pathname === "/";
-
   const render = () => {
-    const path = window.location.pathname;
-
     layout.innerHTML = "";
-    if (isHome()) {
-      main.className = "flex-1";
-      layout.appendChild(main);
-    } else {
-      main.className = "flex-1 px-4 py-8 md:px-8";
-      layout.appendChild(Navbar());
-      layout.appendChild(main);
-      layout.appendChild(Footer());
-    }
+    main.className = "flex-1 px-4 py-8 md:px-8";
+    layout.appendChild(Navbar());
+    layout.appendChild(main);
+    layout.appendChild(Footer());
     renderRoute(main);
   };
 
+  layout.appendChild(Navbar());
   layout.appendChild(main);
-  if (!isHome()) {
-    layout.prepend(Navbar());
-    layout.appendChild(Footer());
-  }
+  layout.appendChild(Footer());
   app.appendChild(layout);
 
   window.addEventListener("popstate", render);

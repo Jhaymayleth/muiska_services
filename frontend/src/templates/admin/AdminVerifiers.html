@@ -1,0 +1,45 @@
+<div id="admin-verifiers" class="max-w-7xl mx-auto">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h2 class="text-lg font-semibold text-text">Verifier Management</h2>
+      <p class="text-sm text-text-secondary mt-1">Manage community verifiers</p>
+    </div>
+    <div class="text-sm text-text-tertiary">
+      <span id="verifiers-count"></span>
+    </div>
+  </div>
+
+  <div class="mb-4">
+    <form id="verifier-search-form" class="flex gap-2">
+      <input
+        type="text"
+        id="verifier-search"
+        placeholder="Search user by name or email..."
+        class="flex-1 rounded-xl border border-border bg-white px-4 py-2.5 text-sm text-text outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary-lighter placeholder:text-text-tertiary"
+      />
+      <button type="submit" class="rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-white transition-all hover:bg-primary-hover shadow-primary">Search</button>
+      <button type="button" id="verifier-clear" class="rounded-xl border border-border bg-white px-5 py-2.5 text-sm font-medium text-text transition-all hover:bg-muted">Clear</button>
+    </form>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-border/60 shadow-sm overflow-hidden">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Verification Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="admin-verifiers-tbody">
+        <tr>
+          <td colspan="5" class="text-text-tertiary text-center py-8">Loading users...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div id="admin-verifiers-message" class="mt-4 hidden rounded-xl bg-red-50 p-4 text-sm text-red-600 border border-red-200"></div>
+</div>

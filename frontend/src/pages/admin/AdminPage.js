@@ -11,6 +11,7 @@ import { AdminDashboard } from "./AdminDashboard.js";
 import { AdminPublications } from "./AdminPublications.js";
 import { AdminCategories } from "./AdminCategories.js";
 import { AdminUsers } from "./AdminUsers.js";
+import { AdminVerifiers } from "./AdminVerifiers.js";
 
 /**
  * Inicializa y renderiza el panel de administración completo
@@ -39,6 +40,7 @@ export default function AdminPage() {
     publications: section.querySelector("#panel-publications"),
     categories: section.querySelector("#panel-categories"),
     users: section.querySelector("#panel-users"),
+    verifiers: section.querySelector("#panel-verifiers"),
   };
 
   // Estado actual
@@ -48,6 +50,7 @@ export default function AdminPage() {
     publications: false,
     categories: false,
     users: false,
+    verifiers: false,
   };
 
   /**
@@ -102,8 +105,18 @@ export default function AdminPage() {
         panel.dataset.currentUserId = user.id;
         AdminUsers.init(panel);
         break;
+      case "verifiers":
+        panel.dataset.currentUserId = user.id;
+        AdminVerifiers.init(panel);
+        break;
     }
   };
+
+  // Determinar tab inicial por URL
+  const urlPath = window.location.pathname;
+  const initialTab = urlPath.startsWith("/admin/") ? urlPath.replace("/admin/", "") : "dashboard";
+  const validTabs = ["dashboard", "publications", "categories", "users", "verifiers"];
+  const defaultTab = validTabs.includes(initialTab) ? initialTab : "dashboard";
 
   // Event listeners para tabs
   tabButtons.forEach((btn) => {
@@ -111,8 +124,12 @@ export default function AdminPage() {
   });
 
   // Inicializar tab por defecto
-  initializeTab("dashboard");
-  initializedTabs.dashboard = true;
+  if (defaultTab !== "dashboard") {
+    switchTab(defaultTab);
+  } else {
+    initializeTab("dashboard");
+    initializedTabs.dashboard = true;
+  }
 
   return section;
 };

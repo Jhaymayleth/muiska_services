@@ -250,6 +250,37 @@ export const api = {
     return this.request("/verifications/history/me");
   },
 
+  // Moderation (for verifiers)
+  getPendingPublications(params = {}) {
+    const query = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        query.append(key, value);
+      }
+    });
+    return this.request(`/moderation/pending?${query.toString()}`);
+  },
+
+  approvePublication(id) {
+    return this.request(`/moderation/publications/${id}/approve`, { method: "POST" });
+  },
+
+  rejectPublication(id, reason) {
+    return this.request(`/moderation/publications/${id}/reject`, {
+      method: "POST",
+      body: JSON.stringify({ reason }),
+    });
+  },
+
+  getMyModerations() {
+    return this.request("/moderation/history/me");
+  },
+
+  // Public seller profile
+  getPublicProfile(sellerId) {
+    return this.request(`/users/${sellerId}/profile`);
+  },
+
   // Admin - Verifiers
   getVerifiers() {
     return this.request("/admin/verifiers");
@@ -261,5 +292,52 @@ export const api = {
 
   removeVerifier(id) {
     return this.request(`/admin/verifiers/${id}`, { method: "DELETE" });
+  },
+
+  // Chat
+  getConversations() {
+    return this.request("/conversations");
+  },
+
+  getConversation(id) {
+    return this.request(`/conversations/${id}`);
+  },
+
+  getMessages(conversationId, params = {}) {
+    const query = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        query.append(key, value);
+      }
+    });
+    return this.request(`/conversations/${conversationId}/messages?${query.toString()}`);
+  },
+
+  createConversation(publicationId, sellerId) {
+    return this.request("/conversations", {
+      method: "POST",
+      body: JSON.stringify({ publicationId, sellerId }),
+    });
+  },
+
+  markMessagesRead(conversationId) {
+    return this.request(`/conversations/${conversationId}/read`, { method: "POST" });
+  },
+
+  // Neighborhoods
+  searchNeighborhoods(q = "", limit = 20) {
+    return this.request(`/neighborhoods/search?q=${encodeURIComponent(q)}&limit=${limit}`);
+  },
+
+  searchBarrios(q = "", limit = 20) {
+    return this.request(`/neighborhoods/search?q=${encodeURIComponent(q)}&limit=${limit}`);
+  },
+
+  getAllNeighborhoods() {
+    return this.request("/neighborhoods");
+  },
+
+  getNeighborhood(id) {
+    return this.request(`/neighborhoods/${id}`);
   },
 };

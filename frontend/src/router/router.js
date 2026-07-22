@@ -9,6 +9,9 @@ import EditListingPage from "../pages/EditListingPage.js";
 import PublicationDetailPage from "../pages/PublicationDetailPage.js";
 import ProfilePage from "../pages/ProfilePage.js";
 import VerificationPendingPage from "../pages/VerificationPendingPage.js";
+import ChatPage from "../pages/ChatPage.js";
+import PerfilPublicoVendedorPage from "../pages/PerfilPublicoVendedorPage.js";
+import VerificadorDashboardPage from "../pages/VerificadorDashboardPage.js";
 import NotFoundPage from "../pages/NotFoundPage.js";
 import { isAuthenticated, isAdmin, isRouteProtected, isGuestRoute, getUser, sessionStore } from "../utils/auth.js";
 
@@ -22,12 +25,19 @@ const routes = {
   "/create": CreateListingPage,
   "/profile": ProfilePage,
   "/verification-pending": VerificationPendingPage,
+  "/chat": ChatPage,
+  "/perfil-publico": PerfilPublicoVendedorPage,
+  "/verificador-dashboard": VerificadorDashboardPage,
 };
 
 const dynamicRoutes = [
   { pattern: /^\/edit\/(.+)$/, component: EditListingPage },
   { pattern: /^\/listing\/(.+)$/, component: PublicationDetailPage },
   { pattern: /^\/dashboard\/favorites$/, component: DashboardPage },
+  { pattern: /^\/dashboard\/favoritos$/, component: DashboardPage },
+  { pattern: /^\/chat\/(.+)$/, component: ChatPage },
+  { pattern: /^\/perfil-publico\/(.+)$/, component: PerfilPublicoVendedorPage },
+  { pattern: /^\/admin(?:\/.*)?$/, component: AdminPage },
 ];
 
 export const navigateTo = (path) => {
