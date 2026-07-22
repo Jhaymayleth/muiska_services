@@ -1,26 +1,23 @@
-<!-- Publications Management Panel -->
-<div id="panel-publications" class="admin-panel" role="tabpanel" aria-labelledby="tab-publications" hidden>
-  <div class="admin-card">
-    <div class="admin-card__header">
-      <div>
-        <h2 class="admin-card__title">Publications management</h2>
-        <p class="admin-card__subtitle">List, filter and delete any publication.</p>
-      </div>
-      <div class="admin-card__filters">
-        <select id="pub-status-filter" class="form-select" aria-label="Filter by status">
-          <option value="">All statuses</option>
-          <option value="active">Active</option>
-          <option value="sold">Sold</option>
-          <option value="inactive">Inactive</option>
-        </select>
-        <input type="search" id="pub-search" placeholder="Search title…" class="form-input" style="min-width: 200px;" aria-label="Search by title">
-      </div>
+<div class="admin-card">
+  <div class="admin-card__header">
+    <div>
+      <h2 class="admin-card__title">Publications management</h2>
+      <p class="admin-card__subtitle">List, filter, manage status and delete publications.</p>
     </div>
-
-    <div id="publications-container" class="admin-table-wrapper">
-      <p class="admin-loading">Loading publications…</p>
+    <div class="admin-card__filters">
+      <select id="pub-status-filter" class="form-select" aria-label="Filter by status">
+        <option value="">All statuses</option>
+        <option value="active">Active</option>
+        <option value="sold">Sold</option>
+        <option value="inactive">Inactive</option>
+      </select>
+      <input type="search" id="pub-search" placeholder="Search title…" class="form-input" style="min-width: 200px;" aria-label="Search by title">
     </div>
-
-    <div id="publications-pagination" class="admin-pagination" aria-label="Publications pagination"></div>
   </div>
+
+  <div id="publications-container" class="admin-table-wrapper">
+    <p class="admin-loading">Loading publications…</p>
+  </div>
+
+  <div id="publications-pagination" class="admin-pagination" aria-label="Publications pagination"></div>
 </div>

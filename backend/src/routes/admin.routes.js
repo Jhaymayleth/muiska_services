@@ -9,6 +9,8 @@ import {
   getVerifiers,
   assignVerifier,
   removeVerifier,
+  getDashboardStats,
+  getCategoriesWithCount,
 } from "../controllers/admin.controller.js";
 import { verifyToken, requireAdmin } from "../middlewares/auth.middleware.js";
 import { validateBody, validateQuery, validateParams } from "../middlewares/validate.middleware.js";
@@ -59,6 +61,8 @@ router.get("/admin/verifiers", getVerifiers);
 router.post("/admin/verifiers/:id", validateParams(idParamSchema), assignVerifier);
 router.delete("/admin/verifiers/:id", validateParams(idParamSchema), removeVerifier);
 
+router.get("/admin/dashboard", getDashboardStats);
+router.get("/admin/categories", getCategoriesWithCount);
 router.get("/admin/publications", validateQuery(publicationQuerySchema), getPublications);
 router.patch("/admin/publications/:id", validateParams(idParamSchema), validateBody(publicationUpdateSchema), updatePublication);
 router.delete("/admin/publications/:id", validateParams(idParamSchema), deletePublication);

@@ -1,29 +1,26 @@
-<!-- Users Management Panel -->
-<div id="panel-users" class="admin-panel" role="tabpanel" aria-labelledby="tab-users" hidden>
-  <div class="admin-card">
-    <div class="admin-card__header">
-      <div>
-        <h2 class="admin-card__title">Users management</h2>
-        <p class="admin-card__subtitle">Search, filter and manage roles and status.</p>
-      </div>
+<div class="admin-card">
+  <div class="admin-card__header">
+    <div>
+      <h2 class="admin-card__title">Users management</h2>
+      <p class="admin-card__subtitle">Search, filter and manage roles and status.</p>
     </div>
+  </div>
 
-    <div id="user-management-message" class="admin-message hidden" aria-live="polite"></div>
+  <div id="user-management-message" class="admin-message hidden" aria-live="polite"></div>
 
-    <form id="user-search-form" class="admin-search-form" role="search">
-      <input
-        type="search"
-        id="user-search"
-        name="q"
-        placeholder="Search user by name or email…"
-        class="form-input"
-        aria-label="Search user"
-      />
-      <button type="submit" class="btn btn--secondary">Search</button>
-    </form>
+  <form id="user-search-form" class="admin-search-form" role="search">
+    <input
+      type="search"
+      id="user-search"
+      name="q"
+      placeholder="Search user by name or email…"
+      class="form-input"
+      aria-label="Search user"
+    />
+    <button type="submit" class="btn btn--secondary">Search</button>
+  </form>
 
-    <div id="admin-users" class="admin-table-wrapper">
-      <p class="admin-loading">Loading users…</p>
-    </div>
+  <div id="admin-users" class="admin-table-wrapper">
+    <p class="admin-loading">Loading users…</p>
   </div>
 </div>

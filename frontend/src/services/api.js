@@ -153,6 +153,11 @@ export const api = {
     return this.request(`/admin/users/${id}`, { method: "DELETE" });
   },
 
+  // Admin - Categories
+  getAdminCategories() {
+    return this.request("/admin/categories");
+  },
+
   // Admin - Publications
   getAdminPublications(params = {}) {
     const query = new URLSearchParams();
@@ -247,7 +252,7 @@ export const api = {
   },
 
   getMyVerificationHistory() {
-    return this.request("/verifications/history/me");
+    return this.request("/verifications/my-history");
   },
 
   // Moderation (for verifiers)
@@ -322,6 +327,41 @@ export const api = {
 
   markMessagesRead(conversationId) {
     return this.request(`/conversations/${conversationId}/read`, { method: "POST" });
+  },
+
+  // Reviews
+  getPublicationReviews(publicationId) {
+    return this.request(`/publications/${publicationId}/reviews`);
+  },
+
+  createReview(publicationId, { rating, comment }) {
+    return this.request(`/publications/${publicationId}/reviews`, {
+      method: "POST",
+      body: JSON.stringify({ rating, comment }),
+    });
+  },
+
+  getMyReviews() {
+    return this.request("/reviews/me");
+  },
+
+  // Push notifications
+  getPushPublicKey() {
+    return this.request("/push/public-key");
+  },
+
+  subscribePush(subscription) {
+    return this.request("/push/subscribe", {
+      method: "POST",
+      body: JSON.stringify(subscription),
+    });
+  },
+
+  unsubscribePush(endpoint) {
+    return this.request("/push/unsubscribe", {
+      method: "POST",
+      body: JSON.stringify({ endpoint }),
+    });
   },
 
   // Neighborhoods

@@ -1,41 +1,38 @@
-<!-- Categories Management Panel -->
-<div id="panel-categories" class="admin-panel" role="tabpanel" aria-labelledby="tab-categories" hidden>
-  <div class="admin-card">
-    <div class="admin-card__header">
-      <div>
-        <h2 class="admin-card__title">Categories management</h2>
-        <p class="admin-card__subtitle">Create, edit and delete categories.</p>
-      </div>
-      <button id="btn-new-category" class="btn btn--primary">New category</button>
+<div class="admin-card">
+  <div class="admin-card__header">
+    <div>
+      <h2 class="admin-card__title">Categories management</h2>
+      <p class="admin-card__subtitle">Create, edit and delete categories.</p>
     </div>
-
-    <div id="categories-container" class="admin-table-wrapper">
-      <p class="admin-loading">Loading categories…</p>
-    </div>
+    <button id="btn-new-category" class="btn btn--primary">New category</button>
   </div>
 
-  <!-- Modal New/Edit Category -->
-  <div id="category-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="category-modal-title" hidden>
-    <div class="modal modal--sm">
-      <div class="modal__header">
-        <h3 id="category-modal-title" class="modal__title">New category</h3>
-        <button id="close-category-modal" class="modal__close" aria-label="Close modal">✕</button>
-      </div>
-      <form id="category-form" class="modal__body">
-        <input type="hidden" id="category-id" />
-        <div class="form-group">
-          <label for="category-name" class="form-label form-label--required">Name *</label>
-          <input type="text" id="category-name" name="name" required class="form-input" placeholder="E.g.: Electronics" />
-        </div>
-        <div class="form-group">
-          <label for="category-description" class="form-label">Description</label>
-          <textarea id="category-description" name="description" rows="3" class="form-textarea" placeholder="Optional description"></textarea>
-        </div>
-        <div class="form-actions">
-          <button type="button" id="cancel-category" class="btn btn--secondary">Cancel</button>
-          <button type="submit" class="btn btn--primary">Save</button>
-        </div>
-      </form>
+  <div id="categories-container" class="admin-table-wrapper">
+    <p class="admin-loading">Loading categories…</p>
+  </div>
+</div>
+
+<!-- Modal New/Edit Category -->
+<div id="category-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="category-modal-title" hidden>
+  <div class="modal modal--sm">
+    <div class="modal__header">
+      <h3 id="category-modal-title" class="modal__title">New category</h3>
+      <button id="close-category-modal" class="modal__close" aria-label="Close modal">✕</button>
     </div>
+    <form id="category-form" class="modal__body">
+      <input type="hidden" id="category-id" />
+      <div class="form-group">
+        <label for="category-name" class="form-label form-label--required">Name *</label>
+        <input type="text" id="category-name" name="name" required class="form-input" placeholder="E.g.: Electronics" />
+      </div>
+      <div class="form-group">
+        <label for="category-description" class="form-label">Description</label>
+        <textarea id="category-description" name="description" rows="3" class="form-textarea" placeholder="Optional description"></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="button" id="cancel-category" class="btn btn--secondary">Cancel</button>
+        <button type="submit" class="btn btn--primary">Save</button>
+      </div>
+    </form>
   </div>
 </div>

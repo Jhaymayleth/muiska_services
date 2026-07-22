@@ -136,6 +136,24 @@ export const updatePublication = async (req, res, next) => {
   }
 };
 
+export const getCategoriesWithCount = async (req, res, next) => {
+  try {
+    const categories = await adminService.getCategoriesWithCount();
+    res.json(categories);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getDashboardStats = async (req, res, next) => {
+  try {
+    const stats = await adminService.getDashboardStats();
+    res.json(stats);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const deletePublication = async (req, res, next) => {
   try {
     const { id } = req.params;

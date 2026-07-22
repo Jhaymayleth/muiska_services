@@ -55,7 +55,7 @@ export const adminService = {
     return { message: "User deleted" };
   },
 
-  async getPublications({ page = 1, limit = 20, status, search }) {
+  async getPublications({ page = 1, limit = 20, status, search, category }) {
     const pageNum = Math.max(1, parseInt(page, 10));
     const limitNum = Math.min(50, Math.max(1, parseInt(limit, 10)));
     const offset = (pageNum - 1) * limitNum;
@@ -76,17 +76,24 @@ export const adminService = {
       paramIndex++;
     }
 
+    if (category) {
+      whereClause += ` AND c.name = $${paramIndex}`;
+      params.push(category);
+      paramIndex++;
+    }
+
     const countResult = await pool.query(
-      `SELECT COUNT(*) FROM publications p ${whereClause}`,
+      `SELECT COUNT(*) FROM publications p LEFT JOIN categories c ON p.category_id = c.id ${whereClause}`,
       params
     );
     const total = parseInt(countResult.rows[0].count);
 
     params.push(limitNum, offset);
     const result = await pool.query(
-      `SELECT p.*, u.name as user_name, u.email as user_email
+      `SELECT p.*, u.name as user_name, u.email as user_email, c.name as category
        FROM publications p
        JOIN users u ON p.user_id = u.id
+       LEFT JOIN categories c ON p.category_id = c.id
        ${whereClause}
        ORDER BY p.created_at DESC
        LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
@@ -186,5 +193,34 @@ async assignVerifier(userId) {
       throw error;
     }
     return { message: "Publication deleted" };
+  },
+
+  async getCategoriesWithCount() {
+    const result = await pool.query(
+      `SELECT c.id, c.name, c.description, c.slug, c.created_at,
+              COUNT(p.id) as publication_count
+       FROM categories c
+       LEFT JOIN publications p ON p.category_id = c.id
+       GROUP BY c.id
+       ORDER BY c.name`
+    );
+    return result.rows;
+  },
+
+  async getDashboardStats() {
+    const [users, pubs, cats] = await Promise.all([
+      pool.query("SELECT COUNT(*) FROM users"),
+      pool.query("SELECT COUNT(*), COUNT(*) FILTER (WHERE status = 'active') as active FROM publications"),
+      pool.query("SELECT COUNT(*) FROM categories"),
+    ]);
+
+    return {
+      totals: {
+        users: parseInt(users.rows[0].count, 10),
+        publications: parseInt(pubs.rows[0].count, 10),
+        activePublications: parseInt(pubs.rows[0].active, 10),
+        categories: parseInt(cats.rows[0].count, 10),
+      },
+    };
   },
 };

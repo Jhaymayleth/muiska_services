@@ -11,6 +11,7 @@ export const AdminPublications = {
   currentPage: 1,
   currentStatus: "",
   currentSearch: "",
+  currentCategory: "",
 
   /**
    * Inicializa el módulo de publicaciones dentro del panel
@@ -52,11 +53,13 @@ export const AdminPublications = {
 
     statusFilter?.addEventListener("change", () => {
       this.currentStatus = statusFilter.value;
+      this.currentCategory = "";
       this.loadPublications(1);
     });
 
     searchInput?.addEventListener("input", () => {
       this.currentSearch = searchInput.value.trim();
+      this.currentCategory = "";
       this.loadPublications(1);
     });
 
@@ -71,14 +74,18 @@ export const AdminPublications = {
       const btn = e.target.closest("button[data-action]");
       if (!btn) return;
 
-      const { action, id } = btn.dataset;
+      const { action, id, status } = btn.dataset;
       if (action === "delete") await this.deletePublication(id);
+      if (action === "toggle-status") await this.toggleStatus(id, status);
     });
   },
 
   async loadPublications(page = 1) {
-    const { tbody, pagination } = this.elements;
+    const { tbody, pagination, statusFilter, searchInput } = this.elements;
     this.currentPage = page;
+
+    if (statusFilter) statusFilter.value = this.currentStatus;
+    if (searchInput) searchInput.value = this.currentSearch;
 
     if (tbody) {
       tbody.innerHTML = '<tr><td colspan="7" class="admin-loading">Loading…</td></tr>';
@@ -88,6 +95,7 @@ export const AdminPublications = {
       const params = { page, limit: 20 };
       if (this.currentStatus) params.status = this.currentStatus;
       if (this.currentSearch) params.search = this.currentSearch;
+      if (this.currentCategory) params.category = this.currentCategory;
 
       const res = await api.getAdminPublications(params);
       this.renderTable(res.data || []);
@@ -117,7 +125,8 @@ export const AdminPublications = {
             .replace("{{category}}", escapeHtml(p.category || "—"))
             .replace("{{statusLabel}}", this.getStatusLabel(p.status))
             .replace("{{statusClass}}", p.status)
-            .replace("{{price}}", Number(p.price || 0).toLocaleString("es-CO", { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
+            .replace("{{toggleLabel}}", this.getToggleLabel(p.status))
+            .replace("{{price}}", Number(p.price || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
             .replace("{{userName}}", escapeHtml(p.user_name || p.user_id || "—"))
             .replace("{{date}}", formatDate(p.created_at))
             .replace("{{id}}", p.id)
@@ -153,6 +162,19 @@ export const AdminPublications = {
     paginationEl.innerHTML = html;
   },
 
+  async toggleStatus(id, currentStatus) {
+    const nextStatus = currentStatus === "active" ? "sold" : currentStatus === "sold" ? "active" : "active";
+    const label = nextStatus === "sold" ? "Mark as sold" : "Reactivate";
+    if (!confirm(`${label}?`)) return;
+
+    try {
+      await api.updateAdminPublication(id, { status: nextStatus });
+      this.loadPublications(this.currentPage);
+    } catch (err) {
+      alert(err.message);
+    }
+  },
+
   async deletePublication(id) {
     if (!confirm("Delete this publication? This action cannot be undone.")) return;
 
@@ -167,5 +189,10 @@ export const AdminPublications = {
   getStatusLabel(status) {
     const labels = { active: "Active", sold: "Sold", inactive: "Inactive" };
     return labels[status] || status;
+  },
+
+  getToggleLabel(status) {
+    const labels = { active: "Mark sold", sold: "Reactivate", inactive: "Activate" };
+    return labels[status] || "Change status";
   },
 };

@@ -76,7 +76,7 @@ export const AdminCategories = {
     container.innerHTML = '<p class="admin-loading">Loading…</p>';
 
     try {
-      const categories = await api.getCategories();
+      const categories = await api.getAdminCategories();
       this.renderTable(categories);
     } catch (err) {
       container.innerHTML = `<p class="admin-error">${err.message}</p>`;
@@ -102,8 +102,9 @@ export const AdminCategories = {
             <tr>
               <th>Name</th>
               <th>Description</th>
+              <th>Listings</th>
               <th>Date</th>
-              <th class="text-right">Acciones</th>
+              <th class="text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -113,6 +114,7 @@ export const AdminCategories = {
               <tr>
                 <td class="font-semibold">${escapeHtml(c.name)}</td>
                 <td class="text-muted">${escapeHtml(c.description || "—")}</td>
+                <td class="font-medium text-center">${c.publication_count || 0}</td>
                 <td class="text-muted">${formatDate(c.created_at)}</td>
                 <td class="text-right">
                   <button data-action="edit" data-id="${c.id}" class="btn btn--ghost btn--sm">Edit</button>
