@@ -1,91 +1,181 @@
 <!-- Hero -->
-<section id="Home" class="relative px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32 xl:py-40 overflow-hidden">
-  <img src="{{womanImg}}" alt="Colombian entrepreneur working in her workshop" class="absolute inset-0 w-full h-full object-cover" />
-  <div class="absolute inset-0 bg-gradient-to-t from-background/95 via-background/80 to-background/70"></div>
-  <div class="relative max-w-xl sm:max-w-2xl lg:max-w-4xl xl:max-w-5xl mx-auto flex flex-col items-center text-center">
-    <a class="inline-flex items-center gap-2 bg-white/80 border border-border/60 rounded-full px-3 py-1 sm:px-4 sm:py-1.5 text-xs sm:text-sm text-text/70 mb-8 sm:mb-10 hover:border-primary transition shadow-soft animate-fade-in">Community exchange platform</a>
-    <h1 class="font-display font-bold leading-none mb-8 sm:mb-10 animate-slide-up" style="animation-delay: 50ms">
-      <span class="block text-text text-4xl sm:text-6xl lg:text-7xl xl:text-8xl">Connect.</span>
-      <span class="block text-primary text-4xl sm:text-6xl lg:text-7xl xl:text-8xl">Share.</span>
-      <span class="block text-text text-4xl sm:text-6xl lg:text-7xl xl:text-8xl">Grow.</span>
-    </h1>
-    <p class="text-base sm:text-lg lg:text-xl text-text/70 max-w-md sm:max-w-2xl mb-8 sm:mb-10 animate-slide-up" style="animation-delay: 100ms">The community marketplace where entrepreneurs and everyday people exchange goods, services and donations with ease.</p>
-    <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto animate-slide-up" style="animation-delay: 150ms">
-      <a href="/explore" class="w-full sm:w-auto text-center bg-primary hover:bg-primary-hover text-background font-medium px-6 py-3 lg:px-8 lg:py-4 lg:text-lg rounded-full shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98]" id="hero-explore">Explore now →</a>
-      <a href="/register" class="w-full sm:w-auto text-center bg-background hover:bg-muted border border-border text-text font-medium px-6 py-3 lg:px-8 lg:py-4 lg:text-lg rounded-full transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98]" id="hero-register">Create free account</a>
+<section id="Home" class="relative overflow-hidden border-b border-border/60 bg-background">
+  <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_10%,rgba(123,24,38,0.07),transparent_45%),radial-gradient(circle_at_85%_0%,rgba(21,102,90,0.08),transparent_40%)]" aria-hidden="true"></div>
+
+  <div class="relative mx-auto grid w-full max-w-7xl items-center gap-12 px-4 pb-16 pt-14 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:px-8 lg:pb-24 lg:pt-20">
+    <div class="max-w-2xl">
+      <p class="inline-flex items-center gap-2 rounded-full border border-border/80 bg-white/70 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary shadow-sm backdrop-blur">
+        <span class="h-1.5 w-1.5 rounded-full bg-accent" aria-hidden="true"></span>
+        Community marketplace
+      </p>
+
+      <h1 class="mt-6 font-display text-[clamp(2.6rem,6.4vw,4.9rem)] font-bold leading-[0.98] tracking-tight text-text">
+        Buy, sell and share
+        <span class="mt-1 block italic text-primary">close to home.</span>
+      </h1>
+
+      <p class="mt-6 max-w-xl text-base leading-relaxed text-text/60 sm:text-lg">
+        MUISKA connects neighbors, entrepreneurs and local sellers to exchange goods, services and donations — without the noise of a big marketplace.
+      </p>
+
+      <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <a href="/explore" class="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-primary-hover hover:shadow-lg active:scale-[0.98]" id="hero-explore">
+          Explore listings
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+        <a href="/register" class="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-transparent px-6 py-3.5 text-sm font-semibold text-text transition-all hover:border-primary/40 hover:bg-primary/5 active:scale-[0.98]" id="hero-register">
+          Create free account
+        </a>
+      </div>
+
+      <dl class="mt-10 grid grid-cols-2 gap-x-6 gap-y-4 border-t border-border/70 pt-6 sm:grid-cols-4">
+        <div>
+          <dt class="text-sm font-semibold text-text">Local first</dt>
+          <dd class="mt-0.5 text-xs text-text/60">Finds near you</dd>
+        </div>
+        <div>
+          <dt class="text-sm font-semibold text-text">Direct chat</dt>
+          <dd class="mt-0.5 text-xs text-text/60">Talk to sellers</dd>
+        </div>
+        <div>
+          <dt class="text-sm font-semibold text-text">Verified sellers</dt>
+          <dd class="mt-0.5 text-xs text-text/60">Badged profiles</dd>
+        </div>
+        <div>
+          <dt class="text-sm font-semibold text-text">Free to join</dt>
+          <dd class="mt-0.5 text-xs text-text/60">No listing fees</dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="relative mx-auto w-full max-w-md lg:max-w-none">
+      <div class="relative aspect-[4/3] overflow-hidden rounded-[2rem] border border-border/70 bg-muted shadow-elevated sm:aspect-[4/5]">
+        <img src="{{womanImg}}" alt="A local seller working in her workshop" class="h-full w-full object-cover" fetchpriority="high" />
+        <div class="absolute inset-0 bg-gradient-to-t from-text/40 via-transparent to-transparent" aria-hidden="true"></div>
+        <div class="absolute inset-x-4 bottom-4 rounded-2xl border border-white/50 bg-background/95 p-4 shadow-soft backdrop-blur sm:inset-x-5 sm:bottom-5">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">Neighborhood finds</p>
+          <p class="mt-1 font-display text-lg font-semibold leading-snug text-text">Good things, closer than you think.</p>
+        </div>
+      </div>
+
+      <div class="absolute -left-4 top-8 hidden w-44 rotate-[-4deg] overflow-hidden rounded-2xl border border-border bg-white p-2 shadow-elevated sm:block">
+        <img src="{{vestidorImg}}" alt="" class="h-28 w-full rounded-xl object-cover" loading="lazy" />
+        <p class="px-2 pb-1 pt-2 text-xs font-medium text-text/60">Fresh listings every day</p>
+      </div>
+
+      <span class="absolute -right-2 bottom-28 hidden items-center gap-1.5 rounded-full border border-border bg-white px-3 py-1.5 text-xs font-semibold text-text/70 shadow-soft sm:inline-flex">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="text-accent" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        Local exchange
+      </span>
     </div>
   </div>
 </section>
 
 <!-- Categories (dynamic) -->
-<section id="Categories" class="bg-background px-6 py-20">
-  <div class="max-w-6xl mx-auto">
-    <div class="flex items-end justify-between mb-10">
-      <div>
-        <h2 class="font-display text-4xl font-bold text-text mb-2">Categories</h2>
-        <p class="text-text/60">Explore our main categories.</p>
+<section id="Categories" class="bg-background">
+  <div class="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+    <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+      <div class="max-w-xl">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">Browse</p>
+        <h2 class="mt-3 font-display text-3xl font-bold tracking-tight text-text sm:text-4xl">What are you looking for?</h2>
+        <p class="mt-3 text-sm leading-relaxed text-text/60">Start with a category and discover what your community has to offer.</p>
       </div>
-      <a href="/explore" class="text-primary font-medium flex items-center gap-1 hover:text-primary-hover transition" id="cat-view-all">View all →</a>
+      <a href="/explore" class="inline-flex items-center gap-1.5 self-start rounded-full border border-border px-4 py-2 text-sm font-medium text-text/70 transition-colors hover:border-primary/40 hover:text-primary sm:self-auto" id="cat-view-all">
+        View all listings
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
     </div>
-    <div class="categories grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="categories-container">
-      <div class="col-span-full flex justify-center py-8">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+
+    <div class="mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4" id="categories-container">
+      <div class="col-span-full flex justify-center py-10">
+        <div class="h-8 w-8 animate-spin rounded-full border-2 border-border border-b-primary" role="status" aria-label="Loading categories"></div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Featured listings (dynamic) -->
-<section id="Listings" class="bg-muted px-6 py-20">
-  <div class="max-w-6xl mx-auto">
-    <div class="flex items-end justify-between mb-10">
-      <div>
-        <h2 class="font-display text-4xl font-bold text-text mb-2">Featured listings</h2>
-        <p class="text-text/60">Our selection of the most recent listings.</p>
+<section id="Listings" class="border-y border-border/60 bg-muted/50">
+  <div class="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+    <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+      <div class="max-w-xl">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">Just posted</p>
+        <h2 class="mt-3 font-display text-3xl font-bold tracking-tight text-text sm:text-4xl">Fresh from the community</h2>
+        <p class="mt-3 text-sm leading-relaxed text-text/60">The latest products, services and donations published on MUISKA.</p>
       </div>
-      <a href="/explore" class="text-primary font-medium flex items-center gap-1 hover:text-primary-hover transition" id="pub-view-more">View more →</a>
+      <a href="/explore" class="inline-flex items-center gap-1.5 self-start rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-text/70 transition-colors hover:border-primary/40 hover:text-primary sm:self-auto" id="pub-view-more">
+        Browse all
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
     </div>
-    <div class="Publicaciones grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="featured-container">
-      <div class="col-span-full flex justify-center py-8">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+
+    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3" id="featured-container">
+      <div class="col-span-full flex justify-center py-10">
+        <div class="h-8 w-8 animate-spin rounded-full border-2 border-border border-b-primary" role="status" aria-label="Loading listings"></div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- How it works -->
-<section id="HowItWorks" class="bg-background px-6 py-24">
-  <div class="max-w-5xl mx-auto text-center">
-    <h2 class="font-display text-4xl font-bold text-text mb-3 animate-fade-in">How it works</h2>
-    <p class="text-text/60 mb-14 animate-fade-in" style="animation-delay: 50ms">Simple and straightforward.</p>
-    <div class="steps grid grid-cols-1 sm:grid-cols-3 gap-6">
-      <div class="step bg-background border border-border rounded-2xl px-8 py-10 transition-all duration-300 hover:-translate-y-1 hover:shadow-elevated animate-slide-up" style="animation-delay: 100ms">
-        <div class="w-16 h-16 mx-auto mb-6 flex items-center justify-center bg-primary/5 rounded-2xl"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
-        <span class="text-primary font-bold text-sm">01</span>
-        <h3 class="font-bold text-text text-xl mt-2 mb-3">Register free</h3>
-        <p class="text-text/60">Create your account in seconds and set up your seller or buyer profile.</p>
+<section id="HowItWorks" class="bg-background">
+  <div class="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+    <div class="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
+      <div class="max-w-md">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">How it works</p>
+        <h2 class="mt-3 font-display text-3xl font-bold tracking-tight text-text sm:text-4xl">Three steps to your next exchange.</h2>
+        <p class="mt-4 text-sm leading-relaxed text-text/60">
+          No complicated setup. Create an account, publish what you have, and talk directly with the person on the other side.
+        </p>
+        <a href="/register" class="mt-7 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-primary-hover hover:shadow-md active:scale-[0.98]">
+          Get started
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
       </div>
-      <div class="step bg-background border border-border rounded-2xl px-8 py-10 transition-all duration-300 hover:-translate-y-1 hover:shadow-elevated animate-slide-up" style="animation-delay: 150ms">
-        <div class="w-16 h-16 mx-auto mb-6 flex items-center justify-center bg-primary/5 rounded-2xl"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.34-4.34"></path></svg></div>
-        <span class="text-primary font-bold text-sm">02</span>
-        <h3 class="font-bold text-text text-xl mt-2 mb-3">Post or explore</h3>
-        <p class="text-text/60">List your products, services or donations, or find what you need.</p>
-      </div>
-      <div class="step bg-background border border-border rounded-2xl px-8 py-10 transition-all duration-300 hover:-translate-y-1 hover:shadow-elevated animate-slide-up" style="animation-delay: 200ms">
-        <div class="w-16 h-16 mx-auto mb-6 flex items-center justify-center bg-primary/5 rounded-2xl"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><path d="m11 17 2 2a1 1 0 1 0 3-3"></path><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"></path><path d="m21 3 1 11h-2"></path><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"></path><path d="M3 4h8"></path></svg></div>
-        <span class="text-primary font-bold text-sm">03</span>
-        <h3 class="font-bold text-text text-xl mt-2 mb-3">Connect and close</h3>
-        <p class="text-text/60">Talk directly with the seller, agree on details and done.</p>
-      </div>
+
+      <ol class="space-y-8">
+        <li class="grid grid-cols-[auto_1fr] gap-5">
+          <span class="flex h-11 w-11 items-center justify-center rounded-full bg-primary/5 font-display text-sm font-bold text-primary ring-1 ring-primary/20">01</span>
+          <div class="border-b border-border/70 pb-8">
+            <h3 class="font-display text-xl font-semibold text-text">Create your account</h3>
+            <p class="mt-2 text-sm leading-relaxed text-text/60">Sign up in seconds and choose whether you want to buy, sell, or both.</p>
+          </div>
+        </li>
+        <li class="grid grid-cols-[auto_1fr] gap-5">
+          <span class="flex h-11 w-11 items-center justify-center rounded-full bg-primary/5 font-display text-sm font-bold text-primary ring-1 ring-primary/20">02</span>
+          <div class="border-b border-border/70 pb-8">
+            <h3 class="font-display text-xl font-semibold text-text">Publish or explore</h3>
+            <p class="mt-2 text-sm leading-relaxed text-text/60">List a product, service or donation — or search what is already available nearby.</p>
+          </div>
+        </li>
+        <li class="grid grid-cols-[auto_1fr] gap-5">
+          <span class="flex h-11 w-11 items-center justify-center rounded-full bg-primary/5 font-display text-sm font-bold text-primary ring-1 ring-primary/20">03</span>
+          <div>
+            <h3 class="font-display text-xl font-semibold text-text">Connect and close</h3>
+            <p class="mt-2 text-sm leading-relaxed text-text/60">Message the seller, agree on the details and make the exchange happen.</p>
+          </div>
+        </li>
+      </ol>
     </div>
   </div>
 </section>
 
 <!-- CTA -->
-<section id="CTA" class="bg-gradient-to-br from-primary to-primary-hover px-10 py-24">
-  <div class="max-w-4xl mx-auto text-center">
-    <h2 class="font-display text-4xl font-bold text-background mb-4">Join the community!</h2>
-    <p class="text-background/80 mb-10">Thousands of entrepreneurs already exchange on MUISKA.</p>
-    <a href="/register" class="inline-block bg-background hover:bg-muted text-primary font-bold px-8 py-4 rounded-full transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.97] shadow-md" id="cta-register">Create free account →</a>
+<section class="relative overflow-hidden bg-primary text-background">
+  <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.18),transparent_45%),radial-gradient(circle_at_80%_80%,rgba(255,255,255,0.12),transparent_40%)]" aria-hidden="true"></div>
+  <div class="relative mx-auto w-full max-w-4xl px-4 py-16 text-center sm:px-6 lg:py-24">
+    <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-background/70">Join MUISKA</p>
+    <h2 class="mt-4 font-display text-3xl font-bold tracking-tight sm:text-5xl">Your next exchange starts here.</h2>
+    <p class="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-background/75 sm:text-base">
+      Create a free account to publish your first listing or start exploring what your community is sharing.
+    </p>
+    <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+      <a href="/register" class="inline-flex w-full items-center justify-center rounded-full bg-background px-6 py-3.5 text-sm font-semibold text-primary shadow-md transition-all hover:bg-muted active:scale-[0.98] sm:w-auto" id="cta-register">
+        Create free account
+      </a>
+      <a href="/explore" class="inline-flex w-full items-center justify-center rounded-full border border-background/30 px-6 py-3.5 text-sm font-semibold text-background transition-colors hover:bg-background/10 sm:w-auto">
+        Explore listings
+      </a>
+    </div>
   </div>
 </section>

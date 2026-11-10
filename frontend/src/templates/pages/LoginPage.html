@@ -1,48 +1,103 @@
-<h1 class="text-3xl font-display font-bold text-text">Welcome back</h1>
-<p class="text-text/60 -mt-4">Sign in to your account</p>
-<form id="login-form" class="space-y-5 mt-2">
-  <div>
-    <label for="email" class="block text-sm font-medium text-text mb-1.5">Email</label>
+<div class="mx-auto grid w-full max-w-7xl lg:grid-cols-[0.95fr_1.05fr] lg:gap-8 lg:px-8 lg:py-8">
+  <aside class="relative hidden overflow-hidden rounded-[2rem] bg-primary p-10 text-background lg:flex lg:min-h-[38rem] lg:flex-col lg:justify-between">
+    <div class="pointer-events-none absolute inset-0 opacity-25" style="background-image: radial-gradient(circle at 18% 18%, rgba(255,255,255,0.55) 0, transparent 45%), radial-gradient(circle at 82% 78%, rgba(255,255,255,0.35) 0, transparent 42%);" aria-hidden="true"></div>
+
     <div class="relative">
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-text/40 pointer-events-none"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-      <input
-        type="email"
-        id="email"
-        name="email"
-        required
-        placeholder="you@email.com"
-        class="w-full rounded-xl border border-border bg-background pl-10 pr-4 py-2.5 text-sm text-text outline-none transition-all duration-200 placeholder:text-text/30 focus:border-primary focus:ring-2 focus:ring-primary/20"
-      />
+      <a href="/" class="inline-flex items-center gap-2.5" aria-label="MUISKA — Home">
+        <img src="/Logo.png" alt="" width="44" height="44" class="h-11 w-11 rounded-xl bg-background/95 object-contain p-1" />
+        <span class="font-display text-2xl font-bold tracking-tight">MUISKA</span>
+      </a>
+
+      <h2 class="mt-14 max-w-sm font-display text-4xl font-bold leading-[1.05]">Good things happen when neighbors connect.</h2>
+      <p class="mt-5 max-w-sm text-sm leading-relaxed text-background/75">
+        Buy, sell and share with the people around you — from everyday finds to services and donations.
+      </p>
+    </div>
+
+    <ul class="relative mt-12 space-y-3.5 text-sm">
+      <li class="flex items-start gap-3">
+        <span class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-background/20">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m20 6-11 11-5-5"/></svg>
+        </span>
+        Publish listings in minutes
+      </li>
+      <li class="flex items-start gap-3">
+        <span class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-background/20">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m20 6-11 11-5-5"/></svg>
+        </span>
+        Message sellers directly
+      </li>
+      <li class="flex items-start gap-3">
+        <span class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-background/20">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m20 6-11 11-5-5"/></svg>
+        </span>
+        Verified seller badges
+      </li>
+    </ul>
+  </aside>
+
+  <div class="flex items-center justify-center px-4 py-12 sm:px-8 lg:py-16">
+    <div class="w-full max-w-md">
+      <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">Welcome back</p>
+      <h1 class="mt-3 font-display text-4xl font-bold tracking-tight text-text sm:text-5xl">Sign in</h1>
+      <p class="mt-3 text-sm leading-relaxed text-text/60">Access your listings, messages and saved finds.</p>
+
+      <form id="login-form" class="mt-8 space-y-5">
+        <div>
+          <label for="email" class="mb-1.5 block text-sm font-medium text-text">Email</label>
+          <div class="relative">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-text/40" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              autocomplete="email"
+              placeholder="you@email.com"
+              class="w-full rounded-xl border border-border bg-white py-3 pl-11 pr-4 text-sm text-text shadow-sm outline-none transition-all duration-200 placeholder:text-text/30 focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label for="password" class="mb-1.5 block text-sm font-medium text-text">Password</label>
+          <div class="relative">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-text/40" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              required
+              autocomplete="current-password"
+              placeholder="Your password"
+              class="w-full rounded-xl border border-border bg-white py-3 pl-11 pr-12 text-sm text-text shadow-sm outline-none transition-all duration-200 placeholder:text-text/30 focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+            <button type="button" data-toggle-password="password" class="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-text/40 transition-colors hover:bg-muted/60 hover:text-text" aria-label="Show password" aria-pressed="false">
+              <svg data-eye xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg data-eye-off xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="hidden" aria-hidden="true"><path d="m2 2 20 20"/><path d="M6.71 6.71A10.4 10.4 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 5.29-1.71"/><path d="M10.58 5.08A9.8 9.8 0 0 1 12 5c6.5 0 10 7 10 7a13.2 13.2 0 0 1-2.16 3.19"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div id="login-error" class="hidden items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 shrink-0" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span id="login-error-text"></span>
+        </div>
+
+        <button
+          type="submit"
+          id="login-submit"
+          class="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-primary-hover hover:shadow-md active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70"
+        >
+          <span id="login-btn-text">Sign in</span>
+          <svg id="login-spinner" class="hidden h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+        </button>
+      </form>
+
+      <p class="mt-8 text-center text-sm text-text/60">
+        New to MUISKA?
+        <a href="/register" class="font-semibold text-primary transition-colors hover:text-primary-hover">Create an account</a>
+      </p>
     </div>
   </div>
-  <div>
-    <label for="password" class="block text-sm font-medium text-text mb-1.5">Password</label>
-    <div class="relative">
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-text/40 pointer-events-none"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-      <input
-        type="password"
-        id="password"
-        name="password"
-        required
-        placeholder="••••••••"
-        class="w-full rounded-xl border border-border bg-background pl-10 pr-4 py-2.5 text-sm text-text outline-none transition-all duration-200 placeholder:text-text/30 focus:border-primary focus:ring-2 focus:ring-primary/20"
-      />
-    </div>
-  </div>
-  <button
-    type="submit"
-    id="login-submit"
-    class="flex items-center justify-center gap-2 w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-primary-hover hover:shadow-md active:scale-[0.98]"
-  >
-    <span id="login-btn-text">Login</span>
-    <svg id="login-spinner" class="hidden animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-  </button>
-</form>
-<div id="login-error" class="hidden flex items-center gap-2 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-  <span id="login-error-text"></span>
 </div>
-<p class="text-center text-sm text-text/60">
-  Don't have an account?
-  <a href="/register" class="font-semibold text-primary hover:text-primary-hover transition-colors">Register →</a>
-</p>

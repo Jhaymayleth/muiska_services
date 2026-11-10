@@ -33,7 +33,7 @@ const ExplorePage = async () => {
   const locationInput = section.querySelector("#location");
   const autocompleteContainer = section.querySelector("#neighborhood-autocomplete");
   const barrioAutocomplete = createBarrioAutocomplete({
-    placeholder: "Search neighborhood in Barranquilla...",
+    placeholder: "Neighborhood name",
     onSelect: ({ name }) => {
       locationInput.value = name || "";
     },

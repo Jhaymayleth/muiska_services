@@ -3,12 +3,9 @@ import { navigateTo } from "../router/router.js";
 import { loadTemplate } from "../utils/templateLoader.js";
 
 const RegisterPage = () => {
-  const template = loadTemplate("RegisterPage");
   const section = document.createElement("section");
-  section.className =
-    "mx-auto max-w-md space-y-6 rounded-2xl border border-border bg-white p-8 shadow-elevated animate-scale-in";
-
-  section.innerHTML = template;
+  section.className = "w-full";
+  section.innerHTML = loadTemplate("RegisterPage");
 
   const form = section.querySelector("#register-form");
   const errorEl = section.querySelector("#register-error");
@@ -17,12 +14,51 @@ const RegisterPage = () => {
   const btnText = section.querySelector("#register-btn-text");
   const spinner = section.querySelector("#register-spinner");
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  const setLoading = (loading) => {
+    submitBtn.disabled = loading;
+    btnText.textContent = loading ? "Creating account..." : "Create account";
+    spinner.classList.toggle("hidden", !loading);
+  };
+
+  const clearError = () => {
     errorEl.classList.add("hidden");
-    submitBtn.disabled = true;
-    btnText.textContent = "Loading...";
-    spinner.classList.remove("hidden");
+    errorEl.classList.remove("flex");
+    errorText.textContent = "";
+  };
+
+  const showError = (message) => {
+    errorText.textContent = message;
+    errorEl.classList.remove("hidden");
+    errorEl.classList.add("flex");
+    errorEl.focus();
+  };
+
+  const fail = (message) => {
+    showError(message);
+    setLoading(false);
+  };
+
+  section.querySelectorAll("[data-toggle-password]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const input = section.querySelector(`#${button.dataset.togglePassword}`);
+      if (!input) return;
+
+      const show = input.type === "password";
+      input.type = show ? "text" : "password";
+      button.setAttribute("aria-pressed", String(show));
+      button.setAttribute("aria-label", show ? "Hide password" : "Show password");
+      button.querySelector("[data-eye]")?.classList.toggle("hidden", show);
+      button.querySelector("[data-eye-off]")?.classList.toggle("hidden", !show);
+    });
+  });
+
+  form.querySelectorAll("input").forEach((input) => {
+    input.addEventListener("input", clearError);
+  });
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearError();
 
     const name = form.name.value.trim();
     const email = form.email.value.trim();
@@ -30,86 +66,45 @@ const RegisterPage = () => {
     const passwordConfirm = form["password-confirm"].value;
     const userType = form.userType?.value || "client";
 
-    // Validaciones
     if (!name || !email || !password || !passwordConfirm) {
-      errorText.textContent = "All fields are required.";
-      errorEl.classList.remove("hidden");
-      submitBtn.disabled = false;
-      btnText.textContent = "Register";
-      spinner.classList.add("hidden");
-      return;
+      return fail("All fields are required.");
     }
 
     if (name.length < 3) {
-      errorText.textContent = "Name must be at least 3 characters.";
-      errorEl.classList.remove("hidden");
-      submitBtn.disabled = false;
-      btnText.textContent = "Register";
-      spinner.classList.add("hidden");
-      return;
+      return fail("Name must be at least 3 characters.");
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      errorText.textContent = "Please enter a valid email.";
-      errorEl.classList.remove("hidden");
-      submitBtn.disabled = false;
-      btnText.textContent = "Register";
-      spinner.classList.add("hidden");
-      return;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return fail("Please enter a valid email address.");
     }
 
     if (password.length < 8) {
-      errorText.textContent = "Password must be at least 8 characters.";
-      errorEl.classList.remove("hidden");
-      submitBtn.disabled = false;
-      btnText.textContent = "Register";
-      spinner.classList.add("hidden");
-      return;
+      return fail("Password must be at least 8 characters.");
     }
 
     if (!/[A-Z]/.test(password)) {
-      errorText.textContent = "Password must contain at least one uppercase letter.";
-      errorEl.classList.remove("hidden");
-      submitBtn.disabled = false;
-      btnText.textContent = "Register";
-      spinner.classList.add("hidden");
-      return;
+      return fail("Password must contain at least one uppercase letter.");
     }
 
     if (!/[a-z]/.test(password)) {
-      errorText.textContent = "Password must contain at least one lowercase letter.";
-      errorEl.classList.remove("hidden");
-      submitBtn.disabled = false;
-      btnText.textContent = "Register";
-      spinner.classList.add("hidden");
-      return;
+      return fail("Password must contain at least one lowercase letter.");
     }
 
     if (!/[0-9]/.test(password)) {
-      errorText.textContent = "Password must contain at least one number.";
-      errorEl.classList.remove("hidden");
-      submitBtn.disabled = false;
-      btnText.textContent = "Register";
-      spinner.classList.add("hidden");
-      return;
+      return fail("Password must contain at least one number.");
     }
 
     if (password !== passwordConfirm) {
-      errorText.textContent = "Passwords do not match.";
-      errorEl.classList.remove("hidden");
-      submitBtn.disabled = false;
-      btnText.textContent = "Register";
-      spinner.classList.add("hidden");
-      return;
+      return fail("Passwords do not match.");
     }
+
+    setLoading(true);
 
     try {
       const result = await api.register({ name, email, password, userType });
       localStorage.setItem("token", result.token);
       localStorage.setItem("user", JSON.stringify(result.user));
-      
-      // Redirigir según tipo de usuario y estado de verificación
+
       let redirectPath = "/dashboard";
       if (result.user.user_type === "seller" && result.user.verification_status !== "approved") {
         redirectPath = "/verification-pending";
@@ -117,15 +112,11 @@ const RegisterPage = () => {
         redirectPath = "/admin";
       }
       navigateTo(redirectPath);
-    } catch (err) {
-      const msg = err.details
-        ? Object.values(err.details).flat().join("; ")
-        : err.message;
-      errorText.textContent = msg || "Error registering.";
-      errorEl.classList.remove("hidden");
-      submitBtn.disabled = false;
-      btnText.textContent = "Register";
-      spinner.classList.add("hidden");
+    } catch (error) {
+      const message = error.details
+        ? Object.values(error.details).flat().join("; ")
+        : error.message;
+      fail(message || "We couldn't create your account. Please try again.");
     }
   });
 

@@ -2,55 +2,130 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --color-background: #fffaf4;
-  --color-primary: #7b1826;
-  --color-primary-hover: #651320;
-  --color-accent: #15665a;
-  --color-text: #221a16;
-  --color-muted: #f2ece5;
-  --color-border: #e3d8cd;
+@layer base {
+  :root {
+    --color-background: #fffaf4;
+    --color-surface: #ffffff;
+    --color-primary: #7b1826;
+    --color-primary-hover: #651320;
+    --color-accent: #15665a;
+    --color-text: #221a16;
+    --color-text-soft: rgba(34, 26, 22, 0.66);
+    --color-muted: #f2ece5;
+    --color-border: #e3d8cd;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* Deja aire bajo el navbar sticky al saltar a un ancla. */
+    scroll-padding-top: 5.5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    min-height: 100vh;
+    margin: 0;
+    font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+    line-height: 1.6;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Fraunces", ui-serif, Georgia, serif;
+    line-height: 1.1;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  img,
+  svg,
+  video {
+    display: block;
+    max-width: 100%;
+  }
+
+  a,
+  button,
+  input,
+  select,
+  textarea {
+    transition-property: color, background-color, border-color, box-shadow, transform, opacity;
+    transition-duration: 200ms;
+    transition-timing-function: ease;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: rgba(123, 24, 38, 0.16);
+    color: var(--color-text);
+  }
 }
 
-html {
-  scroll-behavior: smooth;
+/* Skip link: visible solo al recibir foco por teclado. */
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  transform: translateY(-150%);
+  border-radius: 9999px;
+  background: var(--color-primary);
+  color: #fff;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
 }
 
-body {
-  margin: 0;
-  font-family: "Plus Jakarta Sans", sans-serif;
-  background-color: var(--color-background);
-  color: var(--color-text);
+.skip-link:focus {
+  transform: translateY(0);
 }
 
-a,
-button,
-input,
-select,
-textarea {
-  transition: all 200ms ease;
-}
-
-/* Custom scrollbar */
+/* Scrollbar discreto y coherente con el papel. */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 10px;
+  height: 10px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
   background: var(--color-border);
-  border-radius: 3px;
+  border: 3px solid var(--color-background);
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-muted);
+  background: #cbb9a8;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: "Fraunces", serif;
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

@@ -3,92 +3,111 @@ import { toggleFavorite, checkFavorite } from "../../services/publication.servic
 import { isAuthenticated } from "../../utils/auth.js";
 import { getIcon } from "../../utils/icons.js";
 
+const escapeHtml = (value = "") =>
+  String(value).replace(
+    /[&<>"']/g,
+    (character) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[character],
+  );
+
+const formatPrice = (value) => {
+  const price = Number(value ?? 0);
+  if (!Number.isFinite(price) || price <= 0) return "Free";
+  return `$${price.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+};
+
 const ListingCard = (pub = {}) => {
   const card = document.createElement("article");
   card.className =
-    "group rounded-xl border border-border bg-white p-4 shadow-card transition-all duration-300 hover:shadow-elevated hover:-translate-y-1 cursor-pointer relative";
+    "group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-border bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-elevated";
 
   let isFavorited = false;
 
-  const checkFavStatus = async () => {
-    if (isAuthenticated() && pub.id) {
-      try {
-        const result = await checkFavorite(pub.id);
-        isFavorited = result.favorited;
-        renderHeart();
-      } catch (e) {
-        console.warn("Error checking favorite:", e);
-      }
-    }
-  };
-
-  const renderHeart = () => {
-    const heartBtn = card.querySelector(".favorite-btn");
-    if (heartBtn) {
-      heartBtn.innerHTML = isFavorited
-        ? `<svg class="w-5 h-5 text-red-500 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`
-        : `<svg class="w-5 h-5 text-text/40 hover:text-red-500 transition-colors" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
-      heartBtn.setAttribute("aria-label", isFavorited ? "Remove from favorites" : "Add to favorites");
-      heartBtn.classList.toggle("favorited", isFavorited);
-    }
-  };
+  const title = escapeHtml(pub.title || "Untitled listing");
+  const images = Array.isArray(pub.images) ? pub.images.filter(Boolean) : [];
+  const cover = images[0];
+  const category = pub.category ? escapeHtml(pub.category) : "";
 
   card.innerHTML = `
-    <button class="favorite-btn absolute top-3 right-3 z-10 p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-sm transition-all duration-200 hover:scale-110 active:scale-90 focus:outline-none focus:ring-2 focus:ring-primary" aria-label="Add to favorites" title="Add to favorites">
-      <svg class="w-5 h-5 text-text/40 hover:text-red-500 transition-colors" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-    </button>
-    <div class="space-y-3">
-      <div class="flex items-start justify-between gap-2">
-        <div>
-          <h4 class="font-display font-semibold text-text text-lg">${pub.title || "No title"}</h4>
-          <p class="mt-1 text-xs uppercase tracking-wide text-text/50">${pub.category || "No category"}</p>
-        </div>
-        <span class="rounded-full bg-accent/10 px-3 py-1 text-sm font-semibold text-accent font-display">$${pub.price ? parseFloat(pub.price).toFixed(2) : "0.00"}</span>
-      </div>
-      <p class="line-clamp-3 text-sm text-text/70 leading-relaxed">${pub.description || "No description"}</p>
-      <div class="flex flex-wrap gap-2 text-xs text-text/60">
-        ${pub.location ? `<span class="rounded-full bg-muted px-2.5 py-1 flex items-center gap-1"><span class="inline-flex">${getIcon("location", 14)}</span> ${pub.location}</span>` : ""}
-        ${pub.contact_method ? `<span class="rounded-full bg-muted px-2.5 py-1 flex items-center gap-1"><span class="inline-flex">${getIcon("phone", 14)}</span> ${pub.contact_method}</span>` : ""}
-      </div>
+    <div class="relative aspect-[4/3] overflow-hidden bg-muted">
       ${
-        Array.isArray(pub.images) && pub.images.length > 0
-          ? `<div class="flex gap-2 overflow-x-auto -mx-1 px-1">${pub.images
-              .slice(0, 3)
-              .map(
-                (image) =>
-                  `<img src="${image}" alt="${pub.title || "Image"}" class="h-20 w-20 rounded-lg object-cover shrink-0 transition-transform duration-300 hover:scale-105" />`,
-              )
-              .join("")}</div>`
-          : ""
+        cover
+          ? `<img src="${escapeHtml(cover)}" alt="${title}" loading="lazy" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" />`
+          : `<div class="flex h-full w-full items-center justify-center text-text/25">${getIcon("package", 40)}</div>`
       }
+      ${category ? `<span class="absolute left-3 top-3 rounded-full bg-white/95 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-text/70 shadow-sm backdrop-blur">${category}</span>` : ""}
+      <button type="button" class="favorite-btn absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-text/50 shadow-sm backdrop-blur transition-all hover:scale-105 hover:text-primary active:scale-95" aria-label="Add to favorites" aria-pressed="false">
+        <svg class="h-5 w-5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </button>
+    </div>
+
+    <div class="flex flex-1 flex-col gap-3 p-5">
+      <div class="flex items-start justify-between gap-3">
+        <h3 class="line-clamp-2 font-display text-lg font-semibold leading-snug text-text">${title}</h3>
+        <span class="shrink-0 font-display text-lg font-bold text-primary">${escapeHtml(formatPrice(pub.price))}</span>
+      </div>
+
+      <p class="line-clamp-2 text-sm leading-relaxed text-text/60">${escapeHtml(pub.description || "No description provided.")}</p>
+
+      <div class="mt-auto flex flex-wrap items-center gap-2 border-t border-border/70 pt-3 text-xs text-text/60">
+        ${pub.location ? `<span class="inline-flex items-center gap-1.5 rounded-full bg-muted/70 px-2.5 py-1"><span class="inline-flex text-text/40">${getIcon("location", 13)}</span>${escapeHtml(pub.location)}</span>` : ""}
+        ${pub.contact_method ? `<span class="inline-flex items-center gap-1.5 rounded-full bg-muted/70 px-2.5 py-1"><span class="inline-flex text-text/40">${getIcon("phone", 13)}</span>${escapeHtml(pub.contact_method)}</span>` : ""}
+      </div>
     </div>
   `;
 
-  const favoriteBtn = card.querySelector(".favorite-btn");
-  favoriteBtn.addEventListener("click", async (e) => {
-    e.stopPropagation();
-    e.preventDefault();
+  const renderHeart = () => {
+    const heartBtn = card.querySelector(".favorite-btn");
+    if (!heartBtn) return;
+    heartBtn.classList.toggle("text-primary", isFavorited);
+    heartBtn.setAttribute("aria-pressed", String(isFavorited));
+    heartBtn.setAttribute("aria-label", isFavorited ? "Remove from favorites" : "Add to favorites");
+    heartBtn.querySelector("svg")?.classList.toggle("fill-current", isFavorited);
+  };
+
+  const checkFavStatus = async () => {
+    if (!isAuthenticated() || !pub.id) return;
+    try {
+      const result = await checkFavorite(pub.id);
+      isFavorited = Boolean(result?.favorited);
+      renderHeart();
+    } catch (error) {
+      console.warn("Error checking favorite:", error);
+    }
+  };
+
+  card.querySelector(".favorite-btn")?.addEventListener("click", async (event) => {
+    event.stopPropagation();
+    event.preventDefault();
 
     if (!isAuthenticated()) {
       navigateTo("/login");
       return;
     }
-
     if (!pub.id) return;
 
     try {
       const result = await toggleFavorite(pub.id);
-      isFavorited = result.favorited;
+      isFavorited = Boolean(result?.favorited);
       renderHeart();
-    } catch (err) {
-      console.error("Error toggling favorite:", err);
-      alert(err.message || "Error updating favorite");
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+      window.alert(error.message || "Error updating favorite");
     }
   });
 
-  card.addEventListener("click", (e) => {
-    if (e.target.closest(".favorite-btn")) return;
-    navigateTo(`/listing/${pub.id}`);
+  card.addEventListener("click", (event) => {
+    if (event.target.closest(".favorite-btn")) return;
+    if (pub.id) navigateTo(`/listing/${pub.id}`);
   });
 
   checkFavStatus();

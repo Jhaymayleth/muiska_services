@@ -1,10 +1,11 @@
 <!-- Loader skeleton para categorías -->
-<div class="col-span-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="categories-skeleton">
+<div class="col-span-full grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4" id="categories-skeleton">
   {{#repeat count}}
-  <div class="rounded-2xl border border-border bg-background px-5 py-6 animate-pulse">
-    <div class="h-10 w-10 rounded-full bg-muted mb-5"></div>
-    <div class="h-5 rounded-full bg-muted mb-3"></div>
-    <div class="h-4 w-3/4 rounded-full bg-muted"></div>
+  <div class="rounded-2xl border border-border bg-white p-4 sm:p-5">
+    <div class="h-10 w-10 animate-pulse rounded-2xl bg-muted sm:h-12 sm:w-12"></div>
+    <div class="mt-3 h-4 w-2/3 animate-pulse rounded-full bg-muted sm:mt-4"></div>
+    <div class="mt-2 hidden h-3 w-full animate-pulse rounded-full bg-muted/70 sm:block"></div>
+    <div class="mt-2 hidden h-3 w-4/5 animate-pulse rounded-full bg-muted/70 sm:block"></div>
   </div>
   {{/repeat}}
 </div>

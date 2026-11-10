@@ -1,11 +1,17 @@
 <!-- Loader skeleton para publicaciones destacadas -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="featured-skeleton">
+<div class="col-span-full grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3" id="featured-skeleton">
   {{#repeat count}}
-  <div class="rounded-2xl border border-border bg-background p-6 animate-pulse">
-    <div class="h-48 w-full rounded-2xl bg-muted mb-4"></div>
-    <div class="h-5 rounded-full bg-muted mb-3"></div>
-    <div class="h-4 rounded-full bg-muted mb-2"></div>
-    <div class="h-4 w-3/4 rounded-full bg-muted"></div>
+  <div class="overflow-hidden rounded-2xl border border-border bg-white">
+    <div class="aspect-[4/3] w-full animate-pulse bg-muted"></div>
+    <div class="space-y-3 p-5">
+      <div class="h-5 w-3/4 animate-pulse rounded-full bg-muted"></div>
+      <div class="h-3.5 w-full animate-pulse rounded-full bg-muted/70"></div>
+      <div class="h-3.5 w-2/3 animate-pulse rounded-full bg-muted/70"></div>
+      <div class="flex items-center gap-3 border-t border-border/70 pt-4">
+        <div class="h-8 w-8 animate-pulse rounded-full bg-muted"></div>
+        <div class="h-3.5 w-24 animate-pulse rounded-full bg-muted/70"></div>
+      </div>
+    </div>
   </div>
   {{/repeat}}
 </div>

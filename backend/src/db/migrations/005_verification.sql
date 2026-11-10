@@ -5,7 +5,6 @@
 -- Extended user fields for verification
 ALTER TABLE users ADD COLUMN IF NOT EXISTS user_type VARCHAR(20) DEFAULT 'client';
 ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_status VARCHAR(20) DEFAULT 'pending';
-CREATE INDEX IF NOT EXISTS idx_users_verified_by ON users(verified_by);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS verified_by UUID REFERENCES users(id);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS verified_at TIMESTAMP;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS rejection_reason TEXT;
@@ -20,6 +19,9 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS avg_rating DECIMAL(3,2) DEFAULT 0;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS total_reviews INT DEFAULT 0;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS avg_response_time INTERVAL;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS is_verified_badge BOOLEAN DEFAULT FALSE;
+
+-- El indice va despues de crear la columna verified_by.
+CREATE INDEX IF NOT EXISTS idx_users_verified_by ON users(verified_by);
 
 -- Neighborhoods table
 CREATE TABLE neighborhoods (

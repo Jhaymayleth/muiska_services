@@ -128,7 +128,8 @@
 .my-auto { margin-top: auto; margin-bottom: auto; }
 
 // Visibility
-.hidden { display: none !important; }
+// Nota: .hidden lo provee Tailwind. Un .hidden con !important rompía
+// combinaciones responsive como `hidden md:flex` en navbar y layouts.
 .invisible { visibility: hidden; }
 .sr-only {
   position: absolute;
@@ -172,16 +173,3 @@
 .aspect-video { aspect-ratio: 16 / 9; }
 .aspect-photo { aspect-ratio: 4 / 3; }
 
-// Screen readers
-@media (max-width: 639px) {
-  .hidden-sm { display: none !important; }
-}
-@media (min-width: 640px) and (max-width: 767px) {
-  .hidden-md { display: none !important; }
-}
-@media (min-width: 768px) and (max-width: 1023px) {
-  .hidden-lg { display: none !important; }
-}
-@media (min-width: 1024px) {
-  .hidden-xl { display: none !important; }
-}

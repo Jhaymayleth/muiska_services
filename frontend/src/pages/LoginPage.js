@@ -3,12 +3,9 @@ import { navigateTo } from "../router/router.js";
 import { loadTemplate } from "../utils/templateLoader.js";
 
 const LoginPage = () => {
-  const template = loadTemplate("LoginPage");
   const section = document.createElement("section");
-  section.className =
-    "mx-auto max-w-md space-y-6 rounded-2xl border border-border bg-white p-8 shadow-elevated animate-scale-in";
-
-  section.innerHTML = template;
+  section.className = "w-full";
+  section.innerHTML = loadTemplate("LoginPage");
 
   const form = section.querySelector("#login-form");
   const errorEl = section.querySelector("#login-error");
@@ -17,37 +14,65 @@ const LoginPage = () => {
   const btnText = section.querySelector("#login-btn-text");
   const spinner = section.querySelector("#login-spinner");
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  const setLoading = (loading) => {
+    submitBtn.disabled = loading;
+    btnText.textContent = loading ? "Signing in..." : "Sign in";
+    spinner.classList.toggle("hidden", !loading);
+  };
+
+  const clearError = () => {
     errorEl.classList.add("hidden");
-    submitBtn.disabled = true;
-    btnText.textContent = "Loading...";
-    spinner.classList.remove("hidden");
+    errorEl.classList.remove("flex");
+    errorText.textContent = "";
+  };
+
+  const showError = (message) => {
+    errorText.textContent = message;
+    errorEl.classList.remove("hidden");
+    errorEl.classList.add("flex");
+    errorEl.focus();
+  };
+
+  section.querySelectorAll("[data-toggle-password]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const input = section.querySelector(`#${button.dataset.togglePassword}`);
+      if (!input) return;
+
+      const show = input.type === "password";
+      input.type = show ? "text" : "password";
+      button.setAttribute("aria-pressed", String(show));
+      button.setAttribute("aria-label", show ? "Hide password" : "Show password");
+      button.querySelector("[data-eye]")?.classList.toggle("hidden", show);
+      button.querySelector("[data-eye-off]")?.classList.toggle("hidden", !show);
+    });
+  });
+
+  form.querySelectorAll("input").forEach((input) => {
+    input.addEventListener("input", clearError);
+  });
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearError();
 
     const email = form.email.value.trim();
     const password = form.password.value.trim();
 
     if (!email || !password) {
-      errorText.textContent = "All fields are required.";
-      errorEl.classList.remove("hidden");
-      submitBtn.disabled = false;
-      btnText.textContent = "Login";
-      spinner.classList.add("hidden");
+      showError("All fields are required.");
       return;
     }
+
+    setLoading(true);
 
     try {
       const result = await api.login(email, password);
       localStorage.setItem("token", result.token);
       localStorage.setItem("user", JSON.stringify(result.user));
-      const redirectPath = result.user.role === "admin" ? "/admin" : "/dashboard";
-      navigateTo(redirectPath);
-    } catch (err) {
-      errorText.textContent = err.message || "Error logging in.";
-      errorEl.classList.remove("hidden");
-      submitBtn.disabled = false;
-      btnText.textContent = "Login";
-      spinner.classList.add("hidden");
+      navigateTo(result.user.role === "admin" ? "/admin" : "/dashboard");
+    } catch (error) {
+      showError(error.message || "We couldn't sign you in. Please try again.");
+      setLoading(false);
     }
   });
 

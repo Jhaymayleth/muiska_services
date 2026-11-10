@@ -33,7 +33,7 @@ const DashboardPage = async () => {
     : "US";
   const userName = user.name || "User";
   const userEmail = user.email || "";
-  const userRole = user.role || "user";
+  const userRole = { admin: "Administrator", verifier: "Verifier", user: "Member" }[user.role] || "Member";
   const userSince = formatDate(user.created_at);
   const adminButton = user.role === "admin" 
     ? '<a href="/admin" id="btn-admin" class="rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-accent-hover hover:shadow-md active:scale-[0.97]">Admin panel</a>' 
