@@ -1,5 +1,19 @@
 import { pool } from "../config/database.js";
 
+/** Solo comprador o vendedor de la conversación pueden leerla/escribirla. */
+async function assertParticipant(conversationId, userId) {
+  const result = await pool.query(
+    `SELECT id FROM conversations
+     WHERE id = $1 AND (buyer_id = $2 OR seller_id = $2)`,
+    [conversationId, userId]
+  );
+  if (result.rows.length === 0) {
+    const error = new Error("Conversation not found");
+    error.code = "NOT_FOUND";
+    throw error;
+  }
+}
+
 export const chatService = {
   async createConversation({ publicationId, buyerId, sellerId }) {
     const result = await pool.query(
@@ -81,6 +95,9 @@ export const chatService = {
   },
 
   async sendMessage({ conversationId, senderId, content }) {
+    // Antes cualquier usuario autenticado podía escribir en un chat ajeno.
+    await assertParticipant(conversationId, senderId);
+
     const result = await pool.query(
       `INSERT INTO messages (conversation_id, sender_id, content)
        VALUES ($1, $2, $3)
@@ -110,6 +127,7 @@ export const chatService = {
   },
 
   async markMessagesRead(conversationId, userId) {
+    await assertParticipant(conversationId, userId);
     await pool.query(
       `UPDATE messages SET is_read = TRUE
        WHERE conversation_id = $1 AND sender_id != $2`,

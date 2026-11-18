@@ -60,10 +60,12 @@ export const update = async (req, res, next) => {
     const { id } = req.params;
     const normalized = normalizePublicationPayload(req.body);
 
-    let images = normalized.images;
-    if (req.files && req.files.length > 0) {
-      images = req.files.map((f) => `/uploads/${f.filename}`);
-    }
+    // Sin archivos nuevos, `images` debe ser NULL para que el COALESCE del
+    // UPDATE conserve las imágenes actuales. Un [] las borraba (auditoría P0).
+    const images =
+      req.files && req.files.length > 0
+        ? req.files.map((f) => `/uploads/${f.filename}`)
+        : undefined;
 
     const publication = await publicationService.update(id, req.user.id, {
       ...normalized,
@@ -86,7 +88,9 @@ export const update = async (req, res, next) => {
 export const remove = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const result = await publicationService.remove(req.user.id, id);
+    // El servicio espera (id, userId); estaban invertidos y el DELETE nunca
+    // encontraba la publicación (404 siempre).
+    const result = await publicationService.remove(id, req.user.id);
     res.json(result);
   } catch (error) {
     if (error.code === "NOT_FOUND") {

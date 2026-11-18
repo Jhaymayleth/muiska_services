@@ -3,6 +3,7 @@ import { getUser } from "../utils/auth.js";
 import { chatService } from "../services/chat.service.js";
 import { sessionStore } from "../state/session.store.js";
 import { navigateTo } from "../router/router.js";
+import { escapeHtml } from "../utils/escape.js";
 
 const ChatPage = async () => {
   const template = loadTemplate("ChatPage");
@@ -44,15 +45,15 @@ const ChatPage = async () => {
     conversationsList.innerHTML = convs
       .map((c) => {
         const isBuyer = c.buyer_id === user.id;
-        const otherUser = isBuyer ? c.seller_name : c.buyer_name;
-        const otherAvatar = isBuyer ? c.seller_avatar : c.buyer_avatar;
+        const otherUser = escapeHtml(isBuyer ? c.seller_name : c.buyer_name || "");
+        const otherAvatar = escapeHtml(isBuyer ? c.seller_avatar : c.buyer_avatar || "");
         const unread = c.unread_count || 0;
         const isActive = c.id === currentConversationId;
 
         return `
           <div
             class="cursor-pointer border-b border-gray-100 p-3 hover:bg-gray-50 ${isActive ? "bg-primary/5" : ""}"
-            data-conversation-id="${c.id}"
+            data-conversation-id="${escapeHtml(c.id)}"
           >
             <div class="flex items-center gap-3">
               <div class="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-gray-200">
@@ -63,7 +64,7 @@ const ChatPage = async () => {
                   <span class="font-medium text-sm">${otherUser || "Unknown"}</span>
                   <span class="text-xs text-gray-400">${formatTimeAgo(c.last_message_at)}</span>
                 </div>
-                <p class="text-xs text-gray-600 line-clamp-1">${c.last_message || "No messages yet"}</p>
+                <p class="text-xs text-gray-600 line-clamp-1">${escapeHtml(c.last_message || "No messages yet")}</p>
               </div>
               ${unread > 0 ? `<span class="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary text-xs font-bold text-white">${unread}</span>` : ""}
             </div>
@@ -103,8 +104,8 @@ const ChatPage = async () => {
       const res = await chatService.getConversation(conversationId);
       const conv = res.conversation;
       const isBuyer = conv.buyer_id === user.id;
-      const otherUser = isBuyer ? conv.seller_name : conv.buyer_name;
-      const otherAvatar = isBuyer ? conv.seller_avatar : conv.buyer_avatar;
+      const otherUser = escapeHtml(isBuyer ? conv.seller_name : conv.buyer_name || "");
+      const otherAvatar = escapeHtml(isBuyer ? conv.seller_avatar : conv.buyer_avatar || "");
 
       chatHeader.innerHTML = `
         <div class="flex items-center gap-3">
@@ -245,12 +246,6 @@ const ChatPage = async () => {
 
   return section;
 };
-
-function escapeHtml(text) {
-  const div = document.createElement("div");
-  div.textContent = text;
-  return div.innerHTML;
-}
 
 function formatTime(dateString) {
   const date = new Date(dateString);

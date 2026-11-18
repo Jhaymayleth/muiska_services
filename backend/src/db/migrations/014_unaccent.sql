@@ -1,0 +1,3 @@
+-- El filtro por barrio (publication.service.js) usa unaccent() para ignorar
+-- tildes. Sin esta extensión PostgreSQL responde 500 en /api/publications?location=...
+CREATE EXTENSION IF NOT EXISTS unaccent;

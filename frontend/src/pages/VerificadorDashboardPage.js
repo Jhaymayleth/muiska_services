@@ -2,6 +2,7 @@ import { loadTemplate } from "../utils/templateLoader.js";
 import { getUser } from "../utils/auth.js";
 import { api } from "../services/api.js";
 import { showToast } from "../state/notification.store.js";
+import { escapeHtml } from "../utils/escape.js";
 
 const VerificadorDashboardPage = () => {
   const template = loadTemplate("VerificadorDashboardPage");
@@ -88,28 +89,28 @@ const VerificadorDashboardPage = () => {
       }
       profilesList.innerHTML = verifications
         .map((v) => `
-          <div class="rounded-lg border border-gray-200 p-4" data-verification-id="${v.id}">
+          <div class="rounded-lg border border-gray-200 p-4" data-verification-id="${escapeHtml(v.id)}">
             <div class="flex items-start justify-between">
               <div class="flex-1">
-                <h3 class="font-semibold text-gray-900">${v.name || "No name"}</h3>
-                <p class="text-sm text-gray-600">${v.email || ""}</p>
-                ${v.phone ? `<p class="text-sm text-gray-600">Phone: ${v.phone}</p>` : ""}
-                ${v.whatsapp ? `<p class="text-sm text-gray-600">WhatsApp: ${v.whatsapp}</p>` : ""}
-                ${v.neighborhood_name ? `<p class="text-sm text-gray-600">Neighborhood: ${v.neighborhood_name} (${v.locality})</p>` : ""}
-                ${v.bio ? `<p class="text-sm text-gray-700 mt-2">${v.bio}</p>` : ""}
-                ${v.rejection_reason ? `<p class="text-sm text-red-600 mt-1">Previous rejection: ${v.rejection_reason}</p>` : ""}
+                <h3 class="font-semibold text-gray-900">${escapeHtml(v.name || "No name")}</h3>
+                <p class="text-sm text-gray-600">${escapeHtml(v.email || "")}</p>
+                ${v.phone ? `<p class="text-sm text-gray-600">Phone: ${escapeHtml(v.phone)}</p>` : ""}
+                ${v.whatsapp ? `<p class="text-sm text-gray-600">WhatsApp: ${escapeHtml(v.whatsapp)}</p>` : ""}
+                ${v.neighborhood_name ? `<p class="text-sm text-gray-600">Neighborhood: ${escapeHtml(v.neighborhood_name)} (${escapeHtml(v.locality)})</p>` : ""}
+                ${v.bio ? `<p class="text-sm text-gray-700 mt-2">${escapeHtml(v.bio)}</p>` : ""}
+                ${v.rejection_reason ? `<p class="text-sm text-red-600 mt-1">Previous rejection: ${escapeHtml(v.rejection_reason)}</p>` : ""}
               </div>
               <div class="ml-4 flex flex-col gap-2">
                 <button
                   data-action="approve"
-                  data-id="${v.id}"
+                  data-id="${escapeHtml(v.id)}"
                   class="rounded bg-green-600 px-3 py-1 text-xs font-medium text-white hover:bg-green-700"
                 >
                   Approve
                 </button>
                 <button
                   data-action="reject"
-                  data-id="${v.id}"
+                  data-id="${escapeHtml(v.id)}"
                   class="rounded bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700"
                 >
                   Reject

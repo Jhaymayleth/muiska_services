@@ -75,6 +75,9 @@ export const chatController = {
       });
       res.status(201).json({ message });
     } catch (error) {
+      if (error.code === "NOT_FOUND") {
+        return res.status(404).json({ message: error.message });
+      }
       next(error);
     }
   },
@@ -85,6 +88,9 @@ export const chatController = {
       await chatService.markMessagesRead(id, req.user.id);
       res.json({ message: "Messages marked as read" });
     } catch (error) {
+      if (error.code === "NOT_FOUND") {
+        return res.status(404).json({ message: error.message });
+      }
       next(error);
     }
   },

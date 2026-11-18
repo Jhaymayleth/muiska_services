@@ -52,8 +52,11 @@ export function setupSocket(httpServer) {
       }
     });
 
-    socket.on("typing", (data) => {
+    socket.on("typing", async (data) => {
       const { conversationId } = data;
+      // No reenviar "escribiendo..." de conversaciones ajenas.
+      const conv = await chatService.getConversationById(conversationId, userId);
+      if (!conv) return;
       socket.to(`conversation:${conversationId}`).emit("user_typing", {
         conversationId,
         userId,
