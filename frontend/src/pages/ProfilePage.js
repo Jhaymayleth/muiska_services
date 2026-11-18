@@ -2,8 +2,20 @@ import { api } from "../services/api.js";
 import { navigateTo } from "../router/router.js";
 import { isAuthenticated, sessionStore } from "../utils/auth.js";
 import { loadTemplate } from "../utils/templateLoader.js";
+import { createBarrioAutocomplete } from "../components/BarrioAutocomplete.js";
 
-const ProfilePage = () => {
+const emptyToNull = (value) => {
+  const trimmed = typeof value === "string" ? value.trim() : "";
+  return trimmed === "" ? null : trimmed;
+};
+
+const coordinateOrNull = (value) => {
+  if (value === null || String(value).trim() === "") return null;
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
+};
+
+const ProfilePage = async () => {
   const template = loadTemplate("ProfilePage");
   const section = document.createElement("section");
   section.className = "mx-auto max-w-2xl space-y-6";
@@ -15,15 +27,74 @@ const ProfilePage = () => {
 
   const user = sessionStore.getUser();
 
-  section.innerHTML = template
-    .replace("{{userName}}", user.name || "")
-    .replace("{{userEmail}}", user.email || "");
+  // Los valores se asignan por JS (no por interpolación) para no romper el HTML
+  // con nombres que contengan comillas o etiquetas.
+  section.innerHTML = template.replace("{{userName}}", "").replace("{{userEmail}}", "");
 
   const profileForm = section.querySelector("#profile-form");
   const profileMessage = section.querySelector("#profile-message");
   const passwordForm = section.querySelector("#password-form");
   const passwordMessage = section.querySelector("#password-message");
   const deleteBtn = section.querySelector("#delete-account-btn");
+  const locateBtn = section.querySelector("#locate-btn");
+
+  const barrioAutocomplete = createBarrioAutocomplete({
+    placeholder: "Search your neighborhood",
+  });
+  section.querySelector("#neighborhood-autocomplete").appendChild(barrioAutocomplete.element);
+
+  let currentNeighborhoodName = "";
+
+  const fillProfile = (data) => {
+    profileForm.name.value = data.name || "";
+    profileForm.email.value = data.email || "";
+    profileForm.phone.value = data.phone || "";
+    profileForm.whatsapp.value = data.whatsapp || "";
+    profileForm.bio.value = data.bio || "";
+    profileForm.lat.value = data.lat ?? "";
+    profileForm.lng.value = data.lng ?? "";
+    barrioAutocomplete.setValue(data.neighborhood_id, currentNeighborhoodName);
+  };
+
+  fillProfile(user || {});
+
+  // El usuario en sesión puede venir de localStorage con datos básicos: se
+  // refresca el perfil completo desde el backend.
+  try {
+    const me = await api.getMe();
+    sessionStore.setUser(me);
+    if (me.neighborhood_id) {
+      try {
+        const neighborhood = await api.getNeighborhood(me.neighborhood_id);
+        currentNeighborhoodName = neighborhood?.name || "";
+      } catch {
+        currentNeighborhoodName = "";
+      }
+    }
+    fillProfile(me);
+  } catch {
+    // Sin conexión se conservan los datos de la sesión local.
+  }
+
+  locateBtn.addEventListener("click", () => {
+    if (!navigator.geolocation) {
+      profileMessage.textContent = "Geolocation is not available in this browser";
+      profileMessage.className = "flex items-center text-sm text-red-600";
+      profileMessage.classList.remove("hidden");
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        profileForm.lat.value = position.coords.latitude.toFixed(6);
+        profileForm.lng.value = position.coords.longitude.toFixed(6);
+      },
+      () => {
+        profileMessage.textContent = "Could not get your location";
+        profileMessage.className = "flex items-center text-sm text-red-600";
+        profileMessage.classList.remove("hidden");
+      },
+    );
+  });
 
   profileForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -32,13 +103,28 @@ const ProfilePage = () => {
 
     const formData = new FormData(profileForm);
     const data = {
-      name: formData.get("name"),
-      email: formData.get("email"),
+      name: emptyToNull(formData.get("name")),
+      email: emptyToNull(formData.get("email")),
+      phone: emptyToNull(formData.get("phone")),
+      whatsapp: emptyToNull(formData.get("whatsapp")),
+      bio: emptyToNull(formData.get("bio")),
+      neighborhoodId: barrioAutocomplete.getValue() || null,
+      lat: coordinateOrNull(formData.get("lat")),
+      lng: coordinateOrNull(formData.get("lng")),
     };
+
+    if (!data.name || !data.email) {
+      profileMessage.textContent = "Name and email are required";
+      profileMessage.className = "flex items-center text-sm text-red-600";
+      profileMessage.classList.remove("hidden");
+      return;
+    }
 
     try {
       const updatedUser = await api.updateProfile(data);
       sessionStore.setUser(updatedUser);
+      currentNeighborhoodName = barrioAutocomplete.getTextValue();
+      fillProfile(updatedUser);
       profileMessage.textContent = "Profile updated successfully";
       profileMessage.className = "flex items-center text-sm text-green-600";
       profileMessage.classList.remove("hidden");

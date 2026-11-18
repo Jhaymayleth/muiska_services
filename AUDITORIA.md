@@ -200,7 +200,9 @@ Correcciones aplicadas después de la revisión; lo anterior describe el estado 
 | P1 VAPID efímero | Claves leídas de `VAPID_PUBLIC_KEY`/`VAPID_PRIVATE_KEY`, con aviso si faltan | `VARIABLES_ENTORNO.md` |
 | Tests | 7 pruebas unitarias + script `test:e2e` | `npm test` y `npm run test:e2e` |
 
-**Sigue pendiente:** UI de perfil con teléfono/bio/barrio/coordenadas y selector de radio en Explore (el backend ya los acepta), mapa de resultados, UI de reviews, Chart.js en el dashboard admin, `helmet`, fingerprints de uploads, CI (no hay `.github/`), y push disparado desde moderación/verificación.
+**Sigue pendiente:** selector de radio y mapa de resultados en Explore, UI de reviews, Chart.js en el dashboard admin, `helmet`, fingerprints de uploads, CI (no hay `.github/`), y push disparado desde moderación/verificación.
+
+El formulario de perfil ya incluye teléfono, WhatsApp, bio, barrio con autocompletar y coordenadas (con botón “Use my current location”); el backend acepta y normaliza esos campos.
 
 ## 10. Conclusión
 
