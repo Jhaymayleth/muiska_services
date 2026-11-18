@@ -13,7 +13,8 @@ export const getAll = async (req, res, next) => {
 export const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const publication = await publicationService.getById(id);
+    // `req.user` es opcional: el detalle público solo devuelve aprobadas.
+    const publication = await publicationService.getById(id, req.user);
     res.json(publication);
   } catch (error) {
     if (error.code === "NOT_FOUND") {

@@ -14,6 +14,20 @@ const MAX_PUBLICATION_PRICE = 99_999_999.99;
 const isValidPublicationPrice = (price) =>
   Number.isFinite(price) && price > 0 && price <= MAX_PUBLICATION_PRICE;
 
+/**
+ * La UI envía el slug de la categoría y el backend histórico buscaba solo por
+ * nombre, así que toda publicación creada desde la SPA quedaba sin categoría.
+ * Se aceptan ambos.
+ */
+const resolveCategoryId = async (category) => {
+  if (!category) return null;
+  const result = await pool.query(
+    "SELECT id FROM categories WHERE LOWER(name) = LOWER($1) OR slug = LOWER($1) LIMIT 1",
+    [category],
+  );
+  return result.rows[0]?.id ?? null;
+};
+
 export const publicationService = {
   async getAll({ category, minPrice, maxPrice, location, search, status, page = 1, limit = 12, user_id, lat, lng, radius }) {
     const pageNum = Math.max(1, parseInt(page, 10));
@@ -81,7 +95,9 @@ export const publicationService = {
        LEFT JOIN users u ON p.user_id = u.id`;
 
     if (hasGeo) {
-      distanceSelect = `, ROUND(ST_DistanceSphere(
+      // ST_DistanceSphere solo acepta geometry; con geography la función
+      // correcta es ST_Distance (metros).
+      distanceSelect = `, ROUND(ST_Distance(
         ST_SetSRID(ST_MakePoint($${paramIndex}, $${paramIndex + 1}), 4326)::geography,
         ST_SetSRID(ST_MakePoint(u.lng, u.lat), 4326)::geography
       )) AS distance_meters`;
@@ -123,7 +139,7 @@ export const publicationService = {
     };
   },
 
-  async getById(id) {
+  async getById(id, requester = null) {
     const result = await pool.query(
       `SELECT ${publicationSelectFields} 
        FROM publications p 
@@ -132,12 +148,17 @@ export const publicationService = {
        WHERE p.id = $1`,
       [id],
     );
-    if (result.rows.length === 0) {
+    const publication = result.rows[0];
+    // Pendientes y rechazadas solo las ve su dueño o un admin: antes bastaba
+    // con conocer el UUID para leer contenido sin moderar.
+    const isOwner = requester && String(requester.id) === String(publication?.user_id);
+    const isAdmin = requester?.role === "admin";
+    if (!publication || (publication.moderation_status !== "approved" && !isOwner && !isAdmin)) {
       const error = new Error("Publication not found");
       error.code = "NOT_FOUND";
       throw error;
     }
-    return result.rows[0];
+    return publication;
   },
 
   async getMine(userId) {
@@ -160,13 +181,7 @@ export const publicationService = {
       throw error;
     }
 
-    let categoryId = null;
-    if (category) {
-      const catResult = await pool.query("SELECT id FROM categories WHERE name = $1", [category]);
-      if (catResult.rows.length > 0) {
-        categoryId = catResult.rows[0].id;
-      }
-    }
+    const categoryId = await resolveCategoryId(category);
 
     const result = await pool.query(
       `INSERT INTO publications (title, description, price, category_id, images, location, contact_method, user_id, type, business_hours, coverage_area, price_type)
@@ -175,7 +190,8 @@ export const publicationService = {
       [title, description, price, categoryId, images, location, contact_method, userId, type, business_hours, coverage_area, price_type],
     );
 
-    return this.getById(result.rows[0].id);
+    // Nace `pending`: el dueño debe recibirla aunque no sea pública todavía.
+    return this.getById(result.rows[0].id, { id: userId, role: "user" });
   },
 
   async update(id, userId, { title, description, price, category, images, location, contact_method, status, type, business_hours, coverage_area, price_type }) {
@@ -185,13 +201,7 @@ export const publicationService = {
       throw error;
     }
 
-    let categoryId = undefined;
-    if (category) {
-      const catResult = await pool.query("SELECT id FROM categories WHERE name = $1", [category]);
-      if (catResult.rows.length > 0) {
-        categoryId = catResult.rows[0].id;
-      }
-    }
+    const categoryId = category ? await resolveCategoryId(category) : undefined;
 
     const result = await pool.query(
       `UPDATE publications
@@ -207,6 +217,12 @@ export const publicationService = {
            business_hours = COALESCE($10, business_hours),
            coverage_area = COALESCE($11, coverage_area),
            price_type = COALESCE($12, price_type),
+           -- Editar una publicación aprobada la devuelve a moderación: el
+           -- contenido nuevo no puede seguir público sin revisión.
+           moderation_status = CASE WHEN moderation_status = 'approved' THEN 'pending' ELSE moderation_status END,
+           moderated_by = CASE WHEN moderation_status = 'approved' THEN NULL ELSE moderated_by END,
+           moderated_at = CASE WHEN moderation_status = 'approved' THEN NULL ELSE moderated_at END,
+           rejection_reason = CASE WHEN moderation_status = 'approved' THEN NULL ELSE rejection_reason END,
            updated_at = NOW()
        WHERE id = $13 AND user_id = $14
        RETURNING *`,
@@ -219,7 +235,9 @@ export const publicationService = {
       throw error;
     }
 
-    return this.getById(id);
+    // El dueño debe poder recibir su publicación recién editada aunque haya
+    // vuelto a `pending` por moderación.
+    return this.getById(id, { id: userId, role: "user" });
   },
 
   async remove(id, userId) {

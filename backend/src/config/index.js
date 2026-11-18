@@ -48,5 +48,10 @@ export const config = {
   rateLimit: {
     windowMs: Number(getEnv("RATE_LIMIT_WINDOW_MS", 15 * 60 * 1000)),
     maxRequests: Number(getEnv("RATE_LIMIT_MAX", 100)),
+    // Límites de autenticación configurables: los valores seguros por defecto
+    // (10 intentos / 3 registros) hacen imposible correr la suite E2E varias
+    // veces desde la misma IP en local.
+    authMax: Number(getEnv("RATE_LIMIT_AUTH_MAX", 10)),
+    registerMax: Number(getEnv("RATE_LIMIT_REGISTER_MAX", 3)),
   },
 };

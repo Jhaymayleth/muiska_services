@@ -7,7 +7,7 @@ import {
     update,
     remove,
 } from "../controllers/publication.controller.js";
-import { verifyToken } from "../middlewares/auth.middleware.js";
+import { verifyToken, optionalAuth } from "../middlewares/auth.middleware.js";
 import { requireVerifiedSeller } from "../middlewares/verification.middleware.js";
 import { upload, handleUploadError } from "../middlewares/upload.middleware.js";
 import { validateBody, validateQuery, validateParams } from "../middlewares/validate.middleware.js";
@@ -22,7 +22,7 @@ const idParamSchema = z.object({
 
 router.get("/publications", validateQuery(publicationQuerySchema), getAll);
 router.get("/publications/mine", verifyToken, validateQuery(publicationQuerySchema), getMine);
-router.get("/publications/:id", validateParams(idParamSchema), getById);
+router.get("/publications/:id", optionalAuth, validateParams(idParamSchema), getById);
 router.post(
     "/publications",
     verifyToken,

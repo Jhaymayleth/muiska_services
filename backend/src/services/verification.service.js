@@ -40,7 +40,9 @@ export const verificationService = {
       );
 
       if (verifResult.rows.length === 0) {
-        throw new Error("Verification not found or already processed");
+        const error = new Error("Verification not found or already processed");
+        error.code = "CONFLICT";
+        throw error;
       }
 
       const verification = verifResult.rows[0];
@@ -95,7 +97,9 @@ export const verificationService = {
       );
 
       if (verifResult.rows.length === 0) {
-        throw new Error("Verification not found or already processed");
+        const error = new Error("Verification not found or already processed");
+        error.code = "CONFLICT";
+        throw error;
       }
 
       const verification = verifResult.rows[0];

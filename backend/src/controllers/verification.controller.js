@@ -48,6 +48,9 @@ export const verificationController = {
       const verification = await verificationService.approveVerification(id, verifierId);
       res.json({ message: "Profile verified successfully", verification });
     } catch (error) {
+      if (error.code === "CONFLICT") {
+        return res.status(409).json({ message: error.message });
+      }
       next(error);
     }
   },
@@ -62,6 +65,12 @@ export const verificationController = {
       const verification = await verificationService.rejectVerification(id, verifierId, reason.trim());
       res.json({ message: "Profile rejected", verification });
     } catch (error) {
+      if (error.code === "MISSING_REASON") {
+        return res.status(400).json({ message: error.message });
+      }
+      if (error.code === "CONFLICT") {
+        return res.status(409).json({ message: error.message });
+      }
       next(error);
     }
   },

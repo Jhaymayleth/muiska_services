@@ -177,7 +177,32 @@ Alcance comprometido: roles cliente/vendedor/verificador/admin, verificación pr
 
 ---
 
-## 9. Conclusión
+## 9. Estado posterior (2026-11-18)
+
+Correcciones aplicadas después de la revisión; lo anterior describe el estado en `3dc9dad`.
+
+| Hallazgo | Cambio | Verificación |
+|---|---|---|
+| P0 borrado invertido | `remove(id, userId)` invocado en el orden correcto | E2E “borrar la publicación propia” / “ya no existe” |
+| P0 imágenes al editar | `normalizePublicationPayload` devuelve `undefined` cuando no llegan imágenes y el `UPDATE` conserva el array | `tests/publication.schema.test.js` y E2E “la edición conserva las imágenes” |
+| P0 `unaccent` | Migración `014_unaccent.sql` | E2E “filtro por barrio” responde 200 |
+| P0 IDOR de chat / XSS | Validación de participantes en REST y socket; `escapeHtml` en chat y verificador | Commit `aea8f83` |
+| P1 categoría perdida | `publication.service` resuelve la categoría por `name` **o** `slug` | E2E “la categoría se resuelve por slug” |
+| P1 crear categoría desde admin | `slug` opcional en el schema; el servicio lo genera y desaccentúa | E2E “crear categoría sin slug” |
+| P1 categoría solo con descripción | `UPDATE` parcial con `COALESCE` | E2E “actualizar categoría solo con descripción” |
+| P1 geo inalcanzable | `lat`, `lng` y `radius` en `publicationQuerySchema`; `ST_Distance` sobre geography en lugar de `ST_DistanceSphere` (la firma con geography no existe) | E2E “filtro por radio responde 200” |
+| P1 perfil borraba campos | `UPDATE` dinámico solo con los campos enviados; se aceptan `neighborhoodId` y `neighborhood_id` | E2E “actualizar nombre no borra el teléfono” |
+| P1 editar evitaba moderación | Editar una publicación aprobada la devuelve a `pending` y limpia la moderación anterior | E2E “editar una aprobada la devuelve a moderación” |
+| P1 detalle sin filtro | `getById` devuelve 404 si está pendiente/rechazada y el solicitante no es dueño ni admin (`optionalAuth` en la ruta) | E2E “el detalle pendiente no es público” / “el dueño ve su publicación” |
+| P1 errores de negocio → 500 | `CONFLICT` en moderación/verificación mapeado a 409 | E2E “aprobar dos veces devuelve 409” |
+| P1 rate limit sin usar | `trust proxy` + `apiLimiter` sobre `/api` y `registerLimiter` en registro | Respuestas incluyen cabeceras `RateLimit-*` (comprobado con `curl -i`) |
+| P1 login sin `user_type` | Login devuelve `user_type`, `verification_status` e `is_verified_badge` | E2E “login devuelve user_type” |
+| P1 VAPID efímero | Claves leídas de `VAPID_PUBLIC_KEY`/`VAPID_PRIVATE_KEY`, con aviso si faltan | `VARIABLES_ENTORNO.md` |
+| Tests | 7 pruebas unitarias + script `test:e2e` | `npm test` y `npm run test:e2e` |
+
+**Sigue pendiente:** UI de perfil con teléfono/bio/barrio/coordenadas y selector de radio en Explore (el backend ya los acepta), mapa de resultados, UI de reviews, Chart.js en el dashboard admin, `helmet`, fingerprints de uploads, CI (no hay `.github/`), y push disparado desde moderación/verificación.
+
+## 10. Conclusión
 
 MUISKA cubre estructuralmente el producto prometido, pero **no está en estado "completed"**: cinco fallos P0 (borrado, imágenes, filtro de barrio, IDOR de chat y XSS) impiden una entrega segura y funcional. La corrección de estos, junto con la activación real del rate limiting y la sincronización de la documentación, es condición mínima para considerar la rama lista para integración.
 

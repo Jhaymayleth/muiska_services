@@ -85,7 +85,18 @@ export const authService = {
     );
 
     return {
-      user: { id: user.id, name: user.name, email: user.email, role: user.role, created_at: user.created_at },
+      // Los guards del frontend necesitan user_type y verification_status al
+      // iniciar sesión; antes solo llegaban tras un GET /auth/me.
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        user_type: user.user_type,
+        verification_status: user.verification_status,
+        is_verified_badge: user.is_verified_badge,
+        created_at: user.created_at,
+      },
       token,
     };
   },
@@ -106,26 +117,57 @@ export const authService = {
     return result.rows[0];
   },
 
-  async updateProfile(userId, { name, email, phone, whatsapp, bio, neighborhood_id, lat, lng }) {
-    const nameTrimed = name.trim();
-    const emailTrimed = email.trim().toLowerCase();
+  async updateProfile(userId, payload) {
+    // Solo se actualizan los campos enviados: antes cualquier PUT que no trajera
+    // teléfono/bio/barrio los dejaba en NULL.
+    const fields = {
+      name: payload.name?.trim(),
+      email: payload.email?.trim().toLowerCase(),
+      phone: payload.phone,
+      whatsapp: payload.whatsapp,
+      bio: payload.bio,
+      neighborhood_id: payload.neighborhoodId ?? payload.neighborhood_id,
+      lat: payload.lat,
+      lng: payload.lng,
+    };
 
-    const existing = await pool.query("SELECT id FROM users WHERE email = $1 AND id != $2", [emailTrimed, userId]);
-    if (existing.rows.length > 0) {
-      const error = new Error("Email already in use");
-      error.code = "EMAIL_EXISTS";
+    if (fields.email) {
+      const existing = await pool.query("SELECT id FROM users WHERE email = $1 AND id != $2", [fields.email, userId]);
+      if (existing.rows.length > 0) {
+        const error = new Error("Email already in use");
+        error.code = "EMAIL_EXISTS";
+        throw error;
+      }
+    }
+
+    const sets = [];
+    const values = [];
+    for (const [column, value] of Object.entries(fields)) {
+      if (value === undefined) continue;
+      values.push(value);
+      sets.push(`${column} = $${values.length}`);
+    }
+
+    if (sets.length === 0) {
+      const error = new Error("No fields to update");
+      error.code = "NO_FIELDS";
       throw error;
     }
 
+    values.push(userId);
     const result = await pool.query(
-      `UPDATE users SET name = $1, email = $2, phone = $3, whatsapp = $4, bio = $5,
-              neighborhood_id = $6, lat = $7, lng = $8, updated_at = NOW()
-       WHERE id = $9
+      `UPDATE users SET ${sets.join(", ")}, updated_at = NOW()
+       WHERE id = $${values.length}
        RETURNING id, name, email, role, user_type, verification_status, is_verified_badge,
                   neighborhood_id, lat, lng, phone, whatsapp, bio, profile_image_url,
                   avg_rating, total_reviews, created_at`,
-      [nameTrimed, emailTrimed, phone, whatsapp, bio, neighborhood_id, lat, lng, userId]
+      values
     );
+    if (result.rows.length === 0) {
+      const error = new Error("User not found");
+      error.code = "NOT_FOUND";
+      throw error;
+    }
     return result.rows[0];
   },
 

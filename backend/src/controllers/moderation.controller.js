@@ -27,6 +27,10 @@ export const moderationController = {
       const result = await moderationService.approvePublication(req.params.id, req.user.id);
       res.json(result);
     } catch (error) {
+      // Procesar dos veces la misma publicación es un conflicto, no un 500.
+      if (error.code === "CONFLICT") {
+        return res.status(409).json({ message: error.message });
+      }
       next(error);
     }
   },
@@ -39,6 +43,9 @@ export const moderationController = {
     } catch (error) {
       if (error.code === "MISSING_REASON") {
         return res.status(400).json({ message: error.message });
+      }
+      if (error.code === "CONFLICT") {
+        return res.status(409).json({ message: error.message });
       }
       next(error);
     }

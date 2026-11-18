@@ -44,12 +44,20 @@ export const publicationQuerySchema = z.object({
     maxPrice: z.coerce.number().positive().optional(),
     location: z.string().max(255).optional(),
     type: z.enum(["product", "service"]).optional(),
-    moderationStatus: z.enum(["pending", "approved", "rejected"]).optional()
+    moderationStatus: z.enum(["pending", "approved", "rejected"]).optional(),
+    // Búsqueda hiperlocal: antes el validador descartaba estos tres campos y
+    // el filtro por radio de publication.service nunca se ejecutaba.
+    lat: z.coerce.number().min(-90).max(90).optional(),
+    lng: z.coerce.number().min(-180).max(180).optional(),
+    radius: z.coerce.number().refine((value) => [1, 3, 5, 10].includes(value), {
+        message: "Radius must be 1, 3, 5 or 10 km"
+    }).optional()
 });
 
 export const createCategorySchema = z.object({
     name: z.string().min(1, "Name is required").max(100, "Name cannot exceed 100 characters"),
-    slug: z.string().min(1, "Slug is required").max(100, "Slug cannot exceed 100 characters").regex(/^[a-z0-9-]+$/, "Slug can only contain lowercase letters, numbers and hyphens"),
+    // Opcional: si no llega, category.service lo genera a partir del nombre.
+    slug: z.string().min(1).max(100).regex(/^[a-z0-9-]+$/, "Slug can only contain lowercase letters, numbers and hyphens").optional(),
     description: z.string().max(500).optional().nullable()
 });
 
@@ -57,6 +65,8 @@ export const updateCategorySchema = z.object({
     name: z.string().min(1).max(100).optional(),
     slug: z.string().min(1).max(100).regex(/^[a-z0-9-]+$/, "Slug can only contain lowercase letters, numbers and hyphens").optional(),
     description: z.string().max(500).optional().nullable()
+}).refine(data => Object.keys(data).length > 0, {
+    message: "At least one field must be provided for update"
 });
 
 export const registerSchema = z.object({
@@ -77,9 +87,14 @@ export const updateProfileSchema = z.object({
     phone: z.string().max(20).optional().nullable(),
     whatsapp: z.string().max(20).optional().nullable(),
     bio: z.string().max(1000).optional().nullable(),
+    // El cliente histórico envía snake_case (api.js convierte camelCase); se
+    // aceptan ambos y el servicio normaliza.
     neighborhoodId: z.string().uuid().optional().nullable(),
-    lat: z.number().optional().nullable(),
-    lng: z.number().optional().nullable()
+    neighborhood_id: z.string().uuid().optional().nullable(),
+    lat: z.coerce.number().min(-90).max(90).optional().nullable(),
+    lng: z.coerce.number().min(-180).max(180).optional().nullable()
+}).refine(data => Object.keys(data).length > 0, {
+    message: "At least one field must be provided for update"
 });
 
 export const changePasswordSchema = z.object({

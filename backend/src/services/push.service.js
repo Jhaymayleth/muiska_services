@@ -1,9 +1,24 @@
 import webPush from "web-push";
 import { pool } from "../config/database.js";
 
-const vapidKeys = webPush.generateVAPIDKeys();
+// Las claves VAPID deben sobrevivir reinicios: si se generan en cada arranque,
+// todas las suscripciones guardadas quedan inválidas. Se leen del entorno y
+// solo se generan (con aviso) cuando no están configuradas.
+const vapidKeys = process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY
+  ? {
+      publicKey: process.env.VAPID_PUBLIC_KEY,
+      privateKey: process.env.VAPID_PRIVATE_KEY,
+    }
+  : webPush.generateVAPIDKeys();
+
+if (!process.env.VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) {
+  console.warn(
+    "VAPID keys no configuradas: las notificaciones push se invalidarán al reiniciar. Define VAPID_PUBLIC_KEY y VAPID_PRIVATE_KEY."
+  );
+}
+
 webPush.setVapidDetails(
-  "mailto:muiska@localhost",
+  process.env.VAPID_SUBJECT || "mailto:muiska@localhost",
   vapidKeys.publicKey,
   vapidKeys.privateKey
 );

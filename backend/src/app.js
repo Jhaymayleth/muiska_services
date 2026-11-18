@@ -21,6 +21,7 @@ import pushRouter from "./routes/push.routes.js";
 import { errorMiddleware, notFoundMiddleware } from "./middlewares/error.middleware.js";
 import { createRequestLogger } from "./config/logger.js";
 import { config } from "./config/index.js";
+import { apiLimiter } from "./middlewares/rateLimit.middleware.js";
 
 dotenv.config();
 
@@ -28,12 +29,19 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
+// Detrás de nginx: sin esto express-rate-limit agrupa a todos los clientes bajo
+// la IP del proxy y rechaza peticiones legítimas.
+app.set("trust proxy", 1);
+
 app.use(cors({ origin: config.cors.origin }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(createRequestLogger);
 
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+
+// Límite global del API: apiLimiter estaba definido pero nunca se montaba.
+app.use("/api", apiLimiter);
 
 app.use("/api", statusRouter);
 app.use("/api", publicationRouter);

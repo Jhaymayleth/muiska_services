@@ -17,13 +17,13 @@ const createRateLimiter = (windowMs, max, message) => rateLimit({
 
 export const authLimiter = createRateLimiter(
     15 * 60 * 1000,
-    10,
+    config.rateLimit.authMax,
     'Too many authentication attempts. Try again in 15 minutes.'
 );
 
 export const registerLimiter = createRateLimiter(
     60 * 60 * 1000,
-    3,
+    config.rateLimit.registerMax,
     'Too many registration attempts. Try again in 1 hour.'
 );
 

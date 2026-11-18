@@ -88,7 +88,9 @@ export const moderationService = {
       );
 
       if (pubResult.rows.length === 0) {
-        throw new Error("Publication not found or already processed");
+        const error = new Error("Publication not found or already processed");
+        error.code = "CONFLICT";
+        throw error;
       }
 
       const publication = pubResult.rows[0];
@@ -141,7 +143,9 @@ export const moderationService = {
       );
 
       if (pubResult.rows.length === 0) {
-        throw new Error("Publication not found or already processed");
+        const error = new Error("Publication not found or already processed");
+        error.code = "CONFLICT";
+        throw error;
       }
 
       const publication = pubResult.rows[0];

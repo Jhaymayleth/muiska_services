@@ -49,6 +49,12 @@ export const updateProfile = async (req, res, next) => {
     if (error.code === "EMAIL_EXISTS") {
       return res.status(409).json({ message: error.message });
     }
+    if (error.code === "NOT_FOUND") {
+      return res.status(404).json({ message: error.message });
+    }
+    if (error.code === "NO_FIELDS") {
+      return res.status(400).json({ message: error.message });
+    }
     next(error);
   }
 };

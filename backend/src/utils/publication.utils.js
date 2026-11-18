@@ -11,9 +11,11 @@ export const normalizePublicationPayload = (payload = {}) => {
     typeof payload.contactMethod === "string"
       ? payload.contactMethod.trim()
       : "";
+  // `undefined` (campo no enviado) es distinto de `[]` (vaciar imágenes): el
+  // COALESCE del UPDATE usa el primero para conservar las actuales.
   const images = Array.isArray(payload.images)
     ? payload.images.filter(Boolean).map((image) => String(image).trim())
-    : [];
+    : undefined;
 
   return {
     title,

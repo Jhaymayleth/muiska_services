@@ -24,8 +24,13 @@
 | `JWT_EXPIRES_IN` | No | `7d` | `1h` / `7d` | Vigencia del token (`config/index.js:36`). |
 | `CORS_ORIGIN` | No | `http://localhost:5173` | `http://localhost:8080` | Origen permitido por CORS (`config/index.js:40`). En Docker el frontend es `:8080`; con Nginx el API es mismo origen, pero conviene declararlo. |
 | `MAX_FILE_SIZE` | No | `5242880` (5 MB) | `5242880` | Tamaño máximo de subida (`config/index.js:44`). Multer además limita a 5 archivos. |
-| `RATE_LIMIT_WINDOW_MS` | No | `900000` | `900000` | Ventana del rate limit (`config/index.js:48`). **Definida pero no aplicada** (auditoría P0). |
-| `RATE_LIMIT_MAX` | No | `100` | `100` | Máximo de peticiones por ventana. **Definida pero no aplicada.** |
+| `RATE_LIMIT_WINDOW_MS` | No | `900000` | `900000` | Ventana del rate limit (`config/index.js:48`). El límite global usa una ventana fija de 15 min (`rateLimit.middleware.js`). |
+| `RATE_LIMIT_MAX` | No | `100` | `100` | Máximo de peticiones por ventana; `apiLimiter` se monta sobre `/api` (`app.js`). |
+| `RATE_LIMIT_AUTH_MAX` | No | `10` | `10` | Intentos de login por IP cada 15 min (`rateLimit.middleware.js`). Compose local usa `50` para poder repetir el E2E. |
+| `RATE_LIMIT_REGISTER_MAX` | No | `3` | `3` | Registros por IP cada hora. En producción debe mantenerse bajo. |
+| `VAPID_PUBLIC_KEY` | No (recomendada) | se genera al arrancar | clave pública base64url | Clave pública de Web Push. Si falta, se genera una nueva en cada arranque y las suscripciones se invalidan. |
+| `VAPID_PRIVATE_KEY` | No (recomendada) | se genera al arrancar | clave privada base64url | Clave privada de Web Push; debe ser estable entre despliegues. |
+| `VAPID_SUBJECT` | No | `mailto:muiska@localhost` | `mailto:soporte@muiska.com` | Contacto que exige el protocolo VAPID. |
 | `RUN_SEEDS` | No | *(vacío)* | `true` | Solo con `true` se ejecutan seeds al arrancar (`db/seed.js:57`). Compose lo pone en `true`. |
 
 ## Frontend
