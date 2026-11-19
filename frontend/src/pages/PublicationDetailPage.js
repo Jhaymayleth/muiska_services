@@ -6,6 +6,7 @@ import { loadTemplate } from "../utils/templateLoader.js";
 import { formatDate, escapeHtml } from "../utils/helpers.js";
 import { chatService } from "../services/chat.service.js";
 import { getIcon } from "../utils/icons.js";
+import { showToast } from "../state/notification.store.js";
 
 const PublicationDetailPage = () => {
   const section = document.createElement("section");
@@ -141,6 +142,88 @@ const PublicationDetailPage = () => {
         }
       });
     }
+
+    // Reviews: listado público + formulario para quien no es dueño.
+    const reviewsList = container.querySelector("#reviews-list");
+    const reviewsAverage = container.querySelector("#reviews-average");
+    const reviewForm = container.querySelector("#review-form");
+    const reviewRating = container.querySelector("#review-rating");
+    const reviewComment = container.querySelector("#review-comment");
+
+    const renderReviews = ({ reviews = [], average = 0, total = 0 } = {}) => {
+      if (reviewsAverage) {
+        reviewsAverage.textContent = total
+          ? `★ ${Number(average).toFixed(1)} · ${total} review${total === 1 ? "" : "s"}`
+          : "No reviews yet";
+      }
+      if (!reviewsList) return;
+      if (reviews.length === 0) {
+        reviewsList.innerHTML = '<p class="text-sm text-text/60">No reviews yet.</p>';
+        return;
+      }
+      reviewsList.innerHTML = reviews
+        .map((review) => {
+          const rating = Math.min(5, Math.max(0, Math.round(Number(review.rating) || 0)));
+          return `
+            <div class="rounded-xl border border-border bg-white p-4">
+              <div class="flex items-center justify-between gap-3">
+                <p class="font-medium text-text">${escapeHtml(review.reviewer_name || "User")}</p>
+                <span class="text-sm text-accent" aria-label="${rating} out of 5">${"★".repeat(rating)}${"☆".repeat(5 - rating)}</span>
+              </div>
+              ${review.comment ? `<p class="mt-2 whitespace-pre-wrap text-sm text-text/70">${escapeHtml(review.comment)}</p>` : ""}
+              <p class="mt-2 text-xs text-text/40">${new Date(review.created_at).toLocaleDateString()}</p>
+            </div>
+          `;
+        })
+        .join("");
+    };
+
+    const loadReviews = async () => {
+      try {
+        const data = await api.getPublicationReviews(pub.id);
+        renderReviews(data);
+        // El backend hace upsert: si ya existe, se precarga para editar.
+        if (currentUser && reviewForm) {
+          const mine = (data.reviews || []).find((r) => r.reviewer_id === currentUser.id);
+          if (mine) {
+            reviewRating.value = String(mine.rating);
+            reviewComment.value = mine.comment || "";
+            reviewForm.querySelector("button[type='submit']").textContent = "Update review";
+          }
+        }
+      } catch {
+        if (reviewsList) {
+          reviewsList.innerHTML = '<p class="text-sm text-text/60">Could not load reviews.</p>';
+        }
+      }
+    };
+
+    if (currentUser && !isOwner && reviewForm) {
+      reviewForm.classList.remove("hidden");
+    }
+
+    if (reviewForm) {
+      reviewForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const submitBtn = reviewForm.querySelector("button[type='submit']");
+        submitBtn.disabled = true;
+        try {
+          await api.createReview(pub.id, {
+            rating: Number(reviewRating.value),
+            comment: reviewComment.value.trim() || null,
+          });
+          await loadReviews();
+          submitBtn.textContent = "Update review";
+          showToast("Review saved", "success");
+        } catch (err) {
+          showToast(err.message || "Could not save review", "error");
+        } finally {
+          submitBtn.disabled = false;
+        }
+      });
+    }
+
+    loadReviews();
 
     // Favorite button handler
     const favBtn = container.querySelector(".detail-fav-btn");
