@@ -3,14 +3,11 @@ import { reviewService } from "../services/review.service.js";
 export const createReview = async (req, res, next) => {
   try {
     const { publicationId } = req.params;
+    // El rating ya viene validado y normalizado por createReviewSchema.
     const { rating, comment } = req.body;
 
-    if (!rating || rating < 1 || rating > 5) {
-      return res.status(400).json({ message: "Rating must be between 1 and 5" });
-    }
-
     const review = await reviewService.create(publicationId, req.user.id, {
-      rating: parseInt(rating, 10),
+      rating,
       comment,
     });
 

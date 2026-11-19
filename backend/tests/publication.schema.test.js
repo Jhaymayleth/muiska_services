@@ -28,6 +28,13 @@ test("rechaza radios fuera de la lista soportada", () => {
   assert.equal(publicationQuerySchema.safeParse({ radius: "7" }).success, false);
 });
 
+test("acepta lat/lng 0 como coordenadas válidas (no las descarta)", () => {
+  const result = publicationQuerySchema.safeParse({ lat: 0, lng: 0, radius: 3 });
+  assert.equal(result.success, true);
+  assert.equal(result.data.lat, 0);
+  assert.equal(result.data.lng, 0);
+});
+
 test("permite crear categorías sin slug (lo genera el servicio)", () => {
   assert.equal(createCategorySchema.safeParse({ name: "Hogar" }).success, true);
 });

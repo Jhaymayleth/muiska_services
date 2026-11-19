@@ -152,3 +152,8 @@ export const favoriteQuerySchema = z.object({
 export const idParamSchema = z.object({
     id: z.string().uuid("Invalid ID format")
 });
+
+export const createReviewSchema = z.object({
+    rating: z.coerce.number().int().min(1).max(5),
+    comment: z.string().max(1000).trim().optional().nullable()
+});
