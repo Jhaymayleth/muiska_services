@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
+import swaggerUi from "swagger-ui-express";
+import { openapi } from "./docs/openapi.js";
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
@@ -33,6 +35,11 @@ const app = express();
 // Detrás de nginx: sin esto express-rate-limit agrupa a todos los clientes bajo
 // la IP del proxy y rechaza peticiones legítimas.
 app.set("trust proxy", 1);
+
+// Documentación interactiva. Se monta antes de Helmet porque Swagger UI usa
+// scripts y estilos inline que la CSP por defecto bloquearía.
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(openapi));
+app.get("/api/docs.json", (_req, res) => res.json(openapi));
 
 // Cabeceras de seguridad. La API también sirve /uploads, así que se permite
 // que el frontend (en otro origen) cargue esas imágenes.
