@@ -34,8 +34,11 @@ export const verifyToken = async (req, res, next) => {
   }
 };
 
-export const requireRole = (roles) => {
-  const allowedRoles = Array.isArray(roles) ? roles : [roles];
+// Acepta tanto requireRole("admin") como requireRole("verifier", "admin") o
+// requireRole(["verifier", "admin"]). Antes solo se usaba el primer argumento,
+// así que un admin no podía moderar ni verificar.
+export const requireRole = (...roles) => {
+  const allowedRoles = roles.flat();
   return (req, res, next) => {
     if (!req.user || !allowedRoles.includes(req.user.role)) {
       return next(new ForbiddenError("Insufficient permissions"));
