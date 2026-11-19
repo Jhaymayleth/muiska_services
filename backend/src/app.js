@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
@@ -33,6 +34,13 @@ const app = express();
 // la IP del proxy y rechaza peticiones legítimas.
 app.set("trust proxy", 1);
 
+// Cabeceras de seguridad. La API también sirve /uploads, así que se permite
+// que el frontend (en otro origen) cargue esas imágenes.
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  }),
+);
 app.use(cors({ origin: config.cors.origin }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

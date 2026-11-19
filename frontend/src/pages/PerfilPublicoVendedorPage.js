@@ -5,6 +5,7 @@ import { createVerificacionBadge } from "../components/VerificacionBadge.js";
 import ListingCard from "../components/listing/ListingCard.js";
 import { useGeolocation } from "../hooks/useGeolocation.js";
 import { getIcon } from "../utils/icons.js";
+import { escapeHtml } from "../utils/helpers.js";
 
 const PerfilPublicoVendedorPage = async () => {
   const template = loadTemplate("PerfilPublicoVendedorPage");
@@ -69,7 +70,7 @@ const PerfilPublicoVendedorPage = async () => {
     }
 
     if (profile.profile_image_url) {
-      avatarEl.innerHTML = `<img src="${profile.profile_image_url}" alt="${profile.name}" class="h-24 w-24 rounded-full object-cover" />`;
+      avatarEl.innerHTML = `<img src="${escapeHtml(profile.profile_image_url)}" alt="${escapeHtml(profile.name)}" class="h-24 w-24 rounded-full object-cover" />`;
     }
 
     statActive.textContent = stats.active_listings || 0;
@@ -96,7 +97,7 @@ const PerfilPublicoVendedorPage = async () => {
     }
   } catch (err) {
     nameEl.textContent = "Error loading profile";
-    listingsGrid.innerHTML = `<p class="text-red-600">Error: ${err.message || "Could not load profile"}</p>`;
+    listingsGrid.innerHTML = `<p class="text-red-600">Error: ${escapeHtml(err.message || "Could not load profile")}</p>`;
   }
 
   return section;

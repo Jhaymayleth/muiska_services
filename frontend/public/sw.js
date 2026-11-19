@@ -1,4 +1,4 @@
-const CACHE = "muiska-v2";
+const CACHE = "muiska-v3";
 const STATIC_ASSETS = ["/", "/index.html", "/Logo.png", "/manifest.json"];
 
 self.addEventListener("install", (event) => {
@@ -24,10 +24,9 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET") return;
   if (url.protocol !== "http:" && url.protocol !== "https:") return;
 
-  if (url.pathname.startsWith("/api/")) {
-    event.respondWith(networkFirst(request));
-    return;
-  }
+  // El API no se cachea: son respuestas autenticadas y datos en tiempo real.
+  // Dejar que el navegador las pida directamente a la red.
+  if (url.pathname.startsWith("/api/")) return;
 
   if (url.origin === self.location.origin) {
     event.respondWith(cacheFirst(request));

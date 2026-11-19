@@ -3,7 +3,7 @@ import { getUser, sessionStore } from "../../utils/auth.js";
 import { getFavorites } from "../../services/publication.service.js";
 import { api } from "../../services/api.js";
 import { loadTemplate, renderTemplate } from "../../utils/templateLoader.js";
-import { formatDate } from "../../utils/helpers.js";
+import { formatDate, escapeHtml } from "../../utils/helpers.js";
 
 const DashboardPage = async () => {
   const template = loadTemplate("DashboardPage");
@@ -40,12 +40,12 @@ const DashboardPage = async () => {
     : "";
 
   section.innerHTML = template
-    .replace("{{userInitials}}", userInitials)
-    .replace("{{userName}}", userName)
-    .replace("{{userEmail}}", userEmail)
-    .replace("{{userRole}}", userRole)
-    .replace("{{userSince}}", userSince)
-    .replace("{{adminButton}}", adminButton);
+    .replace("{{userInitials}}", () => escapeHtml(userInitials))
+    .replace("{{userName}}", () => escapeHtml(userName))
+    .replace("{{userEmail}}", () => escapeHtml(userEmail))
+    .replace("{{userRole}}", () => escapeHtml(userRole))
+    .replace("{{userSince}}", () => escapeHtml(userSince))
+    .replace("{{adminButton}}", () => adminButton);
 
   // Load component templates
   const statsTemplate = loadTemplate("DashboardStats");
@@ -101,11 +101,11 @@ const DashboardPage = async () => {
           : '<span class="inline-flex rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-text/70">Inactive</span>';
 
         return renderTemplate("DashboardPubCard", {
-          title: pub.title,
+          title: escapeHtml(pub.title),
           price: parseFloat(pub.price).toFixed(2),
-          category: pub.category || "",
+          category: escapeHtml(pub.category || ""),
           statusBadge,
-          id: pub.id,
+          id: escapeHtml(pub.id),
         });
       }).join("");
 
@@ -132,7 +132,7 @@ const DashboardPage = async () => {
         });
       });
     } catch (err) {
-      list.innerHTML = `<p class="text-sm text-red-600">${err.message || "Could not load publications."}</p>`;
+      list.innerHTML = `<p class="text-sm text-red-600">${escapeHtml(err.message || "Could not load publications.")}</p>`;
     }
   };
 
@@ -161,14 +161,14 @@ const DashboardPage = async () => {
           : '<span class="inline-flex rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-text/70">Inactive</span>';
 
         return renderTemplate("DashboardFavCard", {
-          id: pub.id,
-          title: pub.title,
+          id: escapeHtml(pub.id),
+          title: escapeHtml(pub.title),
           price: parseFloat(pub.price).toFixed(2),
-          category: pub.category || "",
+          category: escapeHtml(pub.category || ""),
           statusBadge,
-          userName: pub.user_name || "User",
+          userName: escapeHtml(pub.user_name || "User"),
           hasImage: pub.images && pub.images.length > 0,
-          image: pub.images?.[0] || "",
+          image: escapeHtml(pub.images?.[0] || ""),
         });
       }).join("");
 
@@ -192,7 +192,7 @@ const DashboardPage = async () => {
         });
       });
     } catch (err) {
-      favList.innerHTML = `<p class="text-sm text-red-600">${err.message || "Could not load favorites."}</p>`;
+      favList.innerHTML = `<p class="text-sm text-red-600">${escapeHtml(err.message || "Could not load favorites.")}</p>`;
     }
   };
 

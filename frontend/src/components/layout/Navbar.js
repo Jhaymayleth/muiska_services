@@ -6,6 +6,7 @@ import {
   logout,
 } from "../../utils/auth.js";
 import { notificationStore } from "../../state/notification.store.js";
+import { escapeHtml } from "../../utils/helpers.js";
 
 let currentApi = null;
 let globalsBound = false;
@@ -129,13 +130,13 @@ const Navbar = () => {
               <div class="relative" id="user-dropdown-container">
                 <button id="user-dropdown-btn" type="button" class="flex items-center gap-2 rounded-full border border-border/60 p-0.5 pr-2.5 transition-colors hover:bg-muted/60" aria-haspopup="true" aria-expanded="false">
                   <span class="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">${getInitials(user?.name)}</span>
-                  <span class="hidden max-w-[9rem] truncate text-sm font-medium text-text/80 sm:inline">${user?.name || "Account"}</span>
+                  <span class="hidden max-w-[9rem] truncate text-sm font-medium text-text/80 sm:inline">${escapeHtml(user?.name || "Account")}</span>
                   <span class="text-text/40">${icon(ICONS.chevron, 14, 2)}</span>
                 </button>
                 <div id="user-dropdown" class="absolute right-0 z-50 mt-2 hidden w-56 overflow-hidden rounded-2xl border border-border/70 bg-white shadow-elevated">
                   <div class="border-b border-border/50 px-4 py-3">
-                    <p class="truncate text-sm font-semibold text-text">${user?.name || "Account"}</p>
-                    <p class="truncate text-xs text-text/50">${user?.email || ""}</p>
+                    <p class="truncate text-sm font-semibold text-text">${escapeHtml(user?.name || "Account")}</p>
+                    <p class="truncate text-xs text-text/50">${escapeHtml(user?.email || "")}</p>
                   </div>
                   ${dropdownItem("/dashboard", "Dashboard", ICONS.grid)}
                   ${dropdownItem("/profile", "Profile", ICONS.user)}
@@ -235,11 +236,11 @@ const Navbar = () => {
         .slice(0, 10)
         .map(
           (n) => `
-        <a href="#" data-id="${n.id}" class="block border-b border-border/40 px-4 py-3 transition-colors last:border-0 hover:bg-muted/50 ${
+        <a href="#" data-id="${escapeHtml(n.id)}" class="block border-b border-border/40 px-4 py-3 transition-colors last:border-0 hover:bg-muted/50 ${
           !n.is_read ? "border-l-2 border-l-primary bg-primary/[0.04]" : ""
         }">
-          <p class="text-sm ${!n.is_read ? "font-semibold text-text" : "text-text/80"}">${n.title}</p>
-          <p class="mt-0.5 text-xs text-text/60">${n.message}</p>
+          <p class="text-sm ${!n.is_read ? "font-semibold text-text" : "text-text/80"}">${escapeHtml(n.title)}</p>
+          <p class="mt-0.5 text-xs text-text/60">${escapeHtml(n.message)}</p>
           <p class="mt-1 text-[11px] text-text/40">${new Date(n.created_at).toLocaleString()}</p>
         </a>`,
         )

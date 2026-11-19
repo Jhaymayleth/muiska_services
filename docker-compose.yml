@@ -39,6 +39,11 @@ services:
       # IP. En producción se dejan los valores por defecto (10 / 3).
       RATE_LIMIT_AUTH_MAX: "50"
       RATE_LIMIT_REGISTER_MAX: "50"
+      # Claves estables para que las suscripciones push sobrevivan reinicios.
+      # Si no se definen, el backend las genera en cada arranque (solo dev).
+      VAPID_SUBJECT: ${VAPID_SUBJECT:-mailto:muiska@localhost}
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
     volumes:
       - uploads:/app/uploads
     depends_on:

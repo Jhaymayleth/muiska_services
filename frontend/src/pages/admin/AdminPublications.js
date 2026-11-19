@@ -102,7 +102,7 @@ export const AdminPublications = {
       this.renderPagination(pagination, res.pagination);
     } catch (err) {
       if (tbody) {
-        tbody.innerHTML = `<tr><td colspan="7" class="error-message">${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="error-message">${escapeHtml(err.message)}</td></tr>`;
       }
       if (pagination) pagination.innerHTML = "";
     }

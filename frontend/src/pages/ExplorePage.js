@@ -3,6 +3,7 @@ import ListingCard from "../components/listing/ListingCard.js";
 import { navigateTo } from "../router/router.js";
 import { loadTemplate } from "../utils/templateLoader.js";
 import { createBarrioAutocomplete } from "../components/BarrioAutocomplete.js";
+import { escapeHtml } from "../utils/helpers.js";
 
 const ExplorePage = async () => {
   const template = loadTemplate("ExplorePage");
@@ -63,7 +64,7 @@ const ExplorePage = async () => {
 
       renderPagination(pagination);
     } catch (err) {
-      grid.innerHTML = errorStateHtml.replace("{{errorMessage}}", err.message || "Error loading listings");
+      grid.innerHTML = errorStateHtml.replace("{{errorMessage}}", () => escapeHtml(err.message || "Error loading listings"));
     }
   };
 

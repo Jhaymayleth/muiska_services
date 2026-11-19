@@ -1,4 +1,5 @@
 import { api } from "../services/api.js";
+import { escapeHtml } from "../utils/helpers.js";
 
 export function createBarrioAutocomplete({ placeholder = "Search neighborhood...", onSelect = () => {} } = {}) {
   const container = document.createElement("div");
@@ -8,7 +9,7 @@ export function createBarrioAutocomplete({ placeholder = "Search neighborhood...
     <input
       type="text"
       id="barrio-input"
-      placeholder="${placeholder}"
+      placeholder="${escapeHtml(placeholder)}"
       autocomplete="off"
       class="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-900 outline-none focus:border-primary"
     />
@@ -54,12 +55,12 @@ export function createBarrioAutocomplete({ placeholder = "Search neighborhood...
         (b, i) => `
         <div
           class="cursor-pointer px-4 py-2 text-sm hover:bg-gray-50 ${i === selectedIndex ? "bg-primary/5" : ""}"
-          data-barrio-id="${b.id}"
-          data-barrio-name="${b.name}"
-          data-barrio-locality="${b.locality}"
+          data-barrio-id="${escapeHtml(b.id)}"
+          data-barrio-name="${escapeHtml(b.name)}"
+          data-barrio-locality="${escapeHtml(b.locality)}"
         >
-          <div class="font-medium">${b.name}</div>
-          <div class="text-xs text-gray-500">${b.locality}</div>
+          <div class="font-medium">${escapeHtml(b.name)}</div>
+          <div class="text-xs text-gray-500">${escapeHtml(b.locality)}</div>
         </div>
       `
       )

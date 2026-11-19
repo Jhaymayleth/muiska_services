@@ -1,6 +1,7 @@
 import { getPublication, updatePublication, getCategories } from "../services/publication.service.js";
 import { navigateTo } from "../router/router.js";
 import { loadTemplate } from "../utils/templateLoader.js";
+import { escapeHtml } from "../utils/helpers.js";
 
 const EditListingPage = () => {
   const template = loadTemplate("EditListingPage");
@@ -40,7 +41,7 @@ const EditListingPage = () => {
           .slice(0, 5)
           .map(
             (image) =>
-              `<img src="${image}" alt="current image" class="h-20 w-20 rounded-lg object-cover" />`,
+              `<img src="${escapeHtml(image)}" alt="current image" class="h-20 w-20 rounded-lg object-cover" />`,
           )
           .join("");
         form.prepend(imagesContainer);

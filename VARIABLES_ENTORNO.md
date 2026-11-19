@@ -77,5 +77,5 @@ No hace falta `.env`: `docker-compose.yml` inyecta `PORT`, `NODE_ENV`, `DB_*`, `
 
 - `JWT_SECRET` y `DB_PASSWORD` son los secretos críticos; no reutilices los valores de ejemplo.
 - `backend/uploads/` guarda archivos subidos y no debe versionarse.
-- Las claves VAPID de Web Push se generan en cada arranque (`services/push.service.js:4`), no son configurables; esto invalida suscripciones al reiniciar el servidor.
+- Las claves VAPID de Web Push se leen de `VAPID_PUBLIC_KEY`/`VAPID_PRIVATE_KEY` (`services/push.service.js:6`). Si no se definen, se generan en cada arranque y las suscripciones se invalidan al reiniciar: configúralas en producción.
 - Todo el tráfico del frontend pasa por `/api`; si publicas el API en otro dominio, actualiza `CORS_ORIGIN` y el `baseURL` del cliente.

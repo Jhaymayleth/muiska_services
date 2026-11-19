@@ -79,7 +79,7 @@ export const AdminCategories = {
       const categories = await api.getAdminCategories();
       this.renderTable(categories);
     } catch (err) {
-      container.innerHTML = `<p class="admin-error">${err.message}</p>`;
+      container.innerHTML = `<p class="admin-error">${escapeHtml(err.message)}</p>`;
     }
   },
 

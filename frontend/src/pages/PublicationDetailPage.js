@@ -45,11 +45,11 @@ const PublicationDetailPage = () => {
     // Build images HTML
     let imagesHtml = "";
     if (images.length > 0) {
-      imagesHtml = `<div class="rounded-xl overflow-hidden"><div class="relative aspect-video overflow-hidden" id="main-image"><img src="${images[0]}" alt="${escapeHtml(pub.title)}" class="w-full h-full object-cover" /></div>`;
+      imagesHtml = `<div class="rounded-xl overflow-hidden"><div class="relative aspect-video overflow-hidden" id="main-image"><img src="${escapeHtml(images[0])}" alt="${escapeHtml(pub.title)}" class="w-full h-full object-cover" /></div>`;
       if (images.length > 1) {
         imagesHtml += `<div class="flex gap-2 mt-3 overflow-x-auto pb-2" id="thumbnails">`;
         images.forEach((img, i) => {
-          imagesHtml += `<button data-index="${i}" class="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition ${i === 0 ? "border-primary" : "border-transparent hover:border-border"}" aria-label="View image ${i + 1}"><img src="${img}" alt="${escapeHtml(pub.title)} - thumbnail ${i + 1}" class="w-full h-full object-cover" /></button>`;
+          imagesHtml += `<button data-index="${i}" class="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition ${i === 0 ? "border-primary" : "border-transparent hover:border-border"}" aria-label="View image ${i + 1}"><img src="${escapeHtml(img)}" alt="${escapeHtml(pub.title)} - thumbnail ${i + 1}" class="w-full h-full object-cover" /></button>`;
         });
         imagesHtml += `</div>`;
       }

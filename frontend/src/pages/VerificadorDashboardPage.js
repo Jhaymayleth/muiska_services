@@ -121,7 +121,7 @@ const VerificadorDashboardPage = () => {
         `)
         .join("");
     } catch (err) {
-      profilesList.innerHTML = `<p class="text-red-600">Error loading profiles: ${err.message}</p>`;
+      profilesList.innerHTML = `<p class="text-red-600">Error loading profiles: ${escapeHtml(err.message)}</p>`;
     }
   };
 
@@ -138,27 +138,27 @@ const VerificadorDashboardPage = () => {
       }
       publicationsList.innerHTML = pubs
         .map((p) => `
-          <div class="rounded-lg border border-gray-200 p-4" data-publication-id="${p.id}">
+          <div class="rounded-lg border border-gray-200 p-4" data-publication-id="${escapeHtml(p.id)}">
             <div class="flex items-start justify-between">
               <div class="flex-1">
-                <h3 class="font-semibold text-gray-900">${p.title || "No title"}</h3>
-                <p class="text-sm text-gray-600">${p.category || "Uncategorized"}</p>
-                <p class="text-sm text-gray-600">Price: $${p.price || 0}</p>
-                ${p.description ? `<p class="text-sm text-gray-700 mt-2 line-clamp-2">${p.description}</p>` : ""}
-                ${p.location ? `<p class="text-sm text-gray-600 mt-1">Location: ${p.location}</p>` : ""}
-                ${p.rejection_reason ? `<p class="text-sm text-red-600 mt-1">Previous rejection: ${p.rejection_reason}</p>` : ""}
+                <h3 class="font-semibold text-gray-900">${escapeHtml(p.title || "No title")}</h3>
+                <p class="text-sm text-gray-600">${escapeHtml(p.category || "Uncategorized")}</p>
+                <p class="text-sm text-gray-600">Price: $${escapeHtml(p.price ?? 0)}</p>
+                ${p.description ? `<p class="text-sm text-gray-700 mt-2 line-clamp-2">${escapeHtml(p.description)}</p>` : ""}
+                ${p.location ? `<p class="text-sm text-gray-600 mt-1">Location: ${escapeHtml(p.location)}</p>` : ""}
+                ${p.rejection_reason ? `<p class="text-sm text-red-600 mt-1">Previous rejection: ${escapeHtml(p.rejection_reason)}</p>` : ""}
               </div>
               <div class="ml-4 flex flex-col gap-2">
                 <button
                   data-action="approve-pub"
-                  data-id="${p.id}"
+                  data-id="${escapeHtml(p.id)}"
                   class="rounded bg-green-600 px-3 py-1 text-xs font-medium text-white hover:bg-green-700"
                 >
                   Approve
                 </button>
                 <button
                   data-action="reject-pub"
-                  data-id="${p.id}"
+                  data-id="${escapeHtml(p.id)}"
                   class="rounded bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700"
                 >
                   Reject
@@ -169,7 +169,7 @@ const VerificadorDashboardPage = () => {
         `)
         .join("");
     } catch (err) {
-      publicationsList.innerHTML = `<p class="text-red-600">Error loading publications: ${err.message}</p>`;
+      publicationsList.innerHTML = `<p class="text-red-600">Error loading publications: ${escapeHtml(err.message)}</p>`;
     }
   };
 
@@ -188,17 +188,17 @@ const VerificadorDashboardPage = () => {
         .map((v) => `
           <div class="rounded-lg border border-gray-200 p-3">
             <div class="flex items-center justify-between">
-              <span class="font-medium">${v.name || "No name"}</span>
-              <span class="text-xs font-medium ${v.status === "approved" ? "text-green-600" : "text-red-600"}">${v.status}</span>
+              <span class="font-medium">${escapeHtml(v.name || "No name")}</span>
+              <span class="text-xs font-medium ${v.status === "approved" ? "text-green-600" : "text-red-600"}">${escapeHtml(v.status)}</span>
             </div>
-            <p class="text-sm text-gray-600">${v.email || ""}</p>
-            ${v.reason ? `<p class="text-sm text-gray-600">Reason: ${v.reason}</p>` : ""}
+            <p class="text-sm text-gray-600">${escapeHtml(v.email || "")}</p>
+            ${v.reason ? `<p class="text-sm text-gray-600">Reason: ${escapeHtml(v.reason)}</p>` : ""}
             <p class="text-xs text-gray-500">${new Date(v.created_at).toLocaleString()}</p>
           </div>
         `)
         .join("");
     } catch (err) {
-      panel.innerHTML = `<p class="text-red-600">Error: ${err.message}</p>`;
+      panel.innerHTML = `<p class="text-red-600">Error: ${escapeHtml(err.message)}</p>`;
     }
   };
 
@@ -217,16 +217,16 @@ const VerificadorDashboardPage = () => {
         .map((m) => `
           <div class="rounded-lg border border-gray-200 p-3">
             <div class="flex items-center justify-between">
-              <span class="font-medium">${m.title || "No title"}</span>
-              <span class="text-xs font-medium ${m.action === "approved" ? "text-green-600" : "text-red-600"}">${m.action}</span>
+              <span class="font-medium">${escapeHtml(m.title || "No title")}</span>
+              <span class="text-xs font-medium ${m.action === "approved" ? "text-green-600" : "text-red-600"}">${escapeHtml(m.action)}</span>
             </div>
-            ${m.reason ? `<p class="text-sm text-gray-600">Reason: ${m.reason}</p>` : ""}
+            ${m.reason ? `<p class="text-sm text-gray-600">Reason: ${escapeHtml(m.reason)}</p>` : ""}
             <p class="text-xs text-gray-500">${new Date(m.created_at).toLocaleString()}</p>
           </div>
         `)
         .join("");
     } catch (err) {
-      panel.innerHTML = `<p class="text-red-600">Error: ${err.message}</p>`;
+      panel.innerHTML = `<p class="text-red-600">Error: ${escapeHtml(err.message)}</p>`;
     }
   };
 
