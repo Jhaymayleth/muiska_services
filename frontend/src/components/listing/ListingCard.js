@@ -25,6 +25,12 @@ const formatPrice = (value) => {
   })}`;
 };
 
+const formatDistance = (value) => {
+  const meters = Number(value);
+  if (!Number.isFinite(meters) || meters < 0) return "";
+  return meters < 1000 ? `${Math.round(meters)} m` : `${(meters / 1000).toFixed(1)} km`;
+};
+
 const ListingCard = (pub = {}) => {
   const card = document.createElement("article");
   card.className =
@@ -36,6 +42,7 @@ const ListingCard = (pub = {}) => {
   const images = Array.isArray(pub.images) ? pub.images.filter(Boolean) : [];
   const cover = images[0];
   const category = pub.category ? escapeHtml(pub.category) : "";
+  const distance = formatDistance(pub.distance_meters);
 
   card.innerHTML = `
     <div class="relative aspect-[4/3] overflow-hidden bg-muted">
@@ -60,6 +67,7 @@ const ListingCard = (pub = {}) => {
 
       <div class="mt-auto flex flex-wrap items-center gap-2 border-t border-border/70 pt-3 text-xs text-text/60">
         ${pub.location ? `<span class="inline-flex items-center gap-1.5 rounded-full bg-muted/70 px-2.5 py-1"><span class="inline-flex text-text/40">${getIcon("location", 13)}</span>${escapeHtml(pub.location)}</span>` : ""}
+        ${distance ? `<span class="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 font-medium text-primary"><span class="inline-flex">${getIcon("location", 13)}</span>${escapeHtml(distance)}</span>` : ""}
         ${pub.contact_method ? `<span class="inline-flex items-center gap-1.5 rounded-full bg-muted/70 px-2.5 py-1"><span class="inline-flex text-text/40">${getIcon("phone", 13)}</span>${escapeHtml(pub.contact_method)}</span>` : ""}
       </div>
     </div>

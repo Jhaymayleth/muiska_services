@@ -37,7 +37,11 @@ export const publicationService = {
     const params = [];
     let whereClause = "WHERE 1=1";
     let paramIndex = 1;
-    const hasGeo = lat && lng && radius;
+    // Comprobar presencia, no truthiness: lat=0 o lng=0 son coordenadas válidas.
+    const hasGeo =
+      lat !== undefined && lat !== null &&
+      lng !== undefined && lng !== null &&
+      radius !== undefined && radius !== null;
     let distanceSelect = "";
 
     const normalizedStatus = status || (user_id ? null : "active");

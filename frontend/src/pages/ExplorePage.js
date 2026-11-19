@@ -4,6 +4,7 @@ import { navigateTo } from "../router/router.js";
 import { loadTemplate } from "../utils/templateLoader.js";
 import { createBarrioAutocomplete } from "../components/BarrioAutocomplete.js";
 import { escapeHtml } from "../utils/helpers.js";
+import { useGeolocation } from "../hooks/useGeolocation.js";
 
 const ExplorePage = async () => {
   const template = loadTemplate("ExplorePage");
@@ -16,6 +17,8 @@ const ExplorePage = async () => {
   const pageSize = 12;
   let totalPages = 1;
   let currentFilters = { status: "active" };
+  let userCoords = null;
+  const geolocation = useGeolocation();
 
   const urlParams = new URLSearchParams(window.location.search);
   const urlCategory = urlParams.get("category");
@@ -30,6 +33,41 @@ const ExplorePage = async () => {
   const form = section.querySelector("#filter-form");
   const categorySelect = section.querySelector("#category");
   const clearBtn = section.querySelector("#clear-filters");
+  const useLocationBtn = section.querySelector("#use-location");
+  const locationStatus = section.querySelector("#location-status");
+
+  const setLocationStatus = (message, isError = false) => {
+    if (!locationStatus) return;
+    locationStatus.textContent = message;
+    locationStatus.classList.toggle("text-red-600", isError);
+    locationStatus.classList.toggle("text-text/60", !isError);
+  };
+
+  // Pide la ubicación solo cuando hace falta (filtro de distancia o botón) y
+  // cachea el resultado para no repetir el permiso del navegador.
+  const resolveCoords = async () => {
+    if (userCoords) return userCoords;
+    try {
+      userCoords = await geolocation.getCurrentPosition();
+      setLocationStatus(`Using your location (±${Math.round(userCoords.accuracy)} m)`);
+      return userCoords;
+    } catch (err) {
+      setLocationStatus(
+        err?.code === 1
+          ? "Location permission denied. Distance filter ignored."
+          : "Could not get your location. Distance filter ignored.",
+        true,
+      );
+      return null;
+    }
+  };
+
+  useLocationBtn?.addEventListener("click", async () => {
+    useLocationBtn.disabled = true;
+    setLocationStatus("Getting your location...");
+    await resolveCoords();
+    useLocationBtn.disabled = false;
+  });
 
   const locationInput = section.querySelector("#location");
   const autocompleteContainer = section.querySelector("#neighborhood-autocomplete");
@@ -113,9 +151,20 @@ const ExplorePage = async () => {
     }
   });
 
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const formData = new FormData(form);
+    const radius = formData.get("radius");
+
+    // El filtro por distancia solo se envía si el navegador dio coordenadas.
+    let geoFilters = {};
+    if (radius) {
+      const coords = await resolveCoords();
+      if (coords) {
+        geoFilters = { lat: coords.lat, lng: coords.lng, radius: Number(radius) };
+      }
+    }
+
     currentFilters = {
       status: "active",
       search: formData.get("search") || undefined,
@@ -123,6 +172,7 @@ const ExplorePage = async () => {
       minPrice: formData.get("minPrice") ? parseFloat(formData.get("minPrice")) : undefined,
       maxPrice: formData.get("maxPrice") ? parseFloat(formData.get("maxPrice")) : undefined,
       location: locationInput.value || undefined,
+      ...geoFilters,
     };
     currentPage = 1;
     render();
@@ -132,6 +182,8 @@ const ExplorePage = async () => {
     form.reset();
     barrioAutocomplete.clear();
     locationInput.value = "";
+    userCoords = null;
+    setLocationStatus("");
     currentFilters = { status: "active" };
     currentPage = 1;
     render();
